@@ -299,16 +299,10 @@
   // Values we already know are sent in the background; their boxes are hidden
   // and summarised in one line instead.
   function knownFields(clubId, phone) {
-    let line = "Uploading for <b>" + clubId + "</b>";
     $("clubId").closest(".field").hidden = true;
-    if (phone) {
-      $("phone").closest(".field").hidden = true;
-      $("idRow").hidden = true;
-      line += ", registered mobile ending <b>" + phone.slice(-4) + "</b>";
-    } else {
-      $("idRow").classList.add("single");
-    }
-    $("upFor").innerHTML = line + ".";
+    if (phone) $("idRow").hidden = true;          // nothing to type: phone goes in the background
+    else $("idRow").classList.add("single");      // only if the phone is genuinely unknown
+    $("upFor").innerHTML = "Uploading for <b>" + clubId + "</b>";
     $("upFor").hidden = false;
   }
 
@@ -316,7 +310,9 @@
   $("upiId").textContent = UPI_ID;
   $("payeeName").textContent = PAYEE_NAME;
 
-  const urlId = (new URLSearchParams(location.search).get("id") || "").toUpperCase().trim();
+  const params = new URLSearchParams(location.search);
+  const urlId = (params.get("id") || "").toUpperCase().trim();
+  const urlPhone = /^[6-9]\d{9}$/.test(params.get("p") || "") ? params.get("p") : ""; // from email links
   let session = {};
   try { session = JSON.parse(sessionStorage.getItem("unbnd_member") || "{}"); } catch (e) {}
 
@@ -324,7 +320,8 @@
     $("clubId").value = urlId;
     $("heroId").textContent = urlId;
     $("noteId").textContent = urlId;
-    const knownPhone = session.clubId === urlId && mobile.test(session.phone || "") ? session.phone : "";
+    const knownPhone = urlPhone ||
+      (session.clubId === urlId && mobile.test(session.phone || "") ? session.phone : "");
     if (knownPhone) $("phone").value = knownPhone;
     knownFields(urlId, knownPhone);
   } else {
