@@ -172,23 +172,24 @@
       <legend>About you</legend>
       <div class="field" data-f="name">
         <label class="lbl" for="name">Full name</label>
-        <input id="name" type="text" autocomplete="name" required>
+        <input id="name" type="text" autocomplete="name" maxlength="50" required>
         <p class="err"></p>
       </div>
       <div class="field" data-f="phone">
         <label class="lbl" for="phone">Mobile number</label>
-        <input id="phone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="10-digit number" required>
+        <input id="phone" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="10" placeholder="10-digit number" required>
         <p class="err"></p>
       </div>
       <div class="field" data-f="email">
         <label class="lbl" for="email">Email</label>
-        <input id="email" type="email" autocomplete="email" autocapitalize="none" required>
+        <input id="email" type="email" autocomplete="email" autocapitalize="none" maxlength="100" required>
         <p class="hint">We'll send your Club ID here.</p>
         <p class="err"></p>
       </div>
       <div class="field" data-f="age">
         <label class="lbl" for="age">Age</label>
-        <input id="age" type="number" inputmode="numeric" min="1" max="100" required>
+        <input id="age" type="text" inputmode="numeric" maxlength="3" required>
+        <p class="hint">In years, from 1 to 100.</p>
         <p class="err"></p>
       </div>
     </fieldset>
@@ -243,12 +244,12 @@
       <p class="hint">Needed because you're under 18.</p>
       <div class="field" data-f="guardianName">
         <label class="lbl" for="guardianName">Parent/guardian name</label>
-        <input id="guardianName" type="text">
+        <input id="guardianName" type="text" maxlength="50">
         <p class="err"></p>
       </div>
       <div class="field" data-f="guardianPhone">
         <label class="lbl" for="guardianPhone">Parent/guardian mobile number</label>
-        <input id="guardianPhone" type="tel" inputmode="numeric" placeholder="10-digit number">
+        <input id="guardianPhone" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit number">
         <p class="err"></p>
       </div>
       <label class="check" data-f="parentalConsent">
@@ -266,12 +267,12 @@
       </label>
       <div class="field" data-f="emergencyName">
         <label class="lbl" for="emergencyName">Contact name</label>
-        <input id="emergencyName" type="text">
+        <input id="emergencyName" type="text" maxlength="50">
         <p class="err"></p>
       </div>
       <div class="field" data-f="emergencyPhone">
         <label class="lbl" for="emergencyPhone">Contact mobile number</label>
-        <input id="emergencyPhone" type="tel" inputmode="numeric" placeholder="10-digit number">
+        <input id="emergencyPhone" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit number">
         <p class="err"></p>
       </div>
     </fieldset>
@@ -333,6 +334,35 @@
   const $ = (id) => document.getElementById(id);
   const form = $("form");
   const mobile = /^[6-9]\d{9}$/;
+  // Letters, with a single space, apostrophe, hyphen or dot between parts: D'Souza, Mary-Ann, S. Kumar
+  const NAME_RE = /^[A-Za-z]+(?:(?:\. ?|['\- ])[A-Za-z]+)*\.?$/;
+  const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+  // ---- Strict input filters: invalid characters never reach the field ----
+  function filter(el, fn) {
+    el.addEventListener("input", () => {
+      const next = fn(el.value);
+      if (next !== el.value) el.value = next;
+    });
+  }
+  // Phones: digits only, max 10. A pasted +91 or leading 0 is removed first.
+  ["phone", "guardianPhone", "emergencyPhone"].forEach((id) => filter($(id), (v) => {
+    let d = v.replace(/\D/g, "");
+    if (d.length === 12 && d.startsWith("91")) d = d.slice(2);
+    else if (d.length === 11 && d.startsWith("0")) d = d.slice(1);
+    return d.slice(0, 10);
+  }));
+  // Age: digits only, max 3, no leading zero
+  filter($("age"), (v) => v.replace(/\D/g, "").replace(/^0+/, "").slice(0, 3));
+  // Names: English letters plus space ' - . (phone keyboards' curly apostrophe becomes '), max 50
+  ["name", "guardianName", "emergencyName"].forEach((id) => filter($(id), (v) =>
+    v.replace(/[\u2018\u2019\u02BC]/g, "'")
+     .replace(/[^A-Za-z '.\-]/g, "")
+     .replace(/^[^A-Za-z]+/, "")
+     .replace(/ {2,}/g, " ").replace(/'{2,}/g, "'").replace(/-{2,}/g, "-").replace(/\.{2,}/g, ".")
+     .slice(0, 50)));
+  // Email: only characters valid in an email address, no spaces, max 100
+  filter($("email"), (v) => v.replace(/[^A-Za-z0-9@._%+-]/g, "").slice(0, 100));
 
   function cleanPhone(p) {
     let s = String(p || "").replace(/\D/g, "");
@@ -380,22 +410,22 @@
   function validate() {
     const e = {};
     const val = (id) => $(id).value.trim();
-    if (!val("name")) e.name = "Enter your full name.";
+    if (!NAME_RE.test(val("name"))) e.name = val("name") ? "Use letters only, with a single space, ' - or . between parts." : "Enter your full name.";
     if (!mobile.test(cleanPhone(val("phone")))) e.phone = "Enter a valid 10-digit mobile number.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val("email"))) e.email = "Enter a valid email address.";
+    if (!EMAIL_RE.test(val("email"))) e.email = "Enter a valid email address.";
     const a = age();
-    if (!Number.isInteger(a) || a < 1 || a > 100) e.age = "Enter your age in years.";
+    if (!/^\d{1,3}$/.test(val("age")) || a < 1 || a > 100) e.age = "Enter an age from 1 to 100.";
     if (!val("experience")) e.experience = "Choose your running experience.";
     if (!val("pace")) e.pace = "Choose your usual pace.";
     if (!form.querySelector('input[name="tshirt"]:checked')) e.tshirt = "Choose a t-shirt size.";
 
     const minor = isMinor();
     if (minor) {
-      if (!val("guardianName")) e.guardianName = "Enter your parent/guardian's name.";
+      if (!NAME_RE.test(val("guardianName"))) e.guardianName = val("guardianName") ? "Use letters only, with a single space, ' - or . between parts." : "Enter your parent/guardian's name.";
       if (!mobile.test(cleanPhone(val("guardianPhone")))) e.guardianPhone = "Enter a valid 10-digit mobile number.";
       if (!$("parentalConsent").checked) e.parentalConsent = "Confirm your parent/guardian's consent.";
     }
-    if (!val("emergencyName")) e.emergencyName = "Enter an emergency contact name.";
+    if (!NAME_RE.test(val("emergencyName"))) e.emergencyName = val("emergencyName") ? "Use letters only, with a single space, ' - or . between parts." : "Enter an emergency contact name.";
     const ep = cleanPhone(val("emergencyPhone"));
     if (!mobile.test(ep)) e.emergencyPhone = "Enter a valid 10-digit mobile number.";
     else if (ep === cleanPhone(val("phone")) && !(minor && ep === cleanPhone(val("guardianPhone"))))
