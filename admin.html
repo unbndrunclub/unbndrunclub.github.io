@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>UNBND Admin</title>
+<link rel="icon" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root {
+    --black: #000000;
+    --pink: #fe90ae;
+    --white: #ffffff;
+    --paper: #f4f4f5;
+    --line: #e2e2e6;
+    --muted: #686873;
+    --error: #d0021b;
+    color-scheme: light;
+    box-sizing: border-box;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  [hidden] { display: none !important; }
+  *, *::before, *::after { box-sizing: inherit; }
+  body {
+    margin: 0; background: var(--paper); color: var(--black);
+    font: 400 16px/1.55 "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .display { font-family: "Barlow Condensed", "Arial Narrow", sans-serif; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative; overflow: hidden; background: var(--black); color: var(--white);
+    padding: calc(env(safe-area-inset-top, 0px) + 18px) 20px 120px;
+  }
+  /* Running-track lanes sweeping across the hero */
+  .hero::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(118deg, transparent 0 46px, rgba(254,144,174,.28) 46px 48px);
+    mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.35) 45%, transparent 75%);
+    -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.35) 45%, transparent 75%);
+  }
+  .bar { max-width: 620px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+  .bar img { width: 56px; height: 56px; display: block; }
+  .bar .fee { margin: 0; text-align: right; line-height: 1.1; color: rgba(255,255,255,.7); font-size: .85rem; }
+  .bar .fee b { display: block; color: var(--pink); font: italic 800 1.6rem/1 "Barlow Condensed", sans-serif; }
+  .hero-inner { position: relative; z-index: 1; max-width: 620px; margin: 0 auto; padding-top: 44px; }
+  h1 {
+    font: italic 800 clamp(3.8rem, 23vw, 7.5rem)/.86 "Barlow Condensed", "Arial Narrow", sans-serif;
+    text-transform: uppercase; letter-spacing: -.02em; margin: 0; color: var(--pink);
+  }
+  .tagline { font: 600 1.3rem/1.3 "Barlow", sans-serif; margin: 18px 0 0; max-width: 26ch; }
+  .perks { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 0; padding: 0; list-style: none; }
+  .perks li { font-size: .92rem; font-weight: 500; background: rgba(255,255,255,.1); border-radius: 999px; padding: 6px 12px; }
+
+  /* ---------- Form ---------- */
+  main { position: relative; z-index: 2; max-width: 620px; margin: -80px auto 0; padding: 0 14px 56px; }
+  .card { background: var(--white); border-radius: 22px; padding: 10px 22px 26px; box-shadow: 0 24px 60px -30px rgba(0,0,0,.45); }
+  .card-title { font: italic 800 2rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 18px 0 2px; }
+  .card-sub { color: var(--muted); margin: 0; }
+  fieldset { border: 0; padding: 0; margin: 26px 0 0; }
+  legend {
+    font: 700 1.3rem/1.2 "Barlow Condensed", "Arial Narrow", sans-serif; padding: 0 0 0 12px;
+    border-left: 4px solid var(--pink); float: left; width: 100%;
+  }
+  legend + * { clear: both; }
+  .hint { color: var(--muted); font-size: .92rem; margin: 6px 0 0; }
+
+  .field { margin-top: 16px; }
+  label.lbl { display: block; font-weight: 600; margin-bottom: 6px; }
+  input[type="text"], input[type="tel"], input[type="email"], input[type="number"], select {
+    width: 100%; font: inherit; color: var(--black); background: var(--paper);
+    border: 1.5px solid transparent; border-radius: 12px; padding: 13px 14px;
+    appearance: none; -webkit-appearance: none; transition: border-color .15s, background .15s;
+  }
+  input:focus, select:focus { background: var(--white); border-color: var(--black); outline: none; }
+  select {
+    background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+    background-position: calc(100% - 20px) 55%, calc(100% - 14px) 55%;
+    background-size: 6px 6px; background-repeat: no-repeat; padding-right: 40px;
+  }
+  button:focus-visible, a:focus-visible, .check input:focus-visible { outline: 3px solid var(--pink); outline-offset: 2px; }
+  .invalid input, .invalid select { border-color: var(--error); background: var(--white); }
+  .err { color: var(--error); font-size: .9rem; margin: 6px 0 0; }
+  .err:empty { display: none; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .sizes { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sizes label { position: relative; }
+  .sizes input { position: absolute; opacity: 0; inset: 0; }
+  .sizes span {
+    display: inline-block; min-width: 56px; text-align: center; padding: 11px 12px; background: var(--paper);
+    border: 1.5px solid transparent; border-radius: 12px; font: 700 1.05rem/1 "Barlow Condensed", sans-serif; cursor: pointer;
+  }
+  .sizes input:checked + span { background: var(--black); color: var(--pink); }
+  .sizes input:focus-visible + span { outline: 3px solid var(--pink); outline-offset: 2px; }
+  .invalid .sizes span { border-color: var(--error); }
+
+  .check { display: flex; gap: 12px; align-items: flex-start; margin-top: 14px; }
+  .check input { width: 20px; height: 20px; margin: 2px 0 0; flex: none; accent-color: var(--black); }
+  .check.invalid span { color: var(--error); }
+  .optional { color: var(--muted); font-weight: 400; }
+
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  .btn {
+    display: block; width: 100%; margin-top: 28px; border: 0; border-radius: 14px; padding: 17px 18px;
+    font: italic 800 1.35rem/1 "Barlow Condensed", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: .02em;
+    background: var(--black); color: var(--pink); cursor: pointer; text-align: center; text-decoration: none;
+    transition: transform .12s;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn.pink { background: var(--pink); color: var(--black); }
+  .btn[disabled] { opacity: .6; cursor: progress; }
+  .summary { margin-top: 18px; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--error); color: var(--error); }
+  .summary:empty { display: none; }
+  .summary ul { margin: 6px 0 0; padding-left: 20px; }
+
+  /* ---------- Success: race bib ---------- */
+  .bib {
+    position: relative; background: var(--white); color: var(--black); border-radius: 16px;
+    border: 2.5px solid var(--black); padding: 24px 20px 20px; text-align: center; margin: 14px 0 18px;
+  }
+  .bib::before, .bib::after, .bib .pins::before, .bib .pins::after {
+    content: ""; position: absolute; width: 11px; height: 11px; border-radius: 50%; background: var(--paper); border: 2px solid var(--black);
+  }
+  .bib::before { top: 10px; left: 10px; } .bib::after { top: 10px; right: 10px; }
+  .bib .pins::before { bottom: 10px; left: 10px; } .bib .pins::after { bottom: 10px; right: 10px; }
+  .bib .club { display: inline-block; background: var(--black); color: var(--pink); font: 700 .95rem/1 "Barlow Condensed", sans-serif; padding: 5px 10px; border-radius: 6px; }
+  .bib .num { font: italic 800 clamp(3.6rem, 19vw, 5.4rem)/1 "Barlow Condensed", "Arial Narrow", sans-serif; margin: 8px 0 2px; }
+  .bib .who { font-weight: 600; }
+  .copy { border: 0; background: var(--paper); color: var(--black); border-radius: 12px; padding: 11px 16px; font: 600 .95rem "Barlow", sans-serif; cursor: pointer; }
+  .status { font-weight: 700; margin: 18px 0 0; }
+  .status::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--pink); margin-right: 8px; vertical-align: 1px; }
+  #done p { margin: 10px 0 0; }
+
+  @media (max-width: 380px) { .row { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: no-preference) {
+    h1 { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes rise { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+    #done:not([hidden]) .bib { animation: pin .45s cubic-bezier(.2,.8,.2,1.2); }
+    @keyframes pin { from { transform: rotate(-4deg) scale(.94); opacity: 0; } to { transform: none; opacity: 1; } }
+  }
+
+  /* ---------- Admin ---------- */
+  .adminbar { background: var(--black); color: var(--white); padding: calc(env(safe-area-inset-top,0px) + 12px) 16px 12px; }
+  .adminbar .in { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
+  .adminbar img { width: 42px; height: 42px; }
+  .adminbar h1 { font-size: 1.8rem; line-height: 1; animation: none; flex: 1; }
+  .linkbtn { background: none; border: 1.5px solid rgba(255,255,255,.35); color: var(--white); border-radius: 10px; padding: 8px 12px; font: 600 .9rem "Barlow", sans-serif; cursor: pointer; }
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 16px 14px 48px; }
+  .seg { display: flex; background: var(--white); border-radius: 14px; padding: 4px; gap: 4px; max-width: 460px; }
+  .seg button { flex: 1; border: 0; background: none; padding: 11px 10px; border-radius: 10px; font: 700 1.05rem/1 "Barlow Condensed", sans-serif; cursor: pointer; color: var(--muted); }
+  .seg button[aria-selected="true"] { background: var(--black); color: var(--pink); }
+  .panel { margin-top: 16px; }
+  .tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 12px; }
+  .tools input, .tools select { width: auto; flex: 1 1 200px; background: var(--white); }
+  .tools .btn { width: auto; margin: 0; padding: 12px 16px; font-size: 1.05rem; }
+  .counts { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+  .counts span { background: var(--white); border-radius: 999px; padding: 6px 12px; font-weight: 600; font-size: .9rem; }
+  .tablewrap { overflow: auto; max-height: 72vh; background: var(--white); border-radius: 14px; border: 1px solid var(--line); }
+  table { border-collapse: separate; border-spacing: 0; font-size: .9rem; }
+  th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; white-space: nowrap; }
+  th { position: sticky; top: 0; z-index: 2; background: var(--black); color: var(--white); font: 700 .95rem "Barlow Condensed", sans-serif; }
+  td.notes { white-space: pre-line; min-width: 220px; }
+  td.muted { color: var(--muted); font-style: italic; }
+  .ctl { position: sticky; left: 0; z-index: 1; background: var(--white); border-right: 2px solid var(--line); min-width: 250px; white-space: normal; }
+  th.ctl { z-index: 3; background: var(--black); }
+  .ctl .id { font: 800 1.15rem/1 "Barlow Condensed", sans-serif; }
+  .radios { display: flex; gap: 6px; margin: 8px 0; }
+  .radios label { flex: 1; position: relative; }
+  .radios input { position: absolute; opacity: 0; }
+  .radios span { display: block; text-align: center; padding: 7px 6px; border-radius: 8px; border: 1.5px solid var(--line); font-weight: 600; cursor: pointer; font-size: .85rem; }
+  .radios .g input:checked + span { background: #0d7a45; border-color: #0d7a45; color: #fff; }
+  .radios .r input:checked + span { background: #c0001f; border-color: #c0001f; color: #fff; }
+  .radios input:focus-visible + span { outline: 3px solid var(--pink); outline-offset: 2px; }
+  .ctl textarea { width: 100%; font: inherit; font-size: .85rem; border: 1.5px solid var(--line); border-radius: 8px; padding: 7px 8px; resize: vertical; min-height: 38px; background: var(--paper); }
+  .ctl .upd { margin-top: 6px; width: 100%; border: 0; border-radius: 8px; padding: 8px; background: var(--black); color: var(--pink); font: 700 .95rem "Barlow Condensed", sans-serif; cursor: pointer; }
+  .ctl .upd[disabled] { opacity: .5; }
+  .pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-weight: 700; font-size: .8rem; }
+  .pill.Active { background: #d8f3e4; color: #0b5e36; }
+  .pill.Pending { background: #fff1c2; color: #7a5a00; }
+  .pill.Deactivated { background: #ffd9de; color: #9c0019; }
+  tr.flash td { animation: flash 1.2s; }
+  @keyframes flash { from { background: #fff4f8; } }
+
+  /* Check status */
+  .checkbox { background: var(--white); border-radius: 18px; padding: 22px 18px; max-width: 460px; }
+  .idinput { display: flex; align-items: stretch; border: 2px solid var(--black); border-radius: 14px; overflow: hidden; margin-top: 12px; }
+  .idinput b { background: var(--black); color: var(--pink); font: italic 800 2.2rem/1 "Barlow Condensed", sans-serif; padding: 12px 14px; display: grid; place-items: center; }
+  .idinput input { border: 0; border-radius: 0; font: 800 2.2rem/1 "Barlow Condensed", sans-serif; letter-spacing: .08em; background: var(--white); padding: 10px 14px; }
+  .result { margin-top: 16px; border-radius: 16px; padding: 20px 18px; color: #000; }
+  .result.Active { background: #20c46b; }
+  .result.Pending { background: #ffd23f; }
+  .result.Deactivated { background: #ff4d5e; }
+  .result.none { background: var(--line); }
+  .result .big { font: italic 800 2.4rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .result .who { font-weight: 700; font-size: 1.15rem; margin-top: 6px; }
+  .result .rem { margin-top: 12px; background: rgba(255,255,255,.55); border-radius: 10px; padding: 10px 12px; white-space: pre-line; }
+  .result .rem small { display: block; font-weight: 700; margin-bottom: 4px; }
+  .toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom,0px) + 20px); transform: translateX(-50%); background: var(--black); color: var(--white); padding: 12px 18px; border-radius: 12px; z-index: 60; font-weight: 600; }
+  .login { max-width: 380px; margin: 40px auto; }
+  @media (max-width: 600px) { .ctl { min-width: 190px; } }
+
+  .busy { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.72); display: grid; place-items: center; padding: 24px; }
+  .busy-box { background: var(--white); border-radius: 18px; padding: 26px 24px; max-width: 320px; text-align: center; }
+  .busy-box b { display: block; font: italic 800 1.5rem/1.1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin-top: 14px; }
+  .spinner { width: 44px; height: 44px; margin: 0 auto; border-radius: 50%; border: 5px solid var(--paper); border-top-color: var(--pink); animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<header class="adminbar">
+  <div class="in">
+    <img src="logo.png" alt="UNBND Run Club">
+    <h1>Admin</h1>
+    <button class="linkbtn" id="logout" type="button" hidden>Log out</button>
+  </div>
+</header>
+
+<!-- ===== Login ===== -->
+<div class="wrap" id="loginView">
+  <form class="card login" id="loginForm" novalidate>
+    <h2 class="card-title">Admin login</h2>
+    <div class="field">
+      <label class="lbl" for="pass">Passcode</label>
+      <input id="pass" type="password" autocomplete="current-password">
+    </div>
+    <div class="summary" id="loginErr" role="alert"></div>
+    <button class="btn" type="submit">Log in</button>
+  </form>
+</div>
+
+<!-- ===== Admin ===== -->
+<div class="wrap" id="adminView" hidden>
+  <div class="seg" role="tablist">
+    <button type="button" role="tab" aria-selected="true" data-tab="checkPanel">Check Club ID</button>
+    <button type="button" role="tab" aria-selected="false" data-tab="allPanel">All registrations</button>
+  </div>
+
+  <!-- Check Club ID status -->
+  <section class="panel" id="checkPanel">
+    <form class="checkbox" id="checkForm" novalidate>
+      <label class="lbl" for="checkDigits">Enter the 4 digits of the Club ID</label>
+      <div class="idinput"><b>UB</b><input id="checkDigits" type="text" inputmode="numeric" maxlength="4" placeholder="0001" autocomplete="off"></div>
+      <button class="btn" type="submit">Check status</button>
+      <div id="checkResult" aria-live="polite"></div>
+    </form>
+  </section>
+
+  <!-- All registrations -->
+  <section class="panel" id="allPanel" hidden>
+    <div class="tools">
+      <input id="search" type="text" placeholder="Search name, Club ID, phone, email">
+      <select id="filter">
+        <option value="">All statuses</option>
+        <option>Pending</option>
+        <option>Active</option>
+        <option>Deactivated</option>
+      </select>
+      <button class="btn pink" id="refresh" type="button">Refresh</button>
+      <button class="btn" id="download" type="button">Download Excel</button>
+    </div>
+    <div class="counts" id="counts"></div>
+    <div class="tablewrap"><table id="table"></table></div>
+  </section>
+</div>
+
+<div class="busy" id="busy" hidden role="status" aria-live="polite">
+  <div class="busy-box"><div class="spinner" aria-hidden="true"></div><b id="busyText">Please wait</b></div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbzbZCKBa3tIQuXVny1OIx8zpiELks2FqMlwbj6GoEckWIxiJZ-YT0oqfEPfymbl80gG/exec";
+  const $ = (id) => document.getElementById(id);
+  const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  let passcode = "";
+  let headers = [], rows = [];
+
+  // ---------- Backend calls ----------
+  async function api(payload, busyText) {
+    if (busyText) { $("busyText").textContent = busyText; $("busy").hidden = false; }
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 40000);
+      const res = await fetch(API_URL, {
+        method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(Object.assign({ passcode: passcode }, payload)), signal: ctrl.signal,
+      });
+      clearTimeout(timer);
+      const out = JSON.parse(await res.text());
+      // Passcode rejected while already inside (e.g. changed or locked): back to login
+      if (out.auth === false && !$("adminView").hidden) logout(out.errors && out.errors[0]);
+      return out;
+    } catch (e) {
+      return { ok: false, errors: [e.name === "AbortError" ? "This took too long. Please try again." : "Couldn't reach the server. Check your internet and try again."] };
+    } finally {
+      $("busy").hidden = true;
+    }
+  }
+  function toast(msg) {
+    $("toast").textContent = msg; $("toast").hidden = false;
+    clearTimeout(toast.t); toast.t = setTimeout(() => ($("toast").hidden = true), 2600);
+  }
+
+  // ---------- Login ----------
+  $("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    passcode = $("pass").value;
+    $("loginErr").textContent = "";
+    const out = await api({ action: "adminList" }, "Logging in");
+    if (!out.ok) { passcode = ""; $("loginErr").textContent = (out.errors || ["Login failed."])[0]; return; }
+    try { sessionStorage.setItem("unbnd_admin", passcode); } catch (x) {}
+    enter(out);
+  });
+  function enter(out) {
+    $("loginView").hidden = true; $("adminView").hidden = false; $("logout").hidden = false;
+    $("pass").value = "";
+    setData(out);
+  }
+  function logout(msg) {
+    passcode = ""; headers = []; rows = [];
+    try { sessionStorage.removeItem("unbnd_admin"); } catch (x) {}
+    $("adminView").hidden = true; $("loginView").hidden = false; $("logout").hidden = true;
+    $("table").innerHTML = ""; $("checkResult").innerHTML = "";
+    if (msg) $("loginErr").textContent = msg;
+  }
+  $("logout").addEventListener("click", () => logout());
+  // Stay logged in while this tab is open
+  (async () => {
+    let saved = ""; try { saved = sessionStorage.getItem("unbnd_admin") || ""; } catch (x) {}
+    if (!saved) return;
+    passcode = saved;
+    const out = await api({ action: "adminList" }, "Loading");
+    if (out.ok) enter(out); else logout();
+  })();
+
+  // ---------- Tabs ----------
+  document.querySelectorAll(".seg button").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll(".seg button").forEach((x) => {
+      x.setAttribute("aria-selected", String(x === b));
+      $(x.dataset.tab).hidden = x !== b;
+    });
+  }));
+
+  // ---------- Check Club ID ----------
+  $("checkDigits").addEventListener("input", (e) => { e.target.value = e.target.value.replace(/\D/g, "").slice(0, 4); });
+  $("checkForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const d = $("checkDigits").value;
+    if (!/^\d{1,4}$/.test(d)) { $("checkResult").innerHTML = '<div class="result none"><div class="big">Enter digits</div></div>'; return; }
+    const clubId = "UB" + d.padStart(4, "0");
+    const out = await api({ action: "adminCheck", clubId: clubId }, "Checking " + clubId);
+    if (!out.ok) { $("checkResult").innerHTML = '<div class="result none"><div class="big">Error</div><div class="who">' + esc((out.errors || [""])[0]) + "</div></div>"; return; }
+    if (!out.found) { $("checkResult").innerHTML = '<div class="result none"><div class="big">' + clubId + " not found</div></div>"; return; }
+    const label = { Active: "Active", Pending: "Pending activation", Deactivated: "Deactivated" }[out.status] || out.status;
+    const minor = out.minor === "Yes" ? '<div class="who">Under 18, guardian verified: ' + esc(out.guardianVerified || "No") + "</div>" : "";
+    $("checkResult").innerHTML =
+      '<div class="result ' + esc(out.status) + '"><div class="big">' + esc(label) + "</div>" +
+      '<div class="who">' + esc(out.clubId) + " · " + esc(out.name) + "</div>" + minor +
+      '<div class="rem"><small>Admin remarks</small>' + esc(out.notes) + "</div></div>";
+  });
+
+  // ---------- All registrations ----------
+  function setData(out) { headers = out.headers; rows = out.rows; render(); }
+  $("refresh").addEventListener("click", async () => {
+    const out = await api({ action: "adminList" }, "Refreshing");
+    if (out.ok) { setData(out); toast("Up to date"); } else toast((out.errors || ["Refresh failed"])[0]);
+  });
+  $("search").addEventListener("input", render);
+  $("filter").addEventListener("change", render);
+
+  const iOf = (name) => headers.indexOf(name);
+  function render() {
+    const iId = iOf("Club ID"), iStatus = iOf("Membership status"), iNotes = iOf("Admin notes");
+    const q = $("search").value.trim().toLowerCase();
+    const f = $("filter").value;
+
+    const counts = { Pending: 0, Active: 0, Deactivated: 0 };
+    rows.forEach((r) => { if (counts[r[iStatus]] !== undefined) counts[r[iStatus]]++; });
+    $("counts").innerHTML = "<span>Total " + rows.length + "</span>" +
+      Object.keys(counts).map((k) => "<span>" + k + " " + counts[k] + "</span>").join("");
+
+    const shown = rows.filter((r) => (!f || r[iStatus] === f) && (!q || r.join(" ").toLowerCase().includes(q)));
+    let h = '<thead><tr><th class="ctl">Update</th>' + headers.map((x) => "<th>" + esc(x) + "</th>").join("") + "</tr></thead><tbody>";
+    shown.forEach((r) => {
+      const id = r[iId], st = r[iStatus];
+      h += '<tr data-id="' + esc(id) + '"><td class="ctl"><div class="id">' + esc(id) + "</div>" +
+        '<div class="radios">' +
+        '<label class="g"><input type="radio" name="s_' + esc(id) + '" value="Active"' + (st === "Active" ? " checked" : "") + "><span>Active</span></label>" +
+        '<label class="r"><input type="radio" name="s_' + esc(id) + '" value="Deactivated"' + (st === "Deactivated" ? " checked" : "") + "><span>Deactivated</span></label>" +
+        "</div>" +
+        '<textarea rows="1" placeholder="Admin note (optional)" aria-label="Admin note for ' + esc(id) + '"></textarea>' +
+        '<button class="upd" type="button">Update</button></td>';
+      r.forEach((v, i) => {
+        if (i === iStatus) h += '<td><span class="pill ' + esc(v) + '">' + esc(v) + "</span></td>";
+        else if (i === iNotes) h += v ? '<td class="notes">' + esc(v) + "</td>" : '<td class="notes muted">No admin remarks</td>';
+        else h += "<td>" + esc(v) + "</td>";
+      });
+      h += "</tr>";
+    });
+    if (!shown.length) h += '<tr><td class="ctl muted" colspan="' + (headers.length + 1) + '">No matching registrations</td></tr>';
+    $("table").innerHTML = h + "</tbody>";
+  }
+
+  // One Update button per row: sends the chosen status (if changed) and the optional note
+  $("table").addEventListener("click", async (e) => {
+    const btn = e.target.closest(".upd"); if (!btn) return;
+    const tr = btn.closest("tr"), id = tr.dataset.id;
+    const row = rows.find((r) => r[iOf("Club ID")] === id);
+    const chosen = (tr.querySelector("input[type=radio]:checked") || {}).value || "";
+    const status = chosen && chosen !== row[iOf("Membership status")] ? chosen : "";
+    const note = tr.querySelector("textarea").value.trim();
+    if (!status && !note) { toast("Nothing to update for " + id); return; }
+    btn.disabled = true;
+    const out = await api({ action: "adminUpdate", clubId: id, status: status, note: note }, "Updating " + id);
+    btn.disabled = false;
+    if (!out.ok) { toast((out.errors || ["Update failed"])[0]); return; }
+    const k = rows.indexOf(row); rows[k] = out.row;
+    render();
+    const fresh = $("table").querySelector('tr[data-id="' + CSS.escape(id) + '"]');
+    if (fresh) fresh.classList.add("flash");
+    toast(id + " updated" + (status === "Active" ? ". Welcome email sent if not sent before." : ""));
+  });
+
+  // ---------- Excel download ----------
+  $("download").addEventListener("click", () => {
+    if (!window.XLSX) { toast("Excel download isn't available right now. Try refreshing the page."); return; }
+    const ws = XLSX.utils.aoa_to_sheet([headers].concat(rows));
+    ws["!cols"] = headers.map((h) => ({ wch: Math.min(40, Math.max(12, h.length + 2)) }));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Members");
+    const d = new Date(), pad = (n) => String(n).padStart(2, "0");
+    XLSX.writeFile(wb, "UNBND-members-" + d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + ".xlsx");
+  });
+</script>
+</body>
+</html>
