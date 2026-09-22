@@ -1,5 +1,499 @@
-     <!DOCTYPE html>
-     <html lang="en">
-     <head><meta charset="utf-8"><title>UNBND Run Club</title></head>
-     <body><h1>UNBND Run Club</h1><p>Registration opening soon.</p></body>
-     </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Join UNBND Run Club</title>
+<meta name="description" content="Register for UNBND Run Club, Mumbai.">
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #000000;
+    --pink: #fe90ae;
+    --white: #ffffff;
+    --paper: #f4f4f5;
+    --line: #e2e2e6;
+    --muted: #686873;
+    --error: #d0021b;
+    color-scheme: light;
+    box-sizing: border-box;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  [hidden] { display: none !important; }
+  *, *::before, *::after { box-sizing: inherit; }
+  body {
+    margin: 0; background: var(--paper); color: var(--black);
+    font: 400 16px/1.55 "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .display { font-family: "Barlow Condensed", "Arial Narrow", sans-serif; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative; overflow: hidden; background: var(--black); color: var(--white);
+    padding: calc(env(safe-area-inset-top, 0px) + 18px) 20px 120px;
+  }
+  /* Running-track lanes sweeping across the hero */
+  .hero::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(118deg, transparent 0 46px, rgba(254,144,174,.28) 46px 48px);
+    mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.35) 45%, transparent 75%);
+    -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.35) 45%, transparent 75%);
+  }
+  .bar { max-width: 620px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+  .bar img { width: 56px; height: 56px; display: block; }
+  .bar .fee { font-weight: 600; font-size: .95rem; color: var(--white); border: 1.5px solid rgba(255,255,255,.35); border-radius: 999px; padding: 6px 14px; }
+  .hero-inner { position: relative; z-index: 1; max-width: 620px; margin: 0 auto; padding-top: 44px; }
+  h1 {
+    font: italic 800 clamp(3.8rem, 23vw, 7.5rem)/.86 "Barlow Condensed", "Arial Narrow", sans-serif;
+    text-transform: uppercase; letter-spacing: -.02em; margin: 0; color: var(--pink);
+  }
+  .tagline { font: 600 1.3rem/1.3 "Barlow", sans-serif; margin: 18px 0 0; max-width: 26ch; }
+  .perks { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 0; padding: 0; list-style: none; }
+  .perks li { font-size: .92rem; font-weight: 500; background: rgba(255,255,255,.1); border-radius: 999px; padding: 6px 12px; }
+
+  /* ---------- Form ---------- */
+  main { position: relative; z-index: 2; max-width: 620px; margin: -80px auto 0; padding: 0 14px 56px; }
+  .card { background: var(--white); border-radius: 22px; padding: 10px 22px 26px; box-shadow: 0 24px 60px -30px rgba(0,0,0,.45); }
+  .card-title { font: italic 800 2rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 18px 0 2px; }
+  .card-sub { color: var(--muted); margin: 0; }
+  fieldset { border: 0; padding: 0; margin: 26px 0 0; }
+  legend {
+    font: 700 1.3rem/1.2 "Barlow Condensed", "Arial Narrow", sans-serif; padding: 0 0 0 12px;
+    border-left: 4px solid var(--pink); float: left; width: 100%;
+  }
+  legend + * { clear: both; }
+  .hint { color: var(--muted); font-size: .92rem; margin: 6px 0 0; }
+
+  .field { margin-top: 16px; }
+  label.lbl { display: block; font-weight: 600; margin-bottom: 6px; }
+  input[type="text"], input[type="tel"], input[type="email"], input[type="number"], select {
+    width: 100%; font: inherit; color: var(--black); background: var(--paper);
+    border: 1.5px solid transparent; border-radius: 12px; padding: 13px 14px;
+    appearance: none; -webkit-appearance: none; transition: border-color .15s, background .15s;
+  }
+  input:focus, select:focus { background: var(--white); border-color: var(--black); outline: none; }
+  select {
+    background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+    background-position: calc(100% - 20px) 55%, calc(100% - 14px) 55%;
+    background-size: 6px 6px; background-repeat: no-repeat; padding-right: 40px;
+  }
+  button:focus-visible, a:focus-visible, .check input:focus-visible { outline: 3px solid var(--pink); outline-offset: 2px; }
+  .invalid input, .invalid select { border-color: var(--error); background: var(--white); }
+  .err { color: var(--error); font-size: .9rem; margin: 6px 0 0; }
+  .err:empty { display: none; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .sizes { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sizes label { position: relative; }
+  .sizes input { position: absolute; opacity: 0; inset: 0; }
+  .sizes span {
+    display: inline-block; min-width: 56px; text-align: center; padding: 11px 12px; background: var(--paper);
+    border: 1.5px solid transparent; border-radius: 12px; font: 700 1.05rem/1 "Barlow Condensed", sans-serif; cursor: pointer;
+  }
+  .sizes input:checked + span { background: var(--black); color: var(--pink); }
+  .sizes input:focus-visible + span { outline: 3px solid var(--pink); outline-offset: 2px; }
+  .invalid .sizes span { border-color: var(--error); }
+
+  .check { display: flex; gap: 12px; align-items: flex-start; margin-top: 14px; }
+  .check input { width: 20px; height: 20px; margin: 2px 0 0; flex: none; accent-color: var(--black); }
+  .check.invalid span { color: var(--error); }
+  .optional { color: var(--muted); font-weight: 400; }
+
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  .btn {
+    display: block; width: 100%; margin-top: 28px; border: 0; border-radius: 14px; padding: 17px 18px;
+    font: italic 800 1.35rem/1 "Barlow Condensed", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: .02em;
+    background: var(--black); color: var(--pink); cursor: pointer; text-align: center; text-decoration: none;
+    transition: transform .12s;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn.pink { background: var(--pink); color: var(--black); }
+  .btn[disabled] { opacity: .6; cursor: progress; }
+  .summary { margin-top: 18px; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--error); color: var(--error); }
+  .summary:empty { display: none; }
+  .summary ul { margin: 6px 0 0; padding-left: 20px; }
+
+  /* ---------- Success: race bib ---------- */
+  .bib {
+    position: relative; background: var(--white); color: var(--black); border-radius: 16px;
+    border: 2.5px solid var(--black); padding: 24px 20px 20px; text-align: center; margin: 14px 0 18px;
+  }
+  .bib::before, .bib::after, .bib .pins::before, .bib .pins::after {
+    content: ""; position: absolute; width: 11px; height: 11px; border-radius: 50%; background: var(--paper); border: 2px solid var(--black);
+  }
+  .bib::before { top: 10px; left: 10px; } .bib::after { top: 10px; right: 10px; }
+  .bib .pins::before { bottom: 10px; left: 10px; } .bib .pins::after { bottom: 10px; right: 10px; }
+  .bib .club { display: inline-block; background: var(--black); color: var(--pink); font: 700 .95rem/1 "Barlow Condensed", sans-serif; padding: 5px 10px; border-radius: 6px; }
+  .bib .num { font: italic 800 clamp(3.6rem, 19vw, 5.4rem)/1 "Barlow Condensed", "Arial Narrow", sans-serif; margin: 8px 0 2px; }
+  .bib .who { font-weight: 600; }
+  .copy { border: 0; background: var(--paper); color: var(--black); border-radius: 12px; padding: 11px 16px; font: 600 .95rem "Barlow", sans-serif; cursor: pointer; }
+  .status { font-weight: 700; margin: 18px 0 0; }
+  .status::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--pink); margin-right: 8px; vertical-align: 1px; }
+  #done p { margin: 10px 0 0; }
+
+  @media (max-width: 380px) { .row { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: no-preference) {
+    h1 { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes rise { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+    #done:not([hidden]) .bib { animation: pin .45s cubic-bezier(.2,.8,.2,1.2); }
+    @keyframes pin { from { transform: rotate(-4deg) scale(.94); opacity: 0; } to { transform: none; opacity: 1; } }
+  }
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="bar">
+    <img src="logo.png" alt="UNBND Run Club">
+    <span class="fee">₹499 membership</span>
+  </div>
+  <div class="hero-inner">
+    <h1>Run<br>unbound.</h1>
+    <p class="tagline">Every pace. Every distance.<br>One club.</p>
+    <ul class="perks">
+      <li>All levels welcome</li>
+      <li>Club t-shirt included</li>
+      <li>Group runs in Mumbai</li>
+    </ul>
+  </div>
+</section>
+
+<main>
+  <!-- ===== Registration form ===== -->
+  <form id="form" class="card" novalidate>
+    <h2 class="card-title">Join the club</h2>
+    <p class="card-sub">Takes about two minutes. All fields are required unless marked optional.</p>
+    <fieldset>
+      <legend>About you</legend>
+      <div class="field" data-f="name">
+        <label class="lbl" for="name">Full name</label>
+        <input id="name" type="text" autocomplete="name" required>
+        <p class="err"></p>
+      </div>
+      <div class="field" data-f="phone">
+        <label class="lbl" for="phone">Mobile number</label>
+        <input id="phone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="10-digit number" required>
+        <p class="err"></p>
+      </div>
+      <div class="field" data-f="email">
+        <label class="lbl" for="email">Email</label>
+        <input id="email" type="email" autocomplete="email" autocapitalize="none" required>
+        <p class="hint">We'll send your Club ID here.</p>
+        <p class="err"></p>
+      </div>
+      <div class="field" data-f="age">
+        <label class="lbl" for="age">Age</label>
+        <input id="age" type="number" inputmode="numeric" min="1" max="100" required>
+        <p class="err"></p>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Your running</legend>
+      <div class="row">
+        <div class="field" data-f="experience">
+          <label class="lbl" for="experience">Experience</label>
+          <select id="experience" required>
+            <option value="">Choose</option>
+            <option>Beginner</option>
+            <option>Intermediate</option>
+            <option>Advanced</option>
+          </select>
+          <p class="err"></p>
+        </div>
+        <div class="field" data-f="pace">
+          <label class="lbl" for="pace">Usual pace</label>
+          <select id="pace" required>
+            <option value="">Choose</option>
+            <option value="Under 5:00">Under 5:00 min/km</option>
+            <option value="5:00-6:00">5:00–6:00 min/km</option>
+            <option value="6:00-7:00">6:00–7:00 min/km</option>
+            <option value="7:00+">7:00+ min/km</option>
+            <option value="Not sure">Not sure</option>
+          </select>
+          <p class="err"></p>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Club t-shirt</legend>
+      <p class="hint">Every member gets a club t-shirt, handed over at your first run with us.</p>
+      <div class="field" data-f="tshirt">
+        <div class="sizes" role="radiogroup" aria-label="T-shirt size">
+          <label><input type="radio" name="tshirt" value="XS"><span>XS</span></label>
+          <label><input type="radio" name="tshirt" value="S"><span>S</span></label>
+          <label><input type="radio" name="tshirt" value="M"><span>M</span></label>
+          <label><input type="radio" name="tshirt" value="L"><span>L</span></label>
+          <label><input type="radio" name="tshirt" value="XL"><span>XL</span></label>
+          <label><input type="radio" name="tshirt" value="XXL"><span>XXL</span></label>
+          <label><input type="radio" name="tshirt" value="XXXL"><span>XXXL</span></label>
+        </div>
+        <p class="err"></p>
+      </div>
+    </fieldset>
+
+    <fieldset id="guardian" hidden>
+      <legend>Parent or guardian</legend>
+      <p class="hint">Needed because you're under 18.</p>
+      <div class="field" data-f="guardianName">
+        <label class="lbl" for="guardianName">Parent/guardian name</label>
+        <input id="guardianName" type="text">
+        <p class="err"></p>
+      </div>
+      <div class="field" data-f="guardianPhone">
+        <label class="lbl" for="guardianPhone">Parent/guardian mobile number</label>
+        <input id="guardianPhone" type="tel" inputmode="numeric" placeholder="10-digit number">
+        <p class="err"></p>
+      </div>
+      <label class="check" data-f="parentalConsent">
+        <input id="parentalConsent" type="checkbox">
+        <span>I confirm my parent/guardian has given consent for me to join UNBND and take part in club runs.</span>
+      </label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Emergency contact</legend>
+      <p class="hint">Someone we can call if anything happens during a run.</p>
+      <label class="check" id="sameWrap" hidden>
+        <input id="sameAsGuardian" type="checkbox">
+        <span>Same as parent/guardian</span>
+      </label>
+      <div class="field" data-f="emergencyName">
+        <label class="lbl" for="emergencyName">Contact name</label>
+        <input id="emergencyName" type="text">
+        <p class="err"></p>
+      </div>
+      <div class="field" data-f="emergencyPhone">
+        <label class="lbl" for="emergencyPhone">Contact mobile number</label>
+        <input id="emergencyPhone" type="tel" inputmode="numeric" placeholder="10-digit number">
+        <p class="err"></p>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Declarations</legend>
+      <label class="check" data-f="decHealth">
+        <input id="decHealth" type="checkbox">
+        <span>I confirm I'm physically fit to take part in running activities, and I participate at my own risk. I'll consult a doctor if I have any medical condition that may affect my running.</span>
+      </label>
+      <label class="check" data-f="decRefund">
+        <input id="decRefund" type="checkbox">
+        <span>I understand the ₹499 membership fee is non-refundable.</span>
+      </label>
+      <label class="check" data-f="decData">
+        <input id="decData" type="checkbox">
+        <span>I agree to UNBND storing my details to manage my membership and contact me about club activities.</span>
+      </label>
+      <label class="check">
+        <input id="photoConsent" type="checkbox">
+        <span>I'm okay with photos or videos of me from club runs being shared on UNBND's social media. <span class="optional">(Optional)</span></span>
+      </label>
+    </fieldset>
+
+    <!-- Hidden from people; bots tend to fill it -->
+    <div class="hp" aria-hidden="true">
+      <label>Website <input id="website" type="text" tabindex="-1" autocomplete="off"></label>
+    </div>
+
+    <div class="summary" id="summary" role="alert"></div>
+    <button class="btn" id="submit" type="submit">Register</button>
+  </form>
+
+  <!-- ===== Success screen ===== -->
+  <section id="done" hidden aria-live="polite">
+    <div class="card">
+      <h2 class="card-title" id="doneTitle">You're registered</h2>
+      <div class="bib">
+        <span class="pins"></span>
+        <div class="club">UNBND RUN CLUB</div>
+        <div class="num" id="bibId">UB0000</div>
+        <div class="who" id="bibName"></div>
+      </div>
+      <button class="copy" id="copyId" type="button">Copy Club ID</button>
+      <p class="status">Your membership is not active yet.</p>
+      <p>To activate it, pay the ₹499 membership fee and upload your payment screenshot.</p>
+      <p id="emailNote">We've also emailed your Club ID and these steps to <b id="doneEmail"></b>.</p>
+      <a class="btn pink" id="payBtn" href="pay.html">Request membership activation</a>
+    </div>
+  </section>
+</main>
+
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbzbZCKBa3tIQuXVny1OIx8zpiELks2FqMlwbj6GoEckWIxiJZ-YT0oqfEPfymbl80gG/exec";
+
+  const $ = (id) => document.getElementById(id);
+  const form = $("form");
+  const mobile = /^[6-9]\d{9}$/;
+
+  function cleanPhone(p) {
+    let s = String(p || "").replace(/\D/g, "");
+    if (s.length === 12 && s.startsWith("91")) s = s.slice(2);
+    if (s.length === 11 && s.startsWith("0")) s = s.slice(1);
+    return s;
+  }
+  const age = () => Number($("age").value);
+  const isMinor = () => $("age").value !== "" && age() < 18;
+
+  // Show the guardian section only for under-18s; clear it when hidden
+  function syncGuardian() {
+    const minor = isMinor();
+    $("guardian").hidden = !minor;
+    $("sameWrap").hidden = !minor;
+    if (!minor) {
+      ["guardianName", "guardianPhone"].forEach((id) => ($(id).value = ""));
+      $("parentalConsent").checked = false;
+      if ($("sameAsGuardian").checked) {
+        $("sameAsGuardian").checked = false;
+        $("emergencyName").value = ""; $("emergencyPhone").value = "";
+        setEmergencyLocked(false);
+      }
+    }
+  }
+  function setEmergencyLocked(locked) {
+    $("emergencyName").readOnly = locked;
+    $("emergencyPhone").readOnly = locked;
+  }
+  function copyGuardian() {
+    if (!$("sameAsGuardian").checked) return;
+    $("emergencyName").value = $("guardianName").value;
+    $("emergencyPhone").value = $("guardianPhone").value;
+  }
+  $("age").addEventListener("input", syncGuardian);
+  $("sameAsGuardian").addEventListener("change", () => {
+    setEmergencyLocked($("sameAsGuardian").checked);
+    if ($("sameAsGuardian").checked) copyGuardian();
+    else { $("emergencyName").value = ""; $("emergencyPhone").value = ""; }
+  });
+  $("guardianName").addEventListener("input", copyGuardian);
+  $("guardianPhone").addEventListener("input", copyGuardian);
+
+  // Validation (the backend re-checks everything)
+  function validate() {
+    const e = {};
+    const val = (id) => $(id).value.trim();
+    if (!val("name")) e.name = "Enter your full name.";
+    if (!mobile.test(cleanPhone(val("phone")))) e.phone = "Enter a valid 10-digit mobile number.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val("email"))) e.email = "Enter a valid email address.";
+    const a = age();
+    if (!Number.isInteger(a) || a < 1 || a > 100) e.age = "Enter your age in years.";
+    if (!val("experience")) e.experience = "Choose your running experience.";
+    if (!val("pace")) e.pace = "Choose your usual pace.";
+    if (!form.querySelector('input[name="tshirt"]:checked')) e.tshirt = "Choose a t-shirt size.";
+
+    const minor = isMinor();
+    if (minor) {
+      if (!val("guardianName")) e.guardianName = "Enter your parent/guardian's name.";
+      if (!mobile.test(cleanPhone(val("guardianPhone")))) e.guardianPhone = "Enter a valid 10-digit mobile number.";
+      if (!$("parentalConsent").checked) e.parentalConsent = "Confirm your parent/guardian's consent.";
+    }
+    if (!val("emergencyName")) e.emergencyName = "Enter an emergency contact name.";
+    const ep = cleanPhone(val("emergencyPhone"));
+    if (!mobile.test(ep)) e.emergencyPhone = "Enter a valid 10-digit mobile number.";
+    else if (ep === cleanPhone(val("phone")) && !(minor && ep === cleanPhone(val("guardianPhone"))))
+      e.emergencyPhone = "Use a different number from your own.";
+
+    if (!$("decHealth").checked) e.decHealth = "Accept the fitness declaration.";
+    if (!$("decRefund").checked) e.decRefund = "Accept the refund policy.";
+    if (!$("decData").checked) e.decData = "Agree to how we use your details.";
+    return e;
+  }
+
+  function showErrors(errors) {
+    form.querySelectorAll("[data-f]").forEach((el) => {
+      const msg = errors[el.dataset.f] || "";
+      el.classList.toggle("invalid", !!msg);
+      const p = el.querySelector(".err");
+      if (p) p.textContent = msg;
+    });
+    const keys = Object.keys(errors);
+    if (keys.length) {
+      const first = form.querySelector(`[data-f="${keys[0]}"]`);
+      const target = first && first.querySelector("input, select");
+      if (target) target.focus({ preventScroll: true });
+      if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }
+
+  function showSummary(messages) {
+    const box = $("summary");
+    if (!messages.length) { box.innerHTML = ""; return; }
+    box.innerHTML = "<b>Please fix the following:</b><ul>" +
+      messages.map((m) => "<li>" + m.replace(/</g, "&lt;") + "</li>").join("") + "</ul>";
+  }
+
+  form.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    showSummary([]);
+    if ($("website").value) return; // bot
+
+    const errors = validate();
+    showErrors(errors);
+    if (Object.keys(errors).length) return;
+
+    const minor = isMinor();
+    const payload = {
+      action: "register",
+      name: $("name").value.trim(),
+      phone: cleanPhone($("phone").value),
+      email: $("email").value.trim(),
+      age: age(),
+      experience: $("experience").value,
+      pace: $("pace").value,
+      tshirt: form.querySelector('input[name="tshirt"]:checked').value,
+      emergencyName: $("emergencyName").value.trim(),
+      emergencyPhone: cleanPhone($("emergencyPhone").value),
+      guardianName: minor ? $("guardianName").value.trim() : "",
+      guardianPhone: minor ? cleanPhone($("guardianPhone").value) : "",
+      parentalConsent: minor ? $("parentalConsent").checked : false,
+      declarations: $("decHealth").checked && $("decRefund").checked && $("decData").checked,
+      photoConsent: $("photoConsent").checked,
+    };
+
+    const btn = $("submit");
+    btn.disabled = true; btn.textContent = "Registering…";
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload),
+      });
+      const out = await res.json();
+      if (!out.ok) {
+        showSummary(out.errors || ["Registration failed. Please try again."]);
+        return;
+      }
+      showSuccess(out.clubId, payload, out.duplicate);
+    } catch (err) {
+      showSummary(["We couldn't reach the server. Check your internet connection and try again."]);
+    } finally {
+      btn.disabled = false; btn.textContent = "Register";
+    }
+  });
+
+  function showSuccess(clubId, p, duplicate) {
+    try { sessionStorage.setItem("unbnd_member", JSON.stringify({ clubId: clubId, phone: p.phone })); } catch (e) {}
+    $("bibId").textContent = clubId;
+    $("bibName").textContent = p.name;
+    $("doneEmail").textContent = p.email;
+    $("doneTitle").textContent = duplicate ? "You're already registered" : "You're registered";
+    $("emailNote").hidden = !!duplicate; // no new email is sent for a repeat registration
+    $("payBtn").href = "pay.html?id=" + encodeURIComponent(clubId);
+    form.hidden = true;
+    $("done").hidden = false;
+    window.scrollTo({ top: 0 });
+  }
+
+  $("copyId").addEventListener("click", async () => {
+    const id = $("bibId").textContent;
+    try { await navigator.clipboard.writeText(id); $("copyId").textContent = "Copied " + id; }
+    catch (e) { $("copyId").textContent = id; }
+    setTimeout(() => ($("copyId").textContent = "Copy Club ID"), 2000);
+  });
+</script>
+</body>
+</html>
