@@ -281,7 +281,7 @@
   const $ = (id) => document.getElementById(id);
   const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   let passcode = "";
-  let headers = [], rows = [];
+  let headers = [], rows = [], loadedAt = null;
 
   // ---------- Backend calls ----------
   async function api(payload, busyText) {
@@ -326,20 +326,12 @@
   }
   function logout(msg) {
     passcode = ""; headers = []; rows = [];
-    try { sessionStorage.removeItem("unbnd_admin"); } catch (x) {}
+    try { sessionStorage.removeItem("unbnd_admin"); sessionStorage.removeItem("unbnd_admin_data"); } catch (x) {}
     $("adminView").hidden = true; $("loginView").hidden = false; $("logout").hidden = true;
     $("table").innerHTML = ""; $("checkResult").innerHTML = "";
     if (msg) $("loginErr").textContent = msg;
   }
   $("logout").addEventListener("click", () => logout());
-  // Stay logged in while this tab is open
-  (async () => {
-    let saved = ""; try { saved = sessionStorage.getItem("unbnd_admin") || ""; } catch (x) {}
-    if (!saved) return;
-    passcode = saved;
-    const out = await api({ action: "adminList" }, "Loading");
-    if (out.ok) enter(out); else logout();
-  })();
 
   // ---------- Tabs ----------
   document.querySelectorAll(".seg button").forEach((b) => b.addEventListener("click", () => {
@@ -351,6 +343,7 @@
 
   // ---------- Check Club ID ----------
   $("checkDigits").addEventListener("input", (e) => { e.target.value = e.target.value.replace(/\D/g, "").slice(0, 4); });
+  // Live check against the Sheet every time, so last-minute registrations show up
   $("checkForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const d = $("checkDigits").value;
@@ -365,10 +358,24 @@
       '<div class="result ' + esc(out.status) + '"><div class="big">' + esc(label) + "</div>" +
       '<div class="who">' + esc(out.clubId) + " · " + esc(out.name) + "</div>" + minor +
       '<div class="rem"><small>Admin remarks</small>' + esc(out.notes) + "</div></div>";
+    $("checkDigits").select();
   });
 
   // ---------- All registrations ----------
-  function setData(out) { headers = out.headers; rows = out.rows; render(); }
+  function setData(out) {
+    headers = out.headers; rows = out.rows; loadedAt = new Date();
+    try { sessionStorage.setItem("unbnd_admin_data", JSON.stringify({ headers: headers, rows: rows })); } catch (x) {}
+    render();
+  }
+  // Quiet background refresh every minute, without disturbing a note she's typing
+  function editing() {
+    return [...document.querySelectorAll("#table textarea")].some((t) => t.value.trim() || t === document.activeElement);
+  }
+  setInterval(async () => {
+    if (!passcode || document.hidden || editing()) return;
+    const out = await api({ action: "adminList" });
+    if (out.ok && !editing()) setData(out);
+  }, 60000);
   $("refresh").addEventListener("click", async () => {
     const out = await api({ action: "adminList" }, "Refreshing");
     if (out.ok) { setData(out); toast("Up to date"); } else toast((out.errors || ["Refresh failed"])[0]);
@@ -439,6 +446,16 @@
     const d = new Date(), pad = (n) => String(n).padStart(2, "0");
     XLSX.writeFile(wb, "UNBND-members-" + d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + ".xlsx");
   });
+  // Stay logged in while this tab is open
+  (async () => {
+    let saved = ""; try { saved = sessionStorage.getItem("unbnd_admin") || ""; } catch (x) {}
+    if (!saved) return;
+    passcode = saved;
+    let cached = null; try { cached = JSON.parse(sessionStorage.getItem("unbnd_admin_data") || "null"); } catch (x) {}
+    if (cached) enter(cached);
+    const out = await api({ action: "adminList" }, cached ? "" : "Loading");
+    if (out.ok) { if (cached) setData(out); else enter(out); } else if (!cached) logout();
+  })();
 </script>
 </body>
 </html>
