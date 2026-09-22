@@ -45,7 +45,8 @@
   }
   .bar { max-width: 620px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
   .bar img { width: 56px; height: 56px; display: block; }
-  .bar .fee { font-weight: 600; font-size: .95rem; color: var(--white); border: 1.5px solid rgba(255,255,255,.35); border-radius: 999px; padding: 6px 14px; }
+  .bar .fee { margin: 0; text-align: right; line-height: 1.1; color: rgba(255,255,255,.7); font-size: .85rem; }
+  .bar .fee b { display: block; color: var(--pink); font: italic 800 1.6rem/1 "Barlow Condensed", sans-serif; }
   .hero-inner { position: relative; z-index: 1; max-width: 620px; margin: 0 auto; padding-top: 44px; }
   h1 {
     font: italic 800 clamp(3.8rem, 23vw, 7.5rem)/.86 "Barlow Condensed", "Arial Narrow", sans-serif;
@@ -149,7 +150,7 @@
 <section class="hero">
   <div class="bar">
     <img src="logo.png" alt="UNBND Run Club">
-    <span class="fee">₹499 membership</span>
+    <p class="fee">Membership<b>₹499</b></p>
   </div>
   <div class="hero-inner">
     <h1>Run<br>unbound.</h1>
@@ -316,9 +317,12 @@
       </div>
       <button class="copy" id="copyId" type="button">Copy Club ID</button>
       <p class="status">Your membership is not active yet.</p>
-      <p>To activate it, pay the ₹499 membership fee and upload your payment screenshot.</p>
-      <p id="emailNote">We've also emailed your Club ID and these steps to <b id="doneEmail"></b>.</p>
-      <a class="btn pink" id="payBtn" href="pay.html">Request membership activation</a>
+      <p>To activate it, tap <b>Pay and activate membership</b> below. You'll see our UPI details there, and you can upload your payment screenshot on the same page.</p>
+      <a class="btn pink" id="payBtn" href="pay.html">Pay and activate membership</a>
+      <div id="emailNote">
+        <p>Want to pay later? Follow the steps in the email we've sent to <b id="doneEmail"></b>. It has your Club ID and a link to pay.</p>
+        <p class="hint">Can't find the email? Check your spam or promotions folder.</p>
+      </div>
     </div>
   </section>
 </main>
