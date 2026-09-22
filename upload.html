@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Upload payment screenshot | UNBND Run Club</title>
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #000000;
+    --pink: #fe90ae;
+    --white: #ffffff;
+    --paper: #f4f4f5;
+    --line: #e2e2e6;
+    --muted: #686873;
+    --error: #d0021b;
+    color-scheme: light;
+    box-sizing: border-box;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  [hidden] { display: none !important; }
+  *, *::before, *::after { box-sizing: inherit; }
+  body {
+    margin: 0; background: var(--paper); color: var(--black);
+    font: 400 16px/1.55 "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .display { font-family: "Barlow Condensed", "Arial Narrow", sans-serif; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative; overflow: hidden; background: var(--black); color: var(--white);
+    padding: calc(env(safe-area-inset-top, 0px) + 18px) 20px 120px;
+  }
+  /* Running-track lanes sweeping across the hero */
+  .hero::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(118deg, transparent 0 46px, rgba(254,144,174,.28) 46px 48px);
+    mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.35) 45%, transparent 75%);
+    -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.35) 45%, transparent 75%);
+  }
+  .bar { max-width: 620px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+  .bar img { width: 56px; height: 56px; display: block; }
+  .bar .fee { margin: 0; text-align: right; line-height: 1.1; color: rgba(255,255,255,.7); font-size: .85rem; }
+  .bar .fee b { display: block; color: var(--pink); font: italic 800 1.6rem/1 "Barlow Condensed", sans-serif; }
+  .hero-inner { position: relative; z-index: 1; max-width: 620px; margin: 0 auto; padding-top: 44px; }
+  h1 {
+    font: italic 800 clamp(3.8rem, 23vw, 7.5rem)/.86 "Barlow Condensed", "Arial Narrow", sans-serif;
+    text-transform: uppercase; letter-spacing: -.02em; margin: 0; color: var(--pink);
+  }
+  .tagline { font: 600 1.3rem/1.3 "Barlow", sans-serif; margin: 18px 0 0; max-width: 26ch; }
+  .perks { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 0; padding: 0; list-style: none; }
+  .perks li { font-size: .92rem; font-weight: 500; background: rgba(255,255,255,.1); border-radius: 999px; padding: 6px 12px; }
+
+  /* ---------- Form ---------- */
+  main { position: relative; z-index: 2; max-width: 620px; margin: -80px auto 0; padding: 0 14px 56px; }
+  .card { background: var(--white); border-radius: 22px; padding: 10px 22px 26px; box-shadow: 0 24px 60px -30px rgba(0,0,0,.45); }
+  .card-title { font: italic 800 2rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 18px 0 2px; }
+  .card-sub { color: var(--muted); margin: 0; }
+  fieldset { border: 0; padding: 0; margin: 26px 0 0; }
+  legend {
+    font: 700 1.3rem/1.2 "Barlow Condensed", "Arial Narrow", sans-serif; padding: 0 0 0 12px;
+    border-left: 4px solid var(--pink); float: left; width: 100%;
+  }
+  legend + * { clear: both; }
+  .hint { color: var(--muted); font-size: .92rem; margin: 6px 0 0; }
+
+  .field { margin-top: 16px; }
+  label.lbl { display: block; font-weight: 600; margin-bottom: 6px; }
+  input[type="text"], input[type="tel"], input[type="email"], input[type="number"], select {
+    width: 100%; font: inherit; color: var(--black); background: var(--paper);
+    border: 1.5px solid transparent; border-radius: 12px; padding: 13px 14px;
+    appearance: none; -webkit-appearance: none; transition: border-color .15s, background .15s;
+  }
+  input:focus, select:focus { background: var(--white); border-color: var(--black); outline: none; }
+  select {
+    background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+    background-position: calc(100% - 20px) 55%, calc(100% - 14px) 55%;
+    background-size: 6px 6px; background-repeat: no-repeat; padding-right: 40px;
+  }
+  button:focus-visible, a:focus-visible, .check input:focus-visible { outline: 3px solid var(--pink); outline-offset: 2px; }
+  .invalid input, .invalid select { border-color: var(--error); background: var(--white); }
+  .err { color: var(--error); font-size: .9rem; margin: 6px 0 0; }
+  .err:empty { display: none; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .sizes { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sizes label { position: relative; }
+  .sizes input { position: absolute; opacity: 0; inset: 0; }
+  .sizes span {
+    display: inline-block; min-width: 56px; text-align: center; padding: 11px 12px; background: var(--paper);
+    border: 1.5px solid transparent; border-radius: 12px; font: 700 1.05rem/1 "Barlow Condensed", sans-serif; cursor: pointer;
+  }
+  .sizes input:checked + span { background: var(--black); color: var(--pink); }
+  .sizes input:focus-visible + span { outline: 3px solid var(--pink); outline-offset: 2px; }
+  .invalid .sizes span { border-color: var(--error); }
+
+  .check { display: flex; gap: 12px; align-items: flex-start; margin-top: 14px; }
+  .check input { width: 20px; height: 20px; margin: 2px 0 0; flex: none; accent-color: var(--black); }
+  .check.invalid span { color: var(--error); }
+  .optional { color: var(--muted); font-weight: 400; }
+
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  .btn {
+    display: block; width: 100%; margin-top: 28px; border: 0; border-radius: 14px; padding: 17px 18px;
+    font: italic 800 1.35rem/1 "Barlow Condensed", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: .02em;
+    background: var(--black); color: var(--pink); cursor: pointer; text-align: center; text-decoration: none;
+    transition: transform .12s;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn.pink { background: var(--pink); color: var(--black); }
+  .btn[disabled] { opacity: .6; cursor: progress; }
+  .summary { margin-top: 18px; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--error); color: var(--error); }
+  .summary:empty { display: none; }
+  .summary ul { margin: 6px 0 0; padding-left: 20px; }
+
+  /* ---------- Success: race bib ---------- */
+  .bib {
+    position: relative; background: var(--white); color: var(--black); border-radius: 16px;
+    border: 2.5px solid var(--black); padding: 24px 20px 20px; text-align: center; margin: 14px 0 18px;
+  }
+  .bib::before, .bib::after, .bib .pins::before, .bib .pins::after {
+    content: ""; position: absolute; width: 11px; height: 11px; border-radius: 50%; background: var(--paper); border: 2px solid var(--black);
+  }
+  .bib::before { top: 10px; left: 10px; } .bib::after { top: 10px; right: 10px; }
+  .bib .pins::before { bottom: 10px; left: 10px; } .bib .pins::after { bottom: 10px; right: 10px; }
+  .bib .club { display: inline-block; background: var(--black); color: var(--pink); font: 700 .95rem/1 "Barlow Condensed", sans-serif; padding: 5px 10px; border-radius: 6px; }
+  .bib .num { font: italic 800 clamp(3.6rem, 19vw, 5.4rem)/1 "Barlow Condensed", "Arial Narrow", sans-serif; margin: 8px 0 2px; }
+  .bib .who { font-weight: 600; }
+  .copy { border: 0; background: var(--paper); color: var(--black); border-radius: 12px; padding: 11px 16px; font: 600 .95rem "Barlow", sans-serif; cursor: pointer; }
+  .status { font-weight: 700; margin: 18px 0 0; }
+  .status::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--pink); margin-right: 8px; vertical-align: 1px; }
+  #done p { margin: 10px 0 0; }
+
+  @media (max-width: 380px) { .row { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: no-preference) {
+    h1 { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes rise { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+    #done:not([hidden]) .bib { animation: pin .45s cubic-bezier(.2,.8,.2,1.2); }
+    @keyframes pin { from { transform: rotate(-4deg) scale(.94); opacity: 0; } to { transform: none; opacity: 1; } }
+  }
+
+  /* ---------- Payment page ---------- */
+  .hero { padding-bottom: 104px; }
+  .hero-inner { padding-top: 30px; }
+  h1 { font-size: clamp(3rem, 15vw, 5.2rem); }
+  .tagline { max-width: 30ch; }
+  .step { display: grid; grid-template-columns: 34px 1fr; gap: 12px; margin-top: 24px; }
+  .step-n {
+    width: 34px; height: 34px; border-radius: 50%; background: var(--black); color: var(--pink);
+    display: grid; place-items: center; font: italic 800 1.15rem/1 "Barlow Condensed", sans-serif;
+  }
+  .step h3 { font: 700 1.3rem/1.2 "Barlow Condensed", sans-serif; margin: 3px 0 4px; }
+  .step p { margin: 6px 0 0; }
+  .copyrow {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+    background: var(--paper); border-radius: 12px; padding: 10px 10px 10px 14px; margin-top: 10px;
+  }
+  .copyrow b { font: 700 1.02rem/1.2 "Barlow", sans-serif; white-space: nowrap; }
+  .copyrow .copy { background: var(--black); color: var(--pink); flex: none; }
+  .amount { font: italic 800 2.4rem/1 "Barlow Condensed", sans-serif; margin: 4px 0 0; }
+  .qrbox { display: flex; gap: 16px; align-items: center; margin-top: 14px; flex-wrap: wrap; }
+  .qr { background: #ffffff; padding: 10px; border-radius: 14px; border: 2px solid var(--black); line-height: 0; }
+  .qr canvas, .qr img { width: 150px; height: 150px; }
+  .qrbox .side { flex: 1; min-width: 150px; }
+  .ghost {
+    border: 1.5px solid var(--black); background: var(--white); color: var(--black); border-radius: 12px;
+    padding: 11px 14px; font: 600 .95rem "Barlow", sans-serif; cursor: pointer; margin-top: 10px;
+  }
+  .or { color: var(--muted); font-size: .92rem; }
+  .file {
+    display: block; margin-top: 12px; border: 2px dashed var(--line); border-radius: 14px; padding: 18px;
+    text-align: center; cursor: pointer; background: var(--paper);
+  }
+  .file input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .file:focus-within { outline: 3px solid var(--pink); outline-offset: 2px; }
+  .file.invalid { border-color: var(--error); }
+  .file b { display: block; font: 700 1.15rem/1.2 "Barlow Condensed", sans-serif; }
+  .preview { display: block; max-width: 100%; max-height: 260px; margin: 12px auto 0; border-radius: 10px; }
+  .upfor { background: var(--paper); border-radius: 12px; padding: 12px 14px; margin: 14px 0 0; }
+  .row.single { grid-template-columns: 1fr; }
+  .success { text-align: center; padding: 10px 0 4px; }
+  .success .tick {
+    width: 64px; height: 64px; border-radius: 50%; background: var(--pink); margin: 14px auto 8px;
+    display: grid; place-items: center; font-size: 2rem; color: var(--black);
+  }
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="bar">
+    <a href="index.html"><img src="logo.png" alt="UNBND Run Club home"></a>
+    <p class="fee">Membership<b>₹499</b></p>
+  </div>
+  <div class="hero-inner">
+    <h1>Upload<br>screenshot</h1>
+    <p class="tagline">Already paid? Upload your payment screenshot and we'll activate your membership after checking it.</p>
+  </div>
+</section>
+
+<main>
+  <div class="card" id="payCard">
+    <!-- Step 3 -->
+    <div>
+      <div>
+        <p class="card-sub" style="margin-top:18px">Use the screenshot of the successful payment from your UPI app.</p>
+        <form id="upForm" novalidate>
+          <p class="upfor" id="upFor" hidden></p>
+          <div class="row" id="idRow">
+            <div class="field" data-f="clubId">
+              <label class="lbl" for="clubId">Club ID</label>
+              <input id="clubId" type="text" maxlength="6" autocapitalize="characters" autocomplete="off" placeholder="UB0001">
+              <p class="err"></p>
+            </div>
+            <div class="field" data-f="phone">
+              <label class="lbl" for="phone">Registered mobile</label>
+              <input id="phone" type="tel" inputmode="numeric" maxlength="10" autocomplete="tel-national" placeholder="10 digits">
+              <p class="err"></p>
+            </div>
+          </div>
+          <label class="file" id="fileBox" data-f="file">
+            <input id="file" type="file" accept="image/*">
+            <b id="fileLabel">Choose screenshot</b>
+            <span class="hint" id="fileHint">JPG or PNG from your gallery</span>
+            <img class="preview" id="preview" alt="Selected screenshot" hidden>
+          </label>
+          <p class="err" id="fileErr"></p>
+          <div class="summary" id="summary" role="alert"></div>
+          <button class="btn" id="upBtn" type="submit">Upload payment screenshot</button>
+          <p class="hint" style="text-align:center;margin-top:14px">Haven't paid yet? <a href="pay.html" id="payLink" style="color:inherit;font-weight:600">See how to pay</a>.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="card success" id="doneCard" hidden aria-live="polite">
+    <div class="tick" aria-hidden="true">✓</div>
+    <h2 class="card-title">Screenshot received</h2>
+    <p>Thank you. We'll check your payment and activate your membership soon. You'll get an email when your membership is active.</p>
+    <p class="hint">Can't find our emails? Check your spam or promotions folder.</p>
+    <a class="btn pink" href="index.html">Back to home</a>
+  </div>
+</main>
+
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbzbZCKBa3tIQuXVny1OIx8zpiELks2FqMlwbj6GoEckWIxiJZ-YT0oqfEPfymbl80gG/exec";
+  const MAX_SIDE = 1600;       // screenshots are resized to this before upload
+  const JPEG_QUALITY = 0.8;
+
+  const $ = (id) => document.getElementById(id);
+  const ID_RE = /^UB\d{4}$/;
+  const mobile = /^[6-9]\d{9}$/;
+
+  // Values we already know are sent in the background; their boxes are hidden
+  // and summarised in one line instead.
+  function knownFields(clubId, phone) {
+    $("clubId").closest(".field").hidden = true;
+    if (phone) $("idRow").hidden = true;          // nothing to type: phone goes in the background
+    else $("idRow").classList.add("single");      // only if the phone is genuinely unknown
+    $("upFor").innerHTML = "Uploading for <b>" + clubId + "</b>";
+    $("upFor").hidden = false;
+  }
+
+  // ---- Member details from the email link or the registration tab ----
+  const params = new URLSearchParams(location.search);
+  const urlId = (params.get("id") || "").toUpperCase().trim();
+  const urlPhone = /^[6-9]\d{9}$/.test(params.get("p") || "") ? params.get("p") : "";
+  let session = {};
+  try { session = JSON.parse(sessionStorage.getItem("unbnd_member") || "{}"); } catch (e) {}
+
+  if (ID_RE.test(urlId)) {
+    $("clubId").value = urlId;
+    const knownPhone = urlPhone ||
+      (session.clubId === urlId && mobile.test(session.phone || "") ? session.phone : "");
+    if (knownPhone) $("phone").value = knownPhone;
+    knownFields(urlId, knownPhone);
+    $("payLink").href = "pay.html?id=" + encodeURIComponent(urlId) + (knownPhone ? "&p=" + knownPhone : "");
+  }
+
+  // ---- Strict input filters ----
+  function filter(el, fn) {
+    el.addEventListener("input", () => { const n = fn(el.value); if (n !== el.value) el.value = n; });
+  }
+  // Club ID: always "UB" + up to 4 digits. Typing just the digits works too.
+  filter($("clubId"), (v) => {
+    const up = v.toUpperCase();
+    const digits = up.replace(/\D/g, "").slice(0, 4);
+    if (digits) return "UB" + digits;
+    return up.startsWith("UB") ? "UB" : up.startsWith("U") ? "U" : "";
+  });
+  filter($("phone"), (v) => {
+    let d = v.replace(/\D/g, "");
+    if (d.length === 12 && d.startsWith("91")) d = d.slice(2);
+    else if (d.length === 11 && d.startsWith("0")) d = d.slice(1);
+    return d.slice(0, 10);
+  });
+
+  // ---- Screenshot selection + compression ----
+  let imageData = null; // { base64, mimeType }
+  $("file").addEventListener("change", async () => {
+    const f = $("file").files[0];
+    imageData = null; $("preview").hidden = true; $("fileErr").textContent = "";
+    if (!f) return;
+    if (!/^image\//.test(f.type)) { $("fileErr").textContent = "Choose an image file."; return; }
+    $("fileLabel").textContent = "Preparing…";
+    try {
+      imageData = await compress(f);
+      $("preview").src = "data:" + imageData.mimeType + ";base64," + imageData.base64;
+      $("preview").hidden = false;
+      $("fileLabel").textContent = "Screenshot selected";
+      $("fileHint").textContent = "Tap to choose a different one";
+      $("fileBox").classList.remove("invalid");
+    } catch (e) {
+      $("fileLabel").textContent = "Choose screenshot";
+      $("fileErr").textContent = "This image couldn't be read. Try a different screenshot.";
+    }
+  });
+
+  function compress(file) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, MAX_SIDE / Math.max(img.width, img.height));
+        const c = document.createElement("canvas");
+        c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+        const x = c.getContext("2d");
+        x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height);
+        x.drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        const dataUrl = c.toDataURL("image/jpeg", JPEG_QUALITY);
+        resolve({ base64: dataUrl.split(",")[1], mimeType: "image/jpeg" });
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(); };
+      img.src = url;
+    });
+  }
+
+  // ---- Upload ----
+  function setErr(f, msg) {
+    const el = document.querySelector(`[data-f="${f}"]`);
+    el.classList.toggle("invalid", !!msg);
+    const p = el.querySelector(".err"); if (p) p.textContent = msg;
+  }
+  function summary(msgs) {
+    $("summary").innerHTML = msgs.length
+      ? "<ul>" + msgs.map((m) => "<li>" + m.replace(/</g, "&lt;") + "</li>").join("") + "</ul>" : "";
+  }
+
+  $("upForm").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    summary([]);
+    const id = $("clubId").value.trim(), ph = $("phone").value.trim();
+    let bad = false;
+    if (!ID_RE.test(id)) { setErr("clubId", "Enter your Club ID, like UB0001."); bad = true; } else setErr("clubId", "");
+    if (!mobile.test(ph)) { setErr("phone", "Enter the 10-digit number you registered with."); bad = true; } else setErr("phone", "");
+    if (!imageData) { $("fileBox").classList.add("invalid"); $("fileErr").textContent = "Choose your payment screenshot."; bad = true; }
+    if (bad) return;
+
+    const btn = $("upBtn");
+    btn.disabled = true; btn.textContent = "Uploading…";
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "uploadProof", clubId: id, phone: ph, mimeType: imageData.mimeType, data: imageData.base64 }),
+      });
+      const out = await res.json();
+      if (!out.ok) { summary(out.errors || ["Upload failed. Please try again."]); return; }
+      $("payCard").hidden = true;
+      $("doneCard").hidden = false;
+      window.scrollTo({ top: 0 });
+    } catch (e) {
+      summary(["We couldn't reach the server. Check your internet connection and try again."]);
+    } finally {
+      btn.disabled = false; btn.textContent = "Upload payment screenshot";
+    }
+  });
+</script>
+</body>
+</html>
