@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Support | UNBND Run Club</title>
+<meta name="description" content="Contact UNBND Run Club about registration, payment or races.">
+<link rel="icon" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #000000;
+    --pink: #fe90ae;
+    --white: #ffffff;
+    --paper: #f4f4f5;
+    --line: #e2e2e6;
+    --muted: #686873;
+    --error: #d0021b;
+    color-scheme: light;
+    box-sizing: border-box;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  [hidden] { display: none !important; }
+  *, *::before, *::after { box-sizing: inherit; }
+  body {
+    margin: 0; background: var(--paper); color: var(--black);
+    font: 400 16px/1.55 "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .display { font-family: "Barlow Condensed", "Arial Narrow", sans-serif; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative; overflow: hidden; background: var(--black); color: var(--white);
+    padding: calc(env(safe-area-inset-top, 0px) + 18px) 20px 120px;
+  }
+  /* Running-track lanes sweeping across the hero */
+  .hero::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(118deg, transparent 0 46px, rgba(254,144,174,.28) 46px 48px);
+    mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.35) 45%, transparent 75%);
+    -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.35) 45%, transparent 75%);
+  }
+  .bar { max-width: 620px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+  .bar img { width: 56px; height: 56px; display: block; }
+  .bar .fee { margin: 0; text-align: right; line-height: 1.1; color: rgba(255,255,255,.7); font-size: .85rem; }
+  .bar .fee b { display: block; color: var(--pink); font: italic 800 1.6rem/1 "Barlow Condensed", sans-serif; }
+  .hero-inner { position: relative; z-index: 1; max-width: 620px; margin: 0 auto; padding-top: 44px; }
+  h1 {
+    font: italic 800 clamp(3.8rem, 23vw, 7.5rem)/.86 "Barlow Condensed", "Arial Narrow", sans-serif;
+    text-transform: uppercase; letter-spacing: -.02em; margin: 0; color: var(--pink);
+  }
+  .tagline { font: 600 1.3rem/1.3 "Barlow", sans-serif; margin: 18px 0 0; max-width: 26ch; }
+  .perks { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 0; padding: 0; list-style: none; }
+  .perks li { font-size: .92rem; font-weight: 500; background: rgba(255,255,255,.1); border-radius: 999px; padding: 6px 12px; }
+
+  /* ---------- Form ---------- */
+  main { position: relative; z-index: 2; max-width: 620px; margin: -80px auto 0; padding: 0 14px 56px; }
+  .card { background: var(--white); border-radius: 22px; padding: 10px 22px 26px; box-shadow: 0 24px 60px -30px rgba(0,0,0,.45); }
+  .card-title { font: italic 800 2rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 18px 0 2px; }
+  .card-sub { color: var(--muted); margin: 0; }
+  fieldset { border: 0; padding: 0; margin: 26px 0 0; }
+  legend {
+    font: 700 1.3rem/1.2 "Barlow Condensed", "Arial Narrow", sans-serif; padding: 0 0 0 12px;
+    border-left: 4px solid var(--pink); float: left; width: 100%;
+  }
+  legend + * { clear: both; }
+  .hint { color: var(--muted); font-size: .92rem; margin: 6px 0 0; }
+
+  .field { margin-top: 16px; }
+  label.lbl { display: block; font-weight: 600; margin-bottom: 6px; }
+  input[type="text"], input[type="tel"], input[type="email"], input[type="number"], select {
+    width: 100%; font: inherit; color: var(--black); background: var(--paper);
+    border: 1.5px solid transparent; border-radius: 12px; padding: 13px 14px;
+    appearance: none; -webkit-appearance: none; transition: border-color .15s, background .15s;
+  }
+  input:focus, select:focus { background: var(--white); border-color: var(--black); outline: none; }
+  select {
+    background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+    background-position: calc(100% - 20px) 55%, calc(100% - 14px) 55%;
+    background-size: 6px 6px; background-repeat: no-repeat; padding-right: 40px;
+  }
+  button:focus-visible, a:focus-visible, .check input:focus-visible { outline: 3px solid var(--pink); outline-offset: 2px; }
+  .invalid input, .invalid select { border-color: var(--error); background: var(--white); }
+  .err { color: var(--error); font-size: .9rem; margin: 6px 0 0; }
+  .err:empty { display: none; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .sizes { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sizes label { position: relative; }
+  .sizes input { position: absolute; opacity: 0; inset: 0; }
+  .sizes span {
+    display: inline-block; min-width: 56px; text-align: center; padding: 11px 12px; background: var(--paper);
+    border: 1.5px solid transparent; border-radius: 12px; font: 700 1.05rem/1 "Barlow Condensed", sans-serif; cursor: pointer;
+  }
+  .sizes input:checked + span { background: var(--black); color: var(--pink); }
+  .sizes input:focus-visible + span { outline: 3px solid var(--pink); outline-offset: 2px; }
+  .invalid .sizes span { border-color: var(--error); }
+
+  .check { display: flex; gap: 12px; align-items: flex-start; margin-top: 14px; }
+  .check input { width: 20px; height: 20px; margin: 2px 0 0; flex: none; accent-color: var(--black); }
+  .check.invalid span { color: var(--error); }
+  .optional { color: var(--muted); font-weight: 400; }
+
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  .btn {
+    display: block; width: 100%; margin-top: 28px; border: 0; border-radius: 14px; padding: 17px 18px;
+    font: italic 800 1.35rem/1 "Barlow Condensed", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: .02em;
+    background: var(--black); color: var(--pink); cursor: pointer; text-align: center; text-decoration: none;
+    transition: transform .12s;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn.pink { background: var(--pink); color: var(--black); }
+  .btn[disabled] { opacity: .6; cursor: progress; }
+  .summary { margin-top: 18px; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--error); color: var(--error); }
+  .summary:empty { display: none; }
+  .summary ul { margin: 6px 0 0; padding-left: 20px; }
+
+  /* ---------- Success: race bib ---------- */
+  .bib {
+    position: relative; background: var(--white); color: var(--black); border-radius: 16px;
+    border: 2.5px solid var(--black); padding: 24px 20px 20px; text-align: center; margin: 14px 0 18px;
+  }
+  .bib::before, .bib::after, .bib .pins::before, .bib .pins::after {
+    content: ""; position: absolute; width: 11px; height: 11px; border-radius: 50%; background: var(--paper); border: 2px solid var(--black);
+  }
+  .bib::before { top: 10px; left: 10px; } .bib::after { top: 10px; right: 10px; }
+  .bib .pins::before { bottom: 10px; left: 10px; } .bib .pins::after { bottom: 10px; right: 10px; }
+  .bib .club { display: inline-block; background: var(--black); color: var(--pink); font: 700 .95rem/1 "Barlow Condensed", sans-serif; padding: 5px 10px; border-radius: 6px; }
+  .bib .num { font: italic 800 clamp(3.6rem, 19vw, 5.4rem)/1 "Barlow Condensed", "Arial Narrow", sans-serif; margin: 8px 0 2px; }
+  .bib .who { font-weight: 600; }
+  .copy { border: 0; background: var(--paper); color: var(--black); border-radius: 12px; padding: 11px 16px; font: 600 .95rem "Barlow", sans-serif; cursor: pointer; }
+  .status { font-weight: 700; margin: 18px 0 0; }
+  .status::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--pink); margin-right: 8px; vertical-align: 1px; }
+  #done p { margin: 10px 0 0; }
+
+  @media (max-width: 380px) { .row { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: no-preference) {
+    h1 { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes rise { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+    #done:not([hidden]) .bib { animation: pin .45s cubic-bezier(.2,.8,.2,1.2); }
+    @keyframes pin { from { transform: rotate(-4deg) scale(.94); opacity: 0; } to { transform: none; opacity: 1; } }
+  }
+
+  .nav { position: relative; z-index: 3; max-width: 1080px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .nav img { width: 56px; height: 56px; display: block; }
+  .nav .links { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+  .nav .links a { color: var(--white); text-decoration: none; font: 700 1rem/1 "Barlow Condensed", sans-serif; padding: 9px 12px; border-radius: 999px; }
+  .nav .links a:hover, .nav .links a[aria-current="page"] { background: rgba(255,255,255,.14); }
+  .nav .links a.cta { background: var(--pink); color: var(--black); }
+  .wide { max-width: 1080px; margin: 0 auto; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+  .facts div { background: var(--paper); border-radius: 12px; padding: 10px 12px; }
+  .facts small { display: block; color: var(--muted); font-size: .8rem; }
+  .facts b { font: 700 1.05rem/1.25 "Barlow", sans-serif; }
+  .free { background: #eaf8ef; color: #0b5e36; border-radius: 12px; padding: 12px 14px; font-weight: 600; margin: 14px 0 0; }
+  .rich ul { margin: 4px 0 0; padding-left: 20px; } .rich p { margin: 4px 0; }
+  .countdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 4px 0 16px; max-width: 460px; }
+  .countdown div { background: var(--black); color: var(--white); border-radius: 14px; padding: 12px 6px 10px; text-align: center; }
+  .countdown b { display: block; font: italic 800 clamp(2rem, 9vw, 3rem)/1 "Barlow Condensed", sans-serif; color: var(--pink); font-variant-numeric: tabular-nums; }
+  .countdown span { font-size: .75rem; color: rgba(255,255,255,.75); text-transform: uppercase; letter-spacing: .08em; }
+  .livebadge { display: inline-block; background: var(--pink); color: var(--black); font: 700 1.1rem/1 "Barlow Condensed", sans-serif; padding: 10px 14px; border-radius: 999px; margin: 4px 0 16px; }
+  .site-foot { background: var(--black); color: rgba(255,255,255,.75); padding: 28px 18px calc(env(safe-area-inset-bottom,0px) + 28px); margin-top: 40px; }
+  .site-foot .wide { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .site-foot a { color: var(--pink); font-weight: 700; text-decoration: none; }
+
+  .hero { padding-bottom: 96px; }
+  .hero-inner { max-width: 720px; padding-top: 30px; }
+  h1 { font-size: clamp(3.2rem, 16vw, 6rem); }
+  main { max-width: 720px; margin-top: -64px; }
+  .support textarea { width: 100%; font: inherit; color: var(--black); background: var(--paper); border: 1.5px solid transparent; border-radius: 12px; padding: 13px 14px; min-height: 140px; resize: vertical; }
+  .support textarea:focus { background: var(--white); border-color: var(--black); outline: none; }
+  .idin { display: flex; border-radius: 12px; overflow: hidden; background: var(--paper); }
+  .idin b { background: var(--black); color: var(--pink); font: italic 800 1.2rem/1 "Barlow Condensed", sans-serif; padding: 0 12px; display: grid; place-items: center; }
+  .idin input { border-radius: 0 !important; }
+  .sent { text-align: center; padding: 10px 0; }
+  .sent .tick { width: 60px; height: 60px; border-radius: 50%; background: var(--pink); margin: 6px auto 10px; display: grid; place-items: center; font-size: 1.8rem; }
+</style>
+</head>
+<body>
+<section class="hero">
+  <nav class="nav">
+    <a href="index.html"><img src="logo.png" alt="UNBND Run Club home"></a>
+    <div class="links"><a href="index.html">Home</a><a href="races.html">Races</a><a href="support.html" aria-current="page">Support</a><a class="cta" href="register.html">Join</a></div>
+  </nav>
+  <div class="hero-inner">
+    <h1>Contact<br>support</h1>
+    <p class="tagline">Questions about registration, payment or races? Send us a message and we'll reply by email.</p>
+  </div>
+</section>
+
+<main>
+  <section class="support" id="support">
+    <div class="card" style="padding:18px 20px 22px">
+      <form id="cForm" novalidate>
+        <div class="row">
+          <div class="field" data-f="cName"><label class="lbl" for="cName">Your name</label><input id="cName" type="text" maxlength="50" autocomplete="name"><p class="err"></p></div>
+          <div class="field" data-f="cEmail"><label class="lbl" for="cEmail">Email</label><input id="cEmail" type="email" maxlength="100" autocomplete="email" autocapitalize="none"><p class="err"></p></div>
+        </div>
+        <div class="row">
+          <div class="field" data-f="cId"><label class="lbl" for="cId">Club ID <span class="optional">(if you have one)</span></label><div class="idin"><b>UB</b><input id="cId" type="text" inputmode="numeric" maxlength="4" placeholder="0001" autocomplete="off"></div><p class="err"></p></div>
+          <div class="field" data-f="cPhone"><label class="lbl" for="cPhone">Mobile <span class="optional">(optional)</span></label><input id="cPhone" type="tel" inputmode="numeric" maxlength="10" placeholder="10 digits" autocomplete="tel-national"><p class="err"></p></div>
+        </div>
+        <div class="field" data-f="cSubject"><label class="lbl" for="cSubject">Subject</label><input id="cSubject" type="text" maxlength="100"><p class="err"></p></div>
+        <div class="field" data-f="cMsg"><label class="lbl" for="cMsg">Message</label><textarea id="cMsg" maxlength="2000"></textarea><p class="err"></p></div>
+        <div class="hp" aria-hidden="true"><label>Website <input id="cWebsite" type="text" tabindex="-1" autocomplete="off"></label></div>
+        <div class="summary" id="cErr" role="alert"></div>
+        <button class="btn" id="cBtn" type="submit">Send query</button>
+      </form>
+      <div class="sent" id="cSent" hidden aria-live="polite">
+        <div class="tick" aria-hidden="true">✓</div>
+        <h3 class="card-title" style="margin:0">Message sent</h3>
+        <p>Thanks! We'll reply to your email as soon as we can. Check your spam folder if you don't see it.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot"><div class="wide"><span>UNBND Run Club</span><span>Follow us on Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></span></div></footer>
+
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbzbZCKBa3tIQuXVny1OIx8zpiELks2FqMlwbj6GoEckWIxiJZ-YT0oqfEPfymbl80gG/exec";
+
+  const $ = (id) => document.getElementById(id);
+  const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const esc = (t) => String(t == null ? "" : t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const niceDate = (iso) => { const [y, m, d] = iso.split("-").map(Number); return d + " " + MONTHS[m - 1] + " " + y; };
+  const time12 = (t) => { const [H, M] = t.split(":").map(Number); return (H % 12 || 12) + ":" + String(M).padStart(2, "0") + " " + (H < 12 ? "AM" : "PM"); };
+  const raceStart = (r) => new Date(r.date + "T" + r.time + ":00+05:30");
+  function duration(r) {
+    const h = Number(r.hours) || 0, m = Number(r.minutes) || 0;
+    return (h || m) ? ((h ? h + " hr " : "") + (m ? m + " min" : "")).trim() : "";
+  }
+  function ageText(r) {
+    return r.minAge && r.maxAge ? r.minAge + " to " + r.maxAge + " years" : r.minAge ? r.minAge + "+ years" : r.maxAge ? "Up to " + r.maxAge + " years" : "All ages";
+  }
+  function richText(t) {
+    const lines = String(t || "").split("\n").map((l) => l.trim()).filter(Boolean);
+    let h = "", list = [];
+    const flush = () => { if (list.length) { h += "<ul>" + list.map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>"; list = []; } };
+    lines.forEach((l) => { if (/^[-•*]\s*/.test(l)) list.push(l.replace(/^[-•*]\s*/, "")); else { flush(); h += "<p>" + esc(l) + "</p>"; } });
+    flush(); return h;
+  }
+  function factsHtml(r) {
+    const f = (k, v) => v ? "<div><small>" + k + "</small><b>" + esc(v) + "</b></div>" : "";
+    return '<div class="facts">' + f("Date", r.day + ", " + niceDate(r.date)) + f("Reporting time", time12(r.time)) +
+      f("Duration", duration(r)) + f("Distance", r.distance ? r.distance + " km" : "") + f("Age", ageText(r)) + "</div>";
+  }
+  function tickCountdowns() {
+    document.querySelectorAll("[data-count]").forEach((el) => {
+      const ms = new Date(el.dataset.count) - new Date();
+      if (ms <= 0) { el.outerHTML = '<p class="livebadge">Race day is here</p>'; return; }
+      const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60, s = Math.floor(ms / 1e3) % 60;
+      el.innerHTML = [[d, "Days"], [h, "Hours"], [m, "Mins"], [s, "Secs"]]
+        .map((x) => "<div><b>" + String(x[0]).padStart(2, "0") + "</b><span>" + x[1] + "</span></div>").join("");
+    });
+  }
+  async function post(payload, timeoutMs) {
+    const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), timeoutMs || 30000);
+    try {
+      const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload), signal: ctrl.signal });
+      return JSON.parse(await res.text());
+    } catch (e) { return { ok: false, errors: [e.name === "AbortError" ? "This is taking too long. Please try again." : "We couldn't reach the server. Check your internet and try again."] }; }
+    finally { clearTimeout(timer); }
+  }
+  async function fetchRaces() { const out = await post({ action: "races" }); return out.ok ? out.races : null; }
+
+  // ---- Contact support ----
+  const NAME_RE = /^[A-Za-z]+(?:(?:\. ?|['\- ])[A-Za-z]+)*\.?$/;
+  const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+  const filt = (id, fn) => $(id).addEventListener("input", (e) => { const n = fn(e.target.value); if (n !== e.target.value) e.target.value = n; });
+  filt("cName", (v) => v.replace(/[\u2018\u2019\u02BC]/g, "'").replace(/[^A-Za-z '.\-]/g, "").replace(/^[^A-Za-z]+/, "").replace(/ {2,}/g, " ").slice(0, 50));
+  filt("cEmail", (v) => v.replace(/[^A-Za-z0-9@._%+-]/g, "").slice(0, 100));
+  filt("cId", (v) => v.replace(/\D/g, "").slice(0, 4));
+  filt("cPhone", (v) => { let d = v.replace(/\D/g, ""); if (d.length === 12 && d.startsWith("91")) d = d.slice(2); return d.slice(0, 10); });
+  function setErr(f, msg) {
+    const el = document.querySelector('[data-f="' + f + '"]');
+    el.classList.toggle("invalid", !!msg); el.querySelector(".err").textContent = msg || "";
+  }
+  $("cForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    $("cErr").innerHTML = "";
+    if ($("cWebsite").value) return;
+    const v = (id) => $(id).value.trim();
+    const errs = {
+      cName: NAME_RE.test(v("cName")) ? "" : "Enter your name.",
+      cEmail: EMAIL_RE.test(v("cEmail")) ? "" : "Enter a valid email so we can reply.",
+      cId: !v("cId") || /^\d{4}$/.test(v("cId")) ? "" : "Enter the 4 digits of your Club ID.",
+      cPhone: !v("cPhone") || /^[6-9]\d{9}$/.test(v("cPhone")) ? "" : "Enter a valid 10-digit mobile number.",
+      cSubject: v("cSubject").length >= 3 ? "" : "Enter a subject.",
+      cMsg: v("cMsg").length >= 10 ? "" : "Write a short message (at least 10 characters).",
+    };
+    Object.keys(errs).forEach((k) => setErr(k, errs[k]));
+    const first = Object.keys(errs).find((k) => errs[k]);
+    if (first) { $(first).focus(); return; }
+    const btn = $("cBtn"); btn.disabled = true; btn.textContent = "Sending…";
+    const out = await post({ action: "contact", name: v("cName"), email: v("cEmail"), clubId: v("cId") ? "UB" + v("cId") : "",
+      phone: v("cPhone"), subject: v("cSubject"), message: v("cMsg"), website: v("cWebsite") }, 40000);
+    btn.disabled = false; btn.textContent = "Send query";
+    if (!out.ok) { $("cErr").innerHTML = "<ul>" + (out.errors || ["Something went wrong. Please try again."]).map((m) => "<li>" + esc(m) + "</li>").join("") + "</ul>"; return; }
+    $("cForm").hidden = true; $("cSent").hidden = false;
+  });
+</script>
+</body>
+</html>
