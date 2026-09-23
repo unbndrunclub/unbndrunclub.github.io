@@ -169,7 +169,7 @@
   .site-foot a { color: var(--pink); font-weight: 700; text-decoration: none; }
 
   .home-hero { position: relative; overflow: hidden; color: var(--white); padding: calc(env(safe-area-inset-top, 0px) + 18px) 20px 130px;
-    background: linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.85)), url("hero.jpg") center / cover no-repeat, #000; }
+    background: linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.85)), url("hero.jpg") center 55% / cover no-repeat, #000; }
   .home-hero::after { content: ""; position: absolute; inset: 0; pointer-events: none;
     background: repeating-linear-gradient(118deg, transparent 0 46px, rgba(254,144,174,.22) 46px 48px);
     mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.3) 45%, transparent 75%);
@@ -213,7 +213,7 @@
 <section class="home-hero">
   <nav class="nav">
     <a href="index.html"><img src="logo.png" alt="UNBND Run Club home"></a>
-    <div class="links"><a href="races.html">Races</a><a href="#support">Support</a><a class="cta" href="register.html">Join</a></div>
+    <div class="links"><a href="index.html" aria-current="page">Home</a><a href="races.html">Races</a><a href="support.html">Support</a><a class="cta" href="register.html">Join</a></div>
   </nav>
   <div class="inner">
     <h1>Run<br>unbound.</h1>
@@ -256,34 +256,6 @@
     </article>
   </div>
 
-  <section class="support" id="support">
-    <div class="intro">
-      <h2>Contact support</h2>
-      <p>Questions about registration, payment or races? Send us a message and we'll reply by email.</p>
-    </div>
-    <div class="card" style="padding:18px 20px 22px">
-      <form id="cForm" novalidate>
-        <div class="row">
-          <div class="field" data-f="cName"><label class="lbl" for="cName">Your name</label><input id="cName" type="text" maxlength="50" autocomplete="name"><p class="err"></p></div>
-          <div class="field" data-f="cEmail"><label class="lbl" for="cEmail">Email</label><input id="cEmail" type="email" maxlength="100" autocomplete="email" autocapitalize="none"><p class="err"></p></div>
-        </div>
-        <div class="row">
-          <div class="field" data-f="cId"><label class="lbl" for="cId">Club ID <span class="optional">(if you have one)</span></label><div class="idin"><b>UB</b><input id="cId" type="text" inputmode="numeric" maxlength="4" placeholder="0001" autocomplete="off"></div><p class="err"></p></div>
-          <div class="field" data-f="cPhone"><label class="lbl" for="cPhone">Mobile <span class="optional">(optional)</span></label><input id="cPhone" type="tel" inputmode="numeric" maxlength="10" placeholder="10 digits" autocomplete="tel-national"><p class="err"></p></div>
-        </div>
-        <div class="field" data-f="cSubject"><label class="lbl" for="cSubject">Subject</label><input id="cSubject" type="text" maxlength="100"><p class="err"></p></div>
-        <div class="field" data-f="cMsg"><label class="lbl" for="cMsg">Message</label><textarea id="cMsg" maxlength="2000"></textarea><p class="err"></p></div>
-        <div class="hp" aria-hidden="true"><label>Website <input id="cWebsite" type="text" tabindex="-1" autocomplete="off"></label></div>
-        <div class="summary" id="cErr" role="alert"></div>
-        <button class="btn" id="cBtn" type="submit">Send query</button>
-      </form>
-      <div class="sent" id="cSent" hidden aria-live="polite">
-        <div class="tick" aria-hidden="true">✓</div>
-        <h3 class="card-title" style="margin:0">Message sent</h3>
-        <p>Thanks! We'll reply to your email as soon as we can. Check your spam folder if you don't see it.</p>
-      </div>
-    </div>
-  </section>
 </main>
 
 <footer class="site-foot"><div class="wide"><span>UNBND Run Club</span><span>Follow us on Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></span></div></footer>
@@ -347,41 +319,6 @@
     tickCountdowns(); setInterval(tickCountdowns, 1000);
   })();
 
-  // ---- Contact support ----
-  const NAME_RE = /^[A-Za-z]+(?:(?:\. ?|['\- ])[A-Za-z]+)*\.?$/;
-  const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-  const filt = (id, fn) => $(id).addEventListener("input", (e) => { const n = fn(e.target.value); if (n !== e.target.value) e.target.value = n; });
-  filt("cName", (v) => v.replace(/[\u2018\u2019\u02BC]/g, "'").replace(/[^A-Za-z '.\-]/g, "").replace(/^[^A-Za-z]+/, "").replace(/ {2,}/g, " ").slice(0, 50));
-  filt("cEmail", (v) => v.replace(/[^A-Za-z0-9@._%+-]/g, "").slice(0, 100));
-  filt("cId", (v) => v.replace(/\D/g, "").slice(0, 4));
-  filt("cPhone", (v) => { let d = v.replace(/\D/g, ""); if (d.length === 12 && d.startsWith("91")) d = d.slice(2); return d.slice(0, 10); });
-  function setErr(f, msg) {
-    const el = document.querySelector('[data-f="' + f + '"]');
-    el.classList.toggle("invalid", !!msg); el.querySelector(".err").textContent = msg || "";
-  }
-  $("cForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    $("cErr").innerHTML = "";
-    if ($("cWebsite").value) return;
-    const v = (id) => $(id).value.trim();
-    const errs = {
-      cName: NAME_RE.test(v("cName")) ? "" : "Enter your name.",
-      cEmail: EMAIL_RE.test(v("cEmail")) ? "" : "Enter a valid email so we can reply.",
-      cId: !v("cId") || /^\d{4}$/.test(v("cId")) ? "" : "Enter the 4 digits of your Club ID.",
-      cPhone: !v("cPhone") || /^[6-9]\d{9}$/.test(v("cPhone")) ? "" : "Enter a valid 10-digit mobile number.",
-      cSubject: v("cSubject").length >= 3 ? "" : "Enter a subject.",
-      cMsg: v("cMsg").length >= 10 ? "" : "Write a short message (at least 10 characters).",
-    };
-    Object.keys(errs).forEach((k) => setErr(k, errs[k]));
-    const first = Object.keys(errs).find((k) => errs[k]);
-    if (first) { $(first).focus(); return; }
-    const btn = $("cBtn"); btn.disabled = true; btn.textContent = "Sending…";
-    const out = await post({ action: "contact", name: v("cName"), email: v("cEmail"), clubId: v("cId") ? "UB" + v("cId") : "",
-      phone: v("cPhone"), subject: v("cSubject"), message: v("cMsg"), website: v("cWebsite") }, 40000);
-    btn.disabled = false; btn.textContent = "Send query";
-    if (!out.ok) { $("cErr").innerHTML = "<ul>" + (out.errors || ["Something went wrong. Please try again."]).map((m) => "<li>" + esc(m) + "</li>").join("") + "</ul>"; return; }
-    $("cForm").hidden = true; $("cSent").hidden = false;
-  });
 </script>
 </body>
 </html>
