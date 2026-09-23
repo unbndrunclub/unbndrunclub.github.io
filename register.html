@@ -158,13 +158,27 @@
   .bar .links a { color: var(--white); text-decoration: none; font: 700 1rem/1 "Barlow Condensed", sans-serif; padding: 9px 12px; border-radius: 999px; }
   .bar .links a:hover, .bar .links a[aria-current="page"] { background: rgba(255,255,255,.14); }
   .bar .links a.cta { background: var(--pink); color: var(--black); }
+
+  /* Site header + footer (shared look) */
+  .bar { max-width: 1080px !important; flex-wrap: wrap; gap: 10px 14px; }
+  .bar img { width: 76px !important; height: 76px !important; }
+  .bar .links a { white-space: nowrap; }
+  @media (max-width: 560px) {
+    .bar img { width: 64px !important; height: 64px !important; }
+    .bar .links { width: 100%; justify-content: flex-start !important; flex-wrap: nowrap !important; overflow-x: auto; margin: 0 -4px; scrollbar-width: none; }
+    .bar .links::-webkit-scrollbar { display: none; }
+  }
+  @media (min-width: 1110px) { .bar { padding-left: 14px; padding-right: 14px; } }
+  .site-foot { background: var(--black); color: rgba(255,255,255,.75); padding: 28px 18px calc(env(safe-area-inset-bottom,0px) + 28px); margin-top: 40px; }
+  .site-foot .wide { max-width: 1080px; margin: 0 auto; padding: 0 14px; display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .site-foot a { color: var(--pink); font-weight: 700; text-decoration: none; }
 </style>
 </head>
 <body>
 <section class="hero">
   <div class="bar">
     <a href="index.html" aria-label="UNBND Run Club home"><img src="logo.png" alt="UNBND Run Club"></a>
-    <nav class="links" aria-label="Site"><a href="index.html">Home</a><a href="races.html">Races</a><a href="support.html">Support</a></nav>
+    <nav class="links" aria-label="Site"><a href="index.html">Home</a><a href="races.html">Races</a><a href="rules.html">Club rules</a><a href="support.html">Support</a><a class="cta" href="register.html" aria-current="page">Join</a></nav>
   </div>
   <div class="hero-inner">
     <h1>Run<br>unbound.</h1>
@@ -348,6 +362,9 @@
     </div>
   </section>
 </main>
+
+<footer class="site-foot"><div class="wide"><span>&copy; <span class="yr">2026</span> UNBND Run Club. All rights reserved.</span><span>Follow us on Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></span></div></footer>
+<script>document.querySelectorAll(".yr").forEach(function (e) { e.textContent = new Date().getFullYear(); });</script>
 
 
 <div class="busy" id="busy" hidden role="status" aria-live="polite">
