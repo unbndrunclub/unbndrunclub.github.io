@@ -242,6 +242,37 @@
   }
   .rcard input[type="date"]:focus, .rcard input[type="time"]:focus, .rcard input[type="url"]:focus { background: var(--white); border-color: var(--black); outline: none; }
   @media (max-width: 480px) { .row3 { grid-template-columns: 1fr 1fr; } }
+  .timerow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .timerow select { width: auto; min-width: 76px; background-color: var(--paper); }
+  .ampm { display: flex; gap: 6px; margin-left: 4px; }
+  .ampm label { position: relative; }
+  .ampm input { position: absolute; opacity: 0; }
+  .ampm span { display: block; padding: 12px 14px; border-radius: 12px; background: var(--paper); font-weight: 700; cursor: pointer; }
+  .ampm input:checked + span { background: var(--black); color: var(--pink); }
+  .ampm input:focus-visible + span { outline: 3px solid var(--pink); outline-offset: 2px; }
+  .uitem .btns { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  .uitem .btns button { border: 1.5px solid var(--line); background: var(--white); border-radius: 10px; padding: 7px 12px; font: 700 .9rem "Barlow Condensed", sans-serif; cursor: pointer; }
+  .uitem .btns .del { color: #9c0019; border-color: #f3c3ca; }
+  .uitem.exp { opacity: .7; }
+  .exptag { background: var(--paper); color: var(--muted); border-radius: 999px; padding: 4px 10px; font-weight: 700; font-size: .8rem; }
+  /* Race banner (view) + photo lightbox */
+  .overlay { position: fixed; inset: 0; z-index: 56; background: rgba(0,0,0,.8); display: grid; place-items: center; padding: 16px; overflow-y: auto; }
+  .xbtn { position: absolute; top: 10px; right: 10px; width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(0,0,0,.65); color: #fff; font-size: 1.3rem; cursor: pointer; z-index: 2; }
+  .rbanner { position: relative; background: var(--white); border-radius: 20px; overflow: hidden; width: 100%; max-width: 560px; }
+  .rbanner .cover { height: 200px; background: #000 center / cover no-repeat; position: relative; }
+  .rbanner .cover::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.75), transparent 60%); }
+  .rbanner .cover h3 { position: absolute; left: 18px; right: 18px; bottom: 14px; z-index: 1; margin: 0; color: var(--pink); font: italic 800 2.2rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .rbanner .body { padding: 16px 18px 20px; }
+  .rbanner .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .rbanner .facts div { background: var(--paper); border-radius: 12px; padding: 10px 12px; }
+  .rbanner .facts small { display: block; color: var(--muted); font-size: .78rem; }
+  .rbanner .facts b { font: 700 1.05rem/1.2 "Barlow", sans-serif; }
+  .rbanner h4 { font: 700 1.15rem "Barlow Condensed", sans-serif; margin: 16px 0 4px; }
+  .rbanner ul { margin: 4px 0 0; padding-left: 20px; }
+  .lightbox { position: relative; max-width: 96vw; max-height: 90vh; }
+  .lightbox img { display: block; max-width: 96vw; max-height: 86vh; border-radius: 12px; }
+  .lightbox p { color: #fff; text-align: center; margin: 8px 0 0; font-weight: 700; }
+  .ph .vbtn { background: var(--paper); color: var(--black); margin-right: 6px; }
   /* Gallery */
   .upbox { display: block; background: var(--white); border: 2px dashed var(--line); border-radius: 16px; padding: 22px 16px; text-align: center; cursor: pointer; }
   .upbox:focus-within { outline: 3px solid var(--pink); outline-offset: 2px; }
@@ -288,7 +319,7 @@
 <div class="wrap" id="adminView" hidden>
   <div class="seg" role="tablist">
     <button type="button" role="tab" aria-selected="true" data-tab="regPanel">Manage Registrations</button>
-    <button type="button" role="tab" aria-selected="false" data-tab="racePanel">Manage Races</button>
+    <button type="button" role="tab" aria-selected="false" data-tab="racePanel">Post or Manage Races</button>
     <button type="button" role="tab" aria-selected="false" data-tab="galleryPanel">Manage Gallery</button>
   </div>
 
@@ -310,38 +341,43 @@
   </section>
 
   <section class="panel" id="racePanel" hidden>
-    <h2 class="sec">Manage Races</h2>
-    <p class="note-exp">Expired races are removed from the race schedule automatically after race day.</p>
-    <div class="subseg" role="group" aria-label="Race actions">
-      <button type="button" data-rmode="post" aria-pressed="true">Post a race</button>
-      <button type="button" data-rmode="edit" aria-pressed="false">Edit a race</button>
-      <button type="button" data-rmode="delete" aria-pressed="false">Delete a race</button>
+    <h2 class="sec">Post or Manage Races</h2>
+    <div class="subseg" role="group" aria-label="Race sections">
+      <button type="button" data-rmode="post" aria-pressed="true">Post a Race</button>
+      <button type="button" data-rmode="manage" aria-pressed="false">Manage a Race</button>
     </div>
 
-    <div id="upcoming" class="ulist"></div>
-
-    <!-- Load by Race ID (edit + delete) -->
-    <form class="rcard" id="loadBox" hidden novalidate style="margin-bottom:12px">
-      <label class="lbl" for="loadDigits">Race ID</label>
-      <div class="idload">
-        <div class="idinput"><b>RC</b><input id="loadDigits" type="text" inputmode="numeric" maxlength="3" placeholder="001" autocomplete="off"></div>
-        <button class="btn" id="loadBtn" type="submit">Load</button>
-      </div>
-      <div id="delSummary"></div>
-    </form>
+    <!-- Manage a Race: list -->
+    <div id="manageBox" hidden>
+      <p class="note-exp">Expired races are removed from the race schedule automatically after race day.</p>
+      <div id="raceList" class="ulist"></div>
+    </div>
 
     <!-- Post / edit form -->
     <form class="rcard" id="raceForm" novalidate>
-      <h3 class="card-title" id="rfTitle" style="font-size:1.6rem;margin:6px 0 0">Post a race</h3>
+      <h3 class="card-title" id="rfTitle" style="font-size:1.6rem;margin:6px 0 0">Post a Race</h3>
       <div class="field"><label class="lbl" for="rName">Race name</label><input id="rName" type="text" maxlength="60" placeholder="e.g. Sunday Sunrise 10K"></div>
-      <div class="row">
-        <div class="field"><label class="lbl" for="rDate">Date</label><input id="rDate" type="date"><p class="daytag" id="rDay"></p></div>
-        <div class="field"><label class="lbl" for="rTime">Reporting time</label><input id="rTime" type="time"></div>
+      <div class="field">
+        <label class="lbl" for="rDate">Date</label>
+        <input id="rDate" type="text" inputmode="numeric" maxlength="10" placeholder="DD-MM-YYYY" autocomplete="off">
+        <p class="daytag" id="rDay"></p>
+      </div>
+      <div class="field">
+        <label class="lbl" for="rHour">Reporting time</label>
+        <div class="timerow">
+          <select id="rHour" aria-label="Hour"></select>
+          <span>:</span>
+          <select id="rMin" aria-label="Minutes"></select>
+          <div class="ampm" role="radiogroup" aria-label="AM or PM">
+            <label><input type="radio" name="rAmpm" value="AM" checked><span>AM</span></label>
+            <label><input type="radio" name="rAmpm" value="PM"><span>PM</span></label>
+          </div>
+        </div>
       </div>
       <div class="row3">
-        <div class="field"><label class="lbl" for="rHours">Duration (hours)</label><input id="rHours" type="number" min="0" max="12" inputmode="numeric" placeholder="1"></div>
-        <div class="field"><label class="lbl" for="rMinutes">Duration (minutes)</label><input id="rMinutes" type="number" min="0" max="59" inputmode="numeric" placeholder="30"></div>
-        <div class="field"><label class="lbl" for="rDistance">Distance (km) <span class="optional">optional</span></label><input id="rDistance" type="number" min="0" step="0.1" inputmode="decimal" placeholder="10"></div>
+        <div class="field"><label class="lbl" for="rHours">Duration hours <span class="optional">optional</span></label><input id="rHours" type="number" min="0" max="12" inputmode="numeric" placeholder="0"></div>
+        <div class="field"><label class="lbl" for="rMinutes">Duration minutes <span class="optional">optional</span></label><input id="rMinutes" type="number" min="0" max="59" inputmode="numeric" placeholder="0"></div>
+        <div class="field"><label class="lbl" for="rDistance">Distance km <span class="optional">optional</span></label><input id="rDistance" type="number" min="0" step="0.1" inputmode="decimal" placeholder="10"></div>
       </div>
       <div class="field"><label class="lbl" for="rStart">Starting location</label><input id="rStart" type="text" maxlength="100" placeholder="e.g. Carter Road Promenade, Bandra West"></div>
       <div class="field"><label class="lbl" for="rLandmark">Landmark <span class="optional">optional</span></label><input id="rLandmark" type="text" maxlength="100" placeholder="e.g. Near the amphitheatre"></div>
@@ -352,15 +388,23 @@
       </div>
       <p class="free">Free for all members with an active Club ID.</p>
       <div class="field">
+        <label class="lbl" for="rActivities">Additional activities <span class="optional">optional</span></label>
+        <textarea id="rActivities" maxlength="1000" placeholder="Start a line with - to make it a bullet point&#10;- Warm-up session&#10;- Group photo"></textarea>
+      </div>
+      <div class="field">
         <label class="lbl" for="rGoodies">Goodies and awards <span class="optional">optional</span></label>
         <textarea id="rGoodies" maxlength="1000" placeholder="Start a line with - to make it a bullet point&#10;- Finisher medal&#10;- Breakfast after the run"></textarea>
       </div>
       <div class="field">
         <label class="lbl">Cover photo <span class="optional">optional</span></label>
+        <p class="hint">Want more photos to choose from? Add them in the Manage Gallery section. Once added, they'll appear here for selection.</p>
         <div class="pgrid" id="rPhotos"></div>
       </div>
       <div class="summary" id="rErr" role="alert"></div>
-      <button class="btn" id="rSubmit" type="submit">Post race</button>
+      <div class="modal-actions" style="margin-top:22px">
+        <button class="ghostbtn" id="rCancel" type="button" hidden>Cancel</button>
+        <button class="btn" id="rSubmit" type="submit" style="margin:0">Post race</button>
+      </div>
     </form>
   </section>
 
@@ -388,6 +432,13 @@
       <button class="btn" id="mOk" type="button">Confirm</button>
     </div>
   </div>
+</div>
+
+<div class="overlay" id="raceView" hidden role="dialog" aria-modal="true" aria-label="Race details">
+  <div class="rbanner"><button class="xbtn" type="button" data-close="raceView" aria-label="Close">✕</button><div id="raceViewBody"></div></div>
+</div>
+<div class="overlay" id="photoView" hidden role="dialog" aria-modal="true" aria-label="Photo">
+  <div class="lightbox"><button class="xbtn" type="button" data-close="photoView" aria-label="Close">✕</button><img id="photoViewImg" alt=""><p id="photoViewId"></p></div>
 </div>
 
 <div class="busy" id="busy" hidden role="status" aria-live="polite">
@@ -593,7 +644,7 @@
     $("gCount").textContent = photos.length + (photos.length === 1 ? " photo" : " photos");
     $("gGrid").innerHTML = photos.length ? photos.map((p) =>
       '<div class="ph"><img loading="lazy" src="' + esc(p.thumb) + '" alt="Gallery photo ' + esc(p.id) + '">' +
-      '<div><code>' + esc(p.id) + '</code><button type="button" data-del="' + esc(p.id) + '">Delete</button></div></div>'
+      '<div><code>' + esc(p.id) + '</code><span><button type="button" class="vbtn" data-viewp="' + esc(p.id) + '">View</button><button type="button" data-del="' + esc(p.id) + '">Delete</button></span></div></div>'
     ).join("") : '<div class="empty">No photos yet.</div>';
   }
   document.querySelector('[data-tab="galleryPanel"]').addEventListener("click", () => { if (!galleryLoaded) loadGallery("Loading photos"); });
@@ -634,6 +685,12 @@
   });
 
   $("gGrid").addEventListener("click", async (e) => {
+    const vw = e.target.closest("[data-viewp]");
+    if (vw) {
+      const p = photos.find((x) => x.id === vw.dataset.viewp);
+      $("photoViewImg").src = p.url; $("photoViewImg").alt = "Photo " + p.id; $("photoViewId").textContent = p.id;
+      $("photoView").hidden = false; return;
+    }
     const btn = e.target.closest("[data-del]"); if (!btn) return;
     const id = btn.dataset.del;
     if (!confirm("Delete photo " + id + " from the gallery?")) return;
@@ -644,61 +701,119 @@
   });
 
 
-  // ---------- Manage Races ----------
-  let rmode = "post", editingRace = "", racesLoaded = false;
+  // ---------- Post or Manage Races ----------
+  let rmode = "post", editingRace = "", racesLoaded = false, raceCache = [];
   const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const rf = (id) => $(id);
+
+  // Time pickers
+  rf("rHour").innerHTML = '<option value="">HH</option>' + Array.from({ length: 12 }, (_, i) => '<option>' + (i + 1) + "</option>").join("");
+  rf("rMin").innerHTML = '<option value="">MM</option>' + Array.from({ length: 12 }, (_, i) => { const m = String(i * 5).padStart(2, "0"); return "<option>" + m + "</option>"; }).join("");
+
+  // Date as DD-MM-YYYY (typed), stored as YYYY-MM-DD
+  rf("rDate").addEventListener("input", (e) => {
+    const d = e.target.value.replace(/\D/g, "").slice(0, 8);
+    e.target.value = d.length > 4 ? d.slice(0, 2) + "-" + d.slice(2, 4) + "-" + d.slice(4) : d.length > 2 ? d.slice(0, 2) + "-" + d.slice(2) : d;
+    showDay();
+  });
+  function dmyToIso(v) {
+    const m = /^(\d{2})-(\d{2})-(\d{4})$/.exec(v || ""); if (!m) return "";
+    const dt = new Date(Date.UTC(+m[3], +m[2] - 1, +m[1]));
+    return dt.getUTCDate() === +m[1] && dt.getUTCMonth() === +m[2] - 1 ? m[3] + "-" + m[2] + "-" + m[1] : "";
+  }
+  const isoToDmy = (iso) => /^\d{4}-\d{2}-\d{2}$/.test(iso || "") ? iso.slice(8, 10) + "-" + iso.slice(5, 7) + "-" + iso.slice(0, 4) : "";
+  function showDay() {
+    const iso = dmyToIso(rf("rDate").value);
+    if (!iso) { $("rDay").textContent = rf("rDate").value.length === 10 ? "Not a valid date" : ""; return; }
+    const [y, m, d] = iso.split("-").map(Number);
+    $("rDay").textContent = DAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
+  }
+  function to24(h, m, ap) {
+    if (!h || !m) return "";
+    let hh = Number(h) % 12; if (ap === "PM") hh += 12;
+    return String(hh).padStart(2, "0") + ":" + m;
+  }
+  function to12(t) {
+    const x = /^(\d{2}):(\d{2})$/.exec(t || ""); if (!x) return { h: "", m: "", ap: "AM", text: t || "" };
+    const H = Number(x[1]), h = H % 12 || 12, ap = H < 12 ? "AM" : "PM";
+    return { h: String(h), m: x[2], ap: ap, text: h + ":" + x[2] + " " + ap };
+  }
+  const niceDate = (iso) => { const [y, m, d] = (iso || "").split("-").map(Number); return iso ? d + " " + MONTHS[m - 1] + " " + y : ""; };
 
   function setMode(m) {
     rmode = m; editingRace = "";
     document.querySelectorAll("[data-rmode]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.rmode === m)));
-    $("loadBox").hidden = m === "post";
+    $("manageBox").hidden = m !== "manage";
     $("raceForm").hidden = m !== "post";
-    $("delSummary").innerHTML = "";
-    $("loadDigits").value = "";
     $("rErr").innerHTML = "";
     if (m === "post") fillForm(null);
+    if (m === "manage") loadRaceList();
   }
   document.querySelectorAll("[data-rmode]").forEach((b) => b.addEventListener("click", () => setMode(b.dataset.rmode)));
-
-  async function loadRacesTab() {
-    const [list] = await Promise.all([
-      api({ action: "adminRaceList" }, "Loading races"),
-      galleryLoaded ? Promise.resolve() : loadGallery(),
-    ]);
-    racesLoaded = true;
-    renderUpcoming(list.ok ? list.races : []);
-    renderPhotoPicker();
-  }
-  document.querySelector('[data-tab="racePanel"]').addEventListener("click", () => { if (!racesLoaded) loadRacesTab(); });
-
-  function renderUpcoming(list) {
-    $("upcoming").innerHTML = list.length
-      ? "<b style='font:700 1.1rem Barlow Condensed,sans-serif'>Upcoming races</b>" + list.map((r) =>
-        '<div class="uitem"><div><code>' + esc(r.id) + "</code> " + esc(r.name) + "<br><small>" + esc(r.day) + ", " + fmtDate(r.date) + " · " + esc(r.time) + "</small></div>" +
-        '<div style="display:flex;gap:6px"><button class="linkbtn" style="color:var(--black);border-color:var(--line)" type="button" data-quick="edit" data-id="' + esc(r.id) + '">Edit</button>' +
-        '<button class="linkbtn" style="color:#9c0019;border-color:#f3c3ca" type="button" data-quick="delete" data-id="' + esc(r.id) + '">Delete</button></div></div>').join("")
-      : '<div class="empty">No upcoming races yet.</div>';
-  }
-  $("upcoming").addEventListener("click", (e) => {
-    const b = e.target.closest("[data-quick]"); if (!b) return;
-    setMode(b.dataset.quick);
-    $("loadDigits").value = b.dataset.id.replace(/^RC/, "");
-    loadRace();
+  document.querySelector('[data-tab="racePanel"]').addEventListener("click", async () => {
+    if (!racesLoaded) { racesLoaded = true; if (!galleryLoaded) await loadGallery("Loading photos"); renderPhotoPicker(); }
   });
 
-  function fmtDate(iso) {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || "")) return iso || "";
-    const [y, m, d] = iso.split("-").map(Number);
-    return d + " " + ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][m - 1] + " " + y;
+  async function loadRaceList() {
+    const out = await api({ action: "adminRaceList" }, "Loading races");
+    raceCache = out.ok ? out.races : [];
+    $("raceList").innerHTML = raceCache.length ? raceCache.map((r) =>
+      '<div class="uitem' + (r.expired ? " exp" : "") + '"><div><code>' + esc(r.id) + "</code> " + esc(r.name) +
+      "<br><small>" + isoToDmy(r.date) + " · " + esc(r.day) + "</small></div>" +
+      (r.expired ? '<span class="exptag">Expired</span>' :
+        '<div class="btns"><button type="button" data-view="' + esc(r.id) + '">View</button>' +
+        '<button type="button" data-edit="' + esc(r.id) + '">Edit</button>' +
+        '<button type="button" class="del" data-delr="' + esc(r.id) + '">Delete</button></div>') + "</div>"
+    ).join("") : '<div class="empty">No races posted yet.</div>';
   }
-  function showDay() {
-    const v = rf("rDate").value;
-    if (!v) { $("rDay").textContent = ""; return; }
-    const [y, m, d] = v.split("-").map(Number);
-    $("rDay").textContent = DAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
+  $("raceList").addEventListener("click", async (e) => {
+    const v = e.target.closest("[data-view]"), ed = e.target.closest("[data-edit]"), dl = e.target.closest("[data-delr]");
+    if (v) { showRace(raceCache.find((r) => r.id === v.dataset.view)); return; }
+    if (ed) {
+      const r = raceCache.find((x) => x.id === ed.dataset.edit);
+      editingRace = r.id; fillForm(r);
+      $("manageBox").hidden = true; $("raceForm").hidden = false;
+      window.scrollTo({ top: $("racePanel").offsetTop, behavior: "smooth" });
+      return;
+    }
+    if (dl) {
+      const id = dl.dataset.delr;
+      if (!confirm("Delete " + id + "? It will be removed from the race schedule.")) return;
+      const out = await api({ action: "adminRaceDelete", raceId: id }, "Deleting " + id);
+      if (!out.ok) { toast((out.errors || ["Delete failed"])[0]); return; }
+      toast(id + " deleted"); loadRaceList();
+    }
+  });
+
+  // Text with "-" lines becomes bullet points
+  function richText(t) {
+    const lines = String(t || "").split("\n").map((l) => l.trim()).filter(Boolean);
+    let h = "", list = [];
+    const flush = () => { if (list.length) { h += "<ul>" + list.map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul>"; list = []; } };
+    lines.forEach((l) => { if (/^[-•*]\s*/.test(l)) list.push(l.replace(/^[-•*]\s*/, "")); else { flush(); h += "<p style='margin:4px 0'>" + esc(l) + "</p>"; } });
+    flush(); return h;
   }
-  rf("rDate").addEventListener("input", showDay);
+  function showRace(r) {
+    if (!r) return;
+    const dur = (r.hours || r.minutes) ? ((Number(r.hours) ? r.hours + " hr " : "") + (Number(r.minutes) ? r.minutes + " min" : "")).trim() : "";
+    const age = r.minAge && r.maxAge ? r.minAge + " to " + r.maxAge + " years" : r.minAge ? r.minAge + " years and above" : r.maxAge ? "Up to " + r.maxAge + " years" : "All ages";
+    const fact = (k, v) => v ? "<div><small>" + k + "</small><b>" + esc(v) + "</b></div>" : "";
+    $("raceViewBody").innerHTML =
+      '<div class="cover" style="' + (r.photo ? "background-image:url('" + esc(r.photo) + "')" : "") + '"><h3>' + esc(r.name) + "</h3></div>" +
+      '<div class="body"><div class="facts">' +
+      fact("Date", r.day + ", " + niceDate(r.date)) + fact("Reporting time", to12(r.time).text) +
+      fact("Duration", dur) + fact("Distance", r.distance ? r.distance + " km" : "") + fact("Age", age) + fact("Race ID", r.id) +
+      "</div><h4>Starting point</h4><p style='margin:0'>" + esc(r.start) + (r.landmark ? "<br><span style='color:var(--muted)'>" + esc(r.landmark) + "</span>" : "") + "</p>" +
+      (r.map ? '<p style="margin:6px 0 0"><a href="' + esc(r.map) + '" target="_blank" rel="noopener" style="color:inherit;font-weight:700">Open in Google Maps</a></p>' : "") +
+      '<p class="free">Free for all members with an active Club ID.</p>' +
+      (r.activities ? "<h4>Additional activities</h4>" + richText(r.activities) : "") +
+      (r.goodies ? "<h4>Goodies and awards</h4>" + richText(r.goodies) : "") + "</div>";
+    $("raceView").hidden = false;
+  }
+  document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", () => ($(b.dataset.close).hidden = true)));
+  ["raceView", "photoView"].forEach((id) => $(id).addEventListener("click", (e) => { if (e.target.id === id) $(id).hidden = true; }));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { $("raceView").hidden = true; $("photoView").hidden = true; } });
 
   function renderPhotoPicker(selected) {
     const sel = selected !== undefined ? selected : ((document.querySelector('input[name="rPhoto"]:checked') || {}).value || "");
@@ -710,65 +825,47 @@
 
   function fillForm(r) {
     const v = r || {};
-    rf("rName").value = v.name || ""; rf("rDate").value = v.date || ""; rf("rTime").value = v.time || "";
+    rf("rName").value = v.name || ""; rf("rDate").value = isoToDmy(v.date);
+    const t = to12(v.time);
+    rf("rHour").value = t.h; rf("rMin").value = t.m;
+    document.querySelector('input[name="rAmpm"][value="' + t.ap + '"]').checked = true;
     rf("rHours").value = v.hours || ""; rf("rMinutes").value = v.minutes || ""; rf("rDistance").value = v.distance || "";
     rf("rStart").value = v.start || ""; rf("rLandmark").value = v.landmark || ""; rf("rMap").value = v.map || "";
-    rf("rMinAge").value = v.minAge || ""; rf("rMaxAge").value = v.maxAge || ""; rf("rGoodies").value = v.goodies || "";
+    rf("rMinAge").value = v.minAge || ""; rf("rMaxAge").value = v.maxAge || "";
+    rf("rActivities").value = v.activities || ""; rf("rGoodies").value = v.goodies || "";
     showDay();
     renderPhotoPicker(v.photoId || "");
-    $("rfTitle").textContent = r ? "Edit " + r.id : "Post a race";
-    $("rSubmit").textContent = r ? "Save changes" : "Post race";
+    $("rfTitle").textContent = r ? "Edit " + r.id : "Post a Race";
+    $("rSubmit").textContent = r ? "Update" : "Post race";
+    $("rCancel").hidden = !r;
+    $("rErr").innerHTML = "";
   }
-
-  $("loadBox").addEventListener("submit", (e) => { e.preventDefault(); loadRace(); });
-  $("loadDigits").addEventListener("input", (e) => { e.target.value = e.target.value.replace(/\D/g, "").slice(0, 3); });
-  async function loadRace() {
-    const d = $("loadDigits").value;
-    $("delSummary").innerHTML = "";
-    if (!/^\d{1,3}$/.test(d)) { toast("Enter the Race ID digits"); return; }
-    const id = "RC" + d.padStart(3, "0");
-    const out = await api({ action: "adminRaceGet", raceId: id }, "Loading " + id);
-    if (!out.ok) { toast((out.errors || ["Race not found"])[0]); $("raceForm").hidden = true; return; }
-    const r = out.race;
-    if (rmode === "edit") {
-      editingRace = r.id; fillForm(r); $("raceForm").hidden = false;
-      $("raceForm").scrollIntoView({ behavior: "smooth", block: "start" });
-    } else {
-      $("delSummary").innerHTML = '<div class="rsum"><b>' + esc(r.id) + " · " + esc(r.name) + "</b><br>" + esc(r.day) + ", " + fmtDate(r.date) +
-        " · reporting " + esc(r.time) + "<br>" + esc(r.start) + "</div>" +
-        '<button class="btn danger" id="delBtn" type="button">Delete ' + esc(r.id) + "</button>";
-      $("delBtn").addEventListener("click", async () => {
-        if (!confirm("Delete " + r.id + "? It will be removed from the race schedule.")) return;
-        const del = await api({ action: "adminRaceDelete", raceId: r.id }, "Deleting " + r.id);
-        if (!del.ok) { toast((del.errors || ["Delete failed"])[0]); return; }
-        toast(r.id + " deleted"); setMode("delete"); refreshUpcoming();
-      });
-    }
-  }
-  async function refreshUpcoming() {
-    const list = await api({ action: "adminRaceList" });
-    if (list.ok) renderUpcoming(list.races);
-  }
+  $("rCancel").addEventListener("click", () => setMode("manage"));
 
   $("raceForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     $("rErr").innerHTML = "";
+    const local = [];
+    const iso = dmyToIso(rf("rDate").value);
+    if (!iso) local.push("Enter the date as DD-MM-YYYY.");
+    const time = to24(rf("rHour").value, rf("rMin").value, (document.querySelector('input[name="rAmpm"]:checked') || {}).value);
+    if (!time) local.push("Choose the reporting time (hour and minutes).");
+    if (local.length) { $("rErr").innerHTML = "<ul>" + local.map((m) => "<li>" + m + "</li>").join("") + "</ul>"; return; }
     const race = {
-      id: rmode === "edit" ? editingRace : "",
-      name: rf("rName").value.trim(), date: rf("rDate").value, time: rf("rTime").value,
+      id: editingRace, name: rf("rName").value.trim(), date: iso, time: time,
       hours: rf("rHours").value, minutes: rf("rMinutes").value, distance: rf("rDistance").value,
       start: rf("rStart").value.trim(), landmark: rf("rLandmark").value.trim(), map: rf("rMap").value.trim(),
-      minAge: rf("rMinAge").value, maxAge: rf("rMaxAge").value, goodies: rf("rGoodies").value,
+      minAge: rf("rMinAge").value, maxAge: rf("rMaxAge").value,
+      activities: rf("rActivities").value, goodies: rf("rGoodies").value,
       photoId: (document.querySelector('input[name="rPhoto"]:checked') || {}).value || "",
     };
-    const out = await api({ action: "adminRaceSave", race: race }, race.id ? "Saving " + race.id : "Posting race");
+    const out = await api({ action: "adminRaceSave", race: race }, race.id ? "Updating " + race.id : "Posting race");
     if (!out.ok) {
       $("rErr").innerHTML = "<ul>" + (out.errors || ["Couldn't save the race"]).map((m) => "<li>" + esc(m) + "</li>").join("") + "</ul>";
       return;
     }
-    toast((race.id ? out.race.id + " updated" : out.race.id + " posted"));
-    if (!race.id) fillForm(null); else setMode("edit");
-    refreshUpcoming();
+    toast(race.id ? out.race.id + " updated" : out.race.id + " posted");
+    if (race.id) setMode("manage"); else fillForm(null);
   });
   setMode("post");
 
