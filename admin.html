@@ -147,6 +147,7 @@
     @keyframes pin { from { transform: rotate(-4deg) scale(.94); opacity: 0; } to { transform: none; opacity: 1; } }
   }
 
+
   /* ---------- Admin ---------- */
   .adminbar { background: var(--black); color: var(--white); padding: calc(env(safe-area-inset-top,0px) + 12px) 16px 12px; }
   .adminbar .in { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
@@ -154,59 +155,44 @@
   .adminbar h1 { font-size: 1.8rem; line-height: 1; animation: none; flex: 1; }
   .linkbtn { background: none; border: 1.5px solid rgba(255,255,255,.35); color: var(--white); border-radius: 10px; padding: 8px 12px; font: 600 .9rem "Barlow", sans-serif; cursor: pointer; }
   .wrap { max-width: 1400px; margin: 0 auto; padding: 16px 14px 48px; }
-  .seg { display: flex; background: var(--white); border-radius: 14px; padding: 4px; gap: 4px; max-width: 460px; }
-  .seg button { flex: 1; border: 0; background: none; padding: 11px 10px; border-radius: 10px; font: 700 1.05rem/1 "Barlow Condensed", sans-serif; cursor: pointer; color: var(--muted); }
+  .seg { display: flex; background: var(--white); border-radius: 14px; padding: 4px; gap: 4px; overflow-x: auto; }
+  .seg button { flex: 1; border: 0; background: none; padding: 11px 12px; border-radius: 10px; font: 700 1.05rem/1 "Barlow Condensed", sans-serif; cursor: pointer; color: var(--muted); white-space: nowrap; }
   .seg button[aria-selected="true"] { background: var(--black); color: var(--pink); }
   .panel { margin-top: 16px; }
-  .tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 12px; }
-  .tools input, .tools select { width: auto; flex: 1 1 200px; background: var(--white); }
-  .tools .btn { width: auto; margin: 0; padding: 12px 16px; font-size: 1.05rem; }
-  .counts { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
-  .counts span { background: var(--white); border-radius: 999px; padding: 6px 12px; font-weight: 600; font-size: .9rem; }
-  .tablewrap { overflow: auto; max-height: 72vh; background: var(--white); border-radius: 14px; border: 1px solid var(--line); }
-  table { border-collapse: separate; border-spacing: 0; font-size: .9rem; }
-  th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; white-space: nowrap; }
-  th { position: sticky; top: 0; z-index: 2; background: var(--black); color: var(--white); font: 700 .95rem "Barlow Condensed", sans-serif; }
-  td.notes { white-space: pre-line; min-width: 220px; }
+  .panel h2.sec { font: italic 800 1.8rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 0 0 12px; }
+  .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
+  .tools input, .tools select { width: auto; flex: 1 1 180px; background: var(--white); padding: 10px 12px; }
+  .tools .btn { width: auto; margin: 0; padding: 11px 14px; font-size: 1rem; }
+  .counts { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+  .counts span { background: var(--white); border-radius: 999px; padding: 4px 10px; font-weight: 600; font-size: .85rem; }
+  .tablewrap { overflow: auto; max-height: 74vh; background: var(--white); border-radius: 12px; border: 1px solid var(--line); }
+  table { border-collapse: separate; border-spacing: 0; font-size: .82rem; line-height: 1.3; }
+  th, td { padding: 6px 10px; border-bottom: 1px solid rgba(0,0,0,.06); text-align: left; vertical-align: middle; white-space: nowrap; }
+  th { position: sticky; top: 0; z-index: 2; background: var(--black); color: var(--white); font: 700 .85rem "Barlow Condensed", sans-serif; }
+  td.notes { white-space: pre-line; min-width: 200px; vertical-align: top; }
   td.muted { color: var(--muted); font-style: italic; }
-  .ctl { position: sticky; left: 0; z-index: 1; background: var(--white); border-right: 2px solid var(--line); min-width: 250px; white-space: normal; }
-  th.ctl { z-index: 3; background: var(--black); }
-  .ctl .id { font: 800 1.15rem/1 "Barlow Condensed", sans-serif; }
-  .radios { display: flex; gap: 6px; margin: 8px 0; }
-  .radios label { flex: 1; position: relative; }
-  .radios input { position: absolute; opacity: 0; }
-  .radios span { display: block; text-align: center; padding: 7px 6px; border-radius: 8px; border: 1.5px solid var(--line); font-weight: 600; cursor: pointer; font-size: .85rem; }
-  .radios .g input:checked + span { background: #0d7a45; border-color: #0d7a45; color: #fff; }
-  .radios .r input:checked + span { background: #c0001f; border-color: #c0001f; color: #fff; }
-  .radios input:focus-visible + span { outline: 3px solid var(--pink); outline-offset: 2px; }
-  .ctl textarea { width: 100%; font: inherit; font-size: .85rem; border: 1.5px solid var(--line); border-radius: 8px; padding: 7px 8px; resize: vertical; min-height: 38px; background: var(--paper); }
-  .ctl .upd { margin-top: 6px; width: 100%; border: 0; border-radius: 8px; padding: 8px; background: var(--black); color: var(--pink); font: 700 .95rem "Barlow Condensed", sans-serif; cursor: pointer; }
-  .ctl .upd[disabled] { opacity: .5; }
-  .pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-weight: 700; font-size: .8rem; }
-  .pill.Active { background: #d8f3e4; color: #0b5e36; }
-  .pill.Pending { background: #fff1c2; color: #7a5a00; }
-  .pill.Deactivated { background: #ffd9de; color: #9c0019; }
+  tr.Active td { background: #eaf8ef; }
+  tr.Pending td { background: #fff8dc; }
+  tr.Deactivated td { background: #fdecee; }
+  .act { position: sticky; left: 0; z-index: 1; border-right: 2px solid rgba(0,0,0,.08); }
+  th.act { z-index: 3; }
+  .tog { border: 0; border-radius: 8px; padding: 6px 12px; font: 700 .85rem/1 "Barlow Condensed", sans-serif; cursor: pointer; min-width: 88px; }
+  .tog.on { background: #0d7a45; color: #fff; }
+  .tog.off { background: #c0001f; color: #fff; }
+  .tog:focus-visible { outline: 3px solid var(--pink); outline-offset: 2px; }
   tr.flash td { animation: flash 1.2s; }
-  @keyframes flash { from { background: #fff4f8; } }
-
-  /* Check status */
-  .checkbox { background: var(--white); border-radius: 18px; padding: 22px 18px; max-width: 460px; }
-  .idinput { display: flex; align-items: stretch; border: 2px solid var(--black); border-radius: 14px; overflow: hidden; margin-top: 12px; }
-  .idinput b { background: var(--black); color: var(--pink); font: italic 800 2.2rem/1 "Barlow Condensed", sans-serif; padding: 12px 14px; display: grid; place-items: center; }
-  .idinput input { border: 0; border-radius: 0; font: 800 2.2rem/1 "Barlow Condensed", sans-serif; letter-spacing: .08em; background: var(--white); padding: 10px 14px; }
-  .result { margin-top: 16px; border-radius: 16px; padding: 20px 18px; color: #000; }
-  .result.Active { background: #20c46b; }
-  .result.Pending { background: #ffd23f; }
-  .result.Deactivated { background: #ff4d5e; }
-  .result.none { background: var(--line); }
-  .result .big { font: italic 800 2.4rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
-  .result .who { font-weight: 700; font-size: 1.15rem; margin-top: 6px; }
-  .result .rem { margin-top: 12px; background: rgba(255,255,255,.55); border-radius: 10px; padding: 10px 12px; white-space: pre-line; }
-  .result .rem small { display: block; font-weight: 700; margin-bottom: 4px; }
-  .toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom,0px) + 20px); transform: translateX(-50%); background: var(--black); color: var(--white); padding: 12px 18px; border-radius: 12px; z-index: 60; font-weight: 600; }
+  @keyframes flash { from { box-shadow: inset 0 0 0 999px rgba(254,144,174,.35); } }
+  .soon { background: var(--white); border-radius: 16px; padding: 22px 18px; color: var(--muted); }
+  /* Confirm dialog */
+  .modal { position: fixed; inset: 0; z-index: 55; background: rgba(0,0,0,.6); display: grid; place-items: center; padding: 18px; }
+  .modal-box { background: var(--white); border-radius: 18px; padding: 22px 20px; width: 100%; max-width: 420px; }
+  .modal-box h3 { font: italic 800 1.6rem/1.1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 0 0 6px; }
+  .modal-box textarea { width: 100%; font: inherit; border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px; min-height: 70px; background: var(--paper); margin-top: 6px; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+  .modal-actions button { flex: 1; margin: 0; }
+  .ghostbtn { border: 1.5px solid var(--black); background: var(--white); border-radius: 14px; padding: 15px; font: 700 1.1rem/1 "Barlow Condensed", sans-serif; cursor: pointer; }
+  .toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom,0px) + 20px); transform: translateX(-50%); background: var(--black); color: var(--white); padding: 12px 18px; border-radius: 12px; z-index: 60; font-weight: 600; max-width: 90vw; }
   .login { max-width: 380px; margin: 40px auto; }
-  @media (max-width: 600px) { .ctl { min-width: 190px; } }
-
   .busy { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.72); display: grid; place-items: center; padding: 24px; }
   .busy-box { background: var(--white); border-radius: 18px; padding: 26px 24px; max-width: 320px; text-align: center; }
   .busy-box b { display: block; font: italic 800 1.5rem/1.1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin-top: 14px; }
@@ -223,7 +209,6 @@
   </div>
 </header>
 
-<!-- ===== Login ===== -->
 <div class="wrap" id="loginView">
   <form class="card login" id="loginForm" novalidate>
     <h2 class="card-title">Admin login</h2>
@@ -236,25 +221,15 @@
   </form>
 </div>
 
-<!-- ===== Admin ===== -->
 <div class="wrap" id="adminView" hidden>
   <div class="seg" role="tablist">
-    <button type="button" role="tab" aria-selected="true" data-tab="checkPanel">Check Club ID</button>
-    <button type="button" role="tab" aria-selected="false" data-tab="allPanel">All registrations</button>
+    <button type="button" role="tab" aria-selected="true" data-tab="regPanel">Manage Registrations</button>
+    <button type="button" role="tab" aria-selected="false" data-tab="racePanel">Manage Races</button>
+    <button type="button" role="tab" aria-selected="false" data-tab="galleryPanel">Manage Gallery</button>
   </div>
 
-  <!-- Check Club ID status -->
-  <section class="panel" id="checkPanel">
-    <form class="checkbox" id="checkForm" novalidate>
-      <label class="lbl" for="checkDigits">Enter the 4 digits of the Club ID</label>
-      <div class="idinput"><b>UB</b><input id="checkDigits" type="text" inputmode="numeric" maxlength="4" placeholder="0001" autocomplete="off"></div>
-      <button class="btn" type="submit">Check status</button>
-      <div id="checkResult" aria-live="polite"></div>
-    </form>
-  </section>
-
-  <!-- All registrations -->
-  <section class="panel" id="allPanel" hidden>
+  <section class="panel" id="regPanel">
+    <h2 class="sec">Manage Registrations</h2>
     <div class="tools">
       <input id="search" type="text" placeholder="Search name, Club ID, phone, email">
       <select id="filter">
@@ -269,6 +244,30 @@
     <div class="counts" id="counts"></div>
     <div class="tablewrap"><table id="table"></table></div>
   </section>
+
+  <section class="panel" id="racePanel" hidden>
+    <h2 class="sec">Manage Races</h2>
+    <div class="soon">Coming next.</div>
+  </section>
+
+  <section class="panel" id="galleryPanel" hidden>
+    <h2 class="sec">Manage Gallery</h2>
+    <div class="soon">Coming next.</div>
+  </section>
+</div>
+
+<!-- Activate / deactivate confirmation with an optional note -->
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="modal-box">
+    <h3 id="mTitle">Activate</h3>
+    <p id="mText" style="margin:0"></p>
+    <label class="lbl" for="mNote" style="margin-top:14px">Admin note <span class="optional">(optional)</span></label>
+    <textarea id="mNote" maxlength="300" placeholder="Leave blank if not needed"></textarea>
+    <div class="modal-actions">
+      <button class="ghostbtn" id="mCancel" type="button">Cancel</button>
+      <button class="btn" id="mOk" type="button">Confirm</button>
+    </div>
+  </div>
 </div>
 
 <div class="busy" id="busy" hidden role="status" aria-live="polite">
@@ -281,9 +280,8 @@
   const $ = (id) => document.getElementById(id);
   const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   let passcode = "";
-  let headers = [], rows = [], loadedAt = null;
+  let headers = [], rows = [], refs = [];
 
-  // ---------- Backend calls ----------
   async function api(payload, busyText) {
     if (busyText) { $("busyText").textContent = busyText; $("busy").hidden = false; }
     try {
@@ -295,18 +293,17 @@
       });
       clearTimeout(timer);
       const out = JSON.parse(await res.text());
-      // Passcode rejected while already inside (e.g. changed or locked): back to login
       if (out.auth === false && !$("adminView").hidden) logout(out.errors && out.errors[0]);
       return out;
     } catch (e) {
       return { ok: false, errors: [e.name === "AbortError" ? "This took too long. Please try again." : "Couldn't reach the server. Check your internet and try again."] };
     } finally {
-      $("busy").hidden = true;
+      if (busyText) $("busy").hidden = true;
     }
   }
   function toast(msg) {
     $("toast").textContent = msg; $("toast").hidden = false;
-    clearTimeout(toast.t); toast.t = setTimeout(() => ($("toast").hidden = true), 2600);
+    clearTimeout(toast.t); toast.t = setTimeout(() => ($("toast").hidden = true), 2800);
   }
 
   // ---------- Login ----------
@@ -325,10 +322,10 @@
     setData(out);
   }
   function logout(msg) {
-    passcode = ""; headers = []; rows = [];
+    passcode = ""; headers = []; rows = []; refs = [];
     try { sessionStorage.removeItem("unbnd_admin"); sessionStorage.removeItem("unbnd_admin_data"); } catch (x) {}
     $("adminView").hidden = true; $("loginView").hidden = false; $("logout").hidden = true;
-    $("table").innerHTML = ""; $("checkResult").innerHTML = "";
+    $("table").innerHTML = "";
     if (msg) $("loginErr").textContent = msg;
   }
   $("logout").addEventListener("click", () => logout());
@@ -341,99 +338,84 @@
     });
   }));
 
-  // ---------- Check Club ID ----------
-  $("checkDigits").addEventListener("input", (e) => { e.target.value = e.target.value.replace(/\D/g, "").slice(0, 4); });
-  // Live check against the Sheet every time, so last-minute registrations show up
-  $("checkForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const d = $("checkDigits").value;
-    if (!/^\d{1,4}$/.test(d)) { $("checkResult").innerHTML = '<div class="result none"><div class="big">Enter digits</div></div>'; return; }
-    const clubId = "UB" + d.padStart(4, "0");
-    const out = await api({ action: "adminCheck", clubId: clubId }, "Checking " + clubId);
-    if (!out.ok) { $("checkResult").innerHTML = '<div class="result none"><div class="big">Error</div><div class="who">' + esc((out.errors || [""])[0]) + "</div></div>"; return; }
-    if (!out.found) { $("checkResult").innerHTML = '<div class="result none"><div class="big">' + clubId + " not found</div></div>"; return; }
-    const label = { Active: "Active", Pending: "Pending activation", Deactivated: "Deactivated" }[out.status] || out.status;
-    const minor = out.minor === "Yes" ? '<div class="who">Under 18, guardian verified: ' + esc(out.guardianVerified || "No") + "</div>" : "";
-    $("checkResult").innerHTML =
-      '<div class="result ' + esc(out.status) + '"><div class="big">' + esc(label) + "</div>" +
-      '<div class="who">' + esc(out.clubId) + " · " + esc(out.name) + "</div>" + minor +
-      '<div class="rem"><small>Admin remarks</small>' + esc(out.notes) + "</div></div>";
-    $("checkDigits").select();
-  });
-
-  // ---------- All registrations ----------
+  // ---------- Manage Registrations ----------
   function setData(out) {
-    headers = out.headers; rows = out.rows; loadedAt = new Date();
-    try { sessionStorage.setItem("unbnd_admin_data", JSON.stringify({ headers: headers, rows: rows })); } catch (x) {}
+    headers = out.headers; rows = out.rows; refs = out.refs || [];
+    try { sessionStorage.setItem("unbnd_admin_data", JSON.stringify({ headers: headers, rows: rows, refs: refs })); } catch (x) {}
     render();
   }
-  // Quiet background refresh every minute, without disturbing a note she's typing
-  function editing() {
-    return [...document.querySelectorAll("#table textarea")].some((t) => t.value.trim() || t === document.activeElement);
-  }
-  setInterval(async () => {
-    if (!passcode || document.hidden || editing()) return;
-    const out = await api({ action: "adminList" });
-    if (out.ok && !editing()) setData(out);
-  }, 60000);
   $("refresh").addEventListener("click", async () => {
     const out = await api({ action: "adminList" }, "Refreshing");
     if (out.ok) { setData(out); toast("Up to date"); } else toast((out.errors || ["Refresh failed"])[0]);
   });
   $("search").addEventListener("input", render);
   $("filter").addEventListener("change", render);
+  setInterval(async () => {
+    if (!passcode || document.hidden || !$("modal").hidden) return;
+    const out = await api({ action: "adminList" });
+    if (out.ok && $("modal").hidden) setData(out);
+  }, 60000);
 
   const iOf = (name) => headers.indexOf(name);
   function render() {
-    const iId = iOf("Club ID"), iStatus = iOf("Membership status"), iNotes = iOf("Admin notes");
+    const iStatus = iOf("Membership status"), iNotes = iOf("Admin notes");
     const q = $("search").value.trim().toLowerCase();
     const f = $("filter").value;
-
     const counts = { Pending: 0, Active: 0, Deactivated: 0 };
     rows.forEach((r) => { if (counts[r[iStatus]] !== undefined) counts[r[iStatus]]++; });
     $("counts").innerHTML = "<span>Total " + rows.length + "</span>" +
       Object.keys(counts).map((k) => "<span>" + k + " " + counts[k] + "</span>").join("");
 
-    const shown = rows.filter((r) => (!f || r[iStatus] === f) && (!q || r.join(" ").toLowerCase().includes(q)));
-    let h = '<thead><tr><th class="ctl">Update</th>' + headers.map((x) => "<th>" + esc(x) + "</th>").join("") + "</tr></thead><tbody>";
-    shown.forEach((r) => {
-      const id = r[iId], st = r[iStatus];
-      h += '<tr data-id="' + esc(id) + '"><td class="ctl"><div class="id">' + esc(id) + "</div>" +
-        '<div class="radios">' +
-        '<label class="g"><input type="radio" name="s_' + esc(id) + '" value="Active"' + (st === "Active" ? " checked" : "") + "><span>Active</span></label>" +
-        '<label class="r"><input type="radio" name="s_' + esc(id) + '" value="Deactivated"' + (st === "Deactivated" ? " checked" : "") + "><span>Deactivated</span></label>" +
-        "</div>" +
-        '<textarea rows="1" placeholder="Admin note (optional)" aria-label="Admin note for ' + esc(id) + '"></textarea>' +
-        '<button class="upd" type="button">Update</button></td>';
+    let h = '<thead><tr><th class="act">Action</th>' + headers.map((x) => "<th>" + esc(x) + "</th>").join("") + "</tr></thead><tbody>";
+    let shown = 0;
+    rows.forEach((r, k) => {
+      const st = r[iStatus];
+      if ((f && st !== f) || (q && !r.join(" ").toLowerCase().includes(q))) return;
+      shown++;
+      const activate = st !== "Active";
+      h += '<tr class="' + esc(st) + '" data-k="' + k + '"><td class="act"><button type="button" class="tog ' + (activate ? "on" : "off") + '">' +
+        (activate ? "Activate" : "Deactivate") + "</button></td>";
       r.forEach((v, i) => {
-        if (i === iStatus) h += '<td><span class="pill ' + esc(v) + '">' + esc(v) + "</span></td>";
-        else if (i === iNotes) h += v ? '<td class="notes">' + esc(v) + "</td>" : '<td class="notes muted">No admin remarks</td>';
-        else h += "<td>" + esc(v) + "</td>";
+        if (i === iNotes) h += v ? '<td class="notes">' + esc(v) + "</td>" : '<td class="notes muted">No admin remarks</td>';
+        else h += "<td>" + (v === "" ? "" : esc(v)) + "</td>";
       });
       h += "</tr>";
     });
-    if (!shown.length) h += '<tr><td class="ctl muted" colspan="' + (headers.length + 1) + '">No matching registrations</td></tr>';
+    if (!shown) h += '<tr><td class="act muted" colspan="' + (headers.length + 1) + '">No matching registrations</td></tr>';
     $("table").innerHTML = h + "</tbody>";
   }
 
-  // One Update button per row: sends the chosen status (if changed) and the optional note
-  $("table").addEventListener("click", async (e) => {
-    const btn = e.target.closest(".upd"); if (!btn) return;
-    const tr = btn.closest("tr"), id = tr.dataset.id;
-    const row = rows.find((r) => r[iOf("Club ID")] === id);
-    const chosen = (tr.querySelector("input[type=radio]:checked") || {}).value || "";
-    const status = chosen && chosen !== row[iOf("Membership status")] ? chosen : "";
-    const note = tr.querySelector("textarea").value.trim();
-    if (!status && !note) { toast("Nothing to update for " + id); return; }
-    btn.disabled = true;
-    const out = await api({ action: "adminUpdate", clubId: id, status: status, note: note }, "Updating " + id);
-    btn.disabled = false;
+  // Toggle: opens a small confirm box with an optional note
+  let pending = null;
+  $("table").addEventListener("click", (e) => {
+    const btn = e.target.closest(".tog"); if (!btn) return;
+    const k = Number(btn.closest("tr").dataset.k);
+    const r = rows[k];
+    const toActive = r[iOf("Membership status")] !== "Active";
+    const name = r[iOf("Full name")], id = r[iOf("Club ID")];
+    pending = { k: k, status: toActive ? "Active" : "Deactivated" };
+    $("mTitle").textContent = toActive ? "Activate member" : "Deactivate member";
+    $("mText").textContent = (id ? id + " · " : "") + name +
+      (toActive && !id ? ". A Club ID will be assigned and the welcome email sent." : "");
+    $("mOk").textContent = toActive ? "Activate" : "Deactivate";
+    $("mNote").value = "";
+    $("modal").hidden = false;
+    $("mNote").focus();
+  });
+  $("mCancel").addEventListener("click", () => { $("modal").hidden = true; pending = null; });
+  $("mOk").addEventListener("click", async () => {
+    if (!pending) return;
+    const p = pending; pending = null;
+    $("modal").hidden = true;
+    const out = await api({ action: "adminUpdate", ref: refs[p.k], status: p.status, note: $("mNote").value.trim() },
+      p.status === "Active" ? "Activating" : "Deactivating");
     if (!out.ok) { toast((out.errors || ["Update failed"])[0]); return; }
-    const k = rows.indexOf(row); rows[k] = out.row;
+    rows[p.k] = out.row;
     render();
-    const fresh = $("table").querySelector('tr[data-id="' + CSS.escape(id) + '"]');
-    if (fresh) fresh.classList.add("flash");
-    toast(id + " updated" + (status === "Active" ? ". Welcome email sent if not sent before." : ""));
+    const tr = $("table").querySelector('tr[data-k="' + p.k + '"]');
+    if (tr) tr.classList.add("flash");
+    const id = out.row[iOf("Club ID")];
+    toast(p.status === "Active" ? (id + " activated") : "Deactivated");
   });
 
   // ---------- Excel download ----------
@@ -446,13 +428,14 @@
     const d = new Date(), pad = (n) => String(n).padStart(2, "0");
     XLSX.writeFile(wb, "UNBND-members-" + d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + ".xlsx");
   });
-  // Stay logged in while this tab is open
+
+  // ---------- Stay logged in while this tab is open ----------
   (async () => {
     let saved = ""; try { saved = sessionStorage.getItem("unbnd_admin") || ""; } catch (x) {}
     if (!saved) return;
     passcode = saved;
     let cached = null; try { cached = JSON.parse(sessionStorage.getItem("unbnd_admin_data") || "null"); } catch (x) {}
-    if (cached) enter(cached);
+    if (cached && cached.refs) enter(cached);
     const out = await api({ action: "adminList" }, cached ? "" : "Loading");
     if (out.ok) { if (cached) setData(out); else enter(out); } else if (!cached) logout();
   })();
