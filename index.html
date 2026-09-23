@@ -318,21 +318,27 @@
   <!-- ===== Success screen ===== -->
   <section id="done" hidden aria-live="polite">
     <div class="card">
-      <h2 class="card-title" id="doneTitle">You're registered</h2>
-      <div class="bib">
-        <span class="pins"></span>
-        <div class="club">UNBND RUN CLUB</div>
-        <div class="num" id="bibId">UB0000</div>
-        <div class="who" id="bibName"></div>
+      <h2 class="card-title" id="doneTitle">Thank you for registering</h2>
+      <div id="pendingBox">
+        <p class="status">Your membership is not active yet.</p>
+        <p>To complete your membership, pay the ₹499 membership fee and upload your payment screenshot. Tap <b>Pay and upload screenshot</b> below.</p>
+        <p>Once we've checked your payment, we'll activate your membership and email you your <b>UNBND Club ID</b>.</p>
+        <a class="btn pink" id="payBtn" href="pay.html">Pay and upload screenshot</a>
+        <div id="emailNote">
+          <p>Want to pay later? Follow the steps in the email we've sent to <b id="doneEmail"></b>.</p>
+          <p class="hint">Can't find the email? Check your spam or promotions folder.</p>
+        </div>
       </div>
-      <button class="copy" id="copyId" type="button">Copy Club ID</button>
-      <p class="status">Your membership is not active yet.</p>
-      <p>To activate it, tap <b>Pay and activate membership</b> below. You'll see our UPI details there, and you can upload your payment screenshot on the same page.</p>
-      <a class="btn pink" id="payBtn" href="pay.html">Pay and activate membership</a>
-      <div id="emailNote">
-        <p>Want to pay later? Follow the steps in the email we've sent to <b id="doneEmail"></b>. It has your Club ID and a link to pay.</p>
-        <p class="hint">Can't find the email? Check your spam or promotions folder.</p>
+      <div id="activeBox" hidden>
+        <div class="bib">
+          <span class="pins"></span>
+          <div class="club">UNBND RUN CLUB</div>
+          <div class="num" id="bibId">UB0000</div>
+          <div class="who" id="bibName"></div>
+        </div>
+        <p>You're already an active member. This is your Club ID.</p>
       </div>
+      <p id="deactBox" hidden>This registration is not active. Please contact the club by replying to any of our emails.</p>
     </div>
   </section>
 </main>
@@ -548,7 +554,7 @@
       if (!out.ok) { showSummary(out.errors || ["Registration failed. Please try again."]); return; }
       // If the first try went through but its reply was lost, the retry sees a "duplicate".
       // That's still this person's fresh registration, so treat it as new.
-      showSuccess(out.clubId, payload, out.duplicate && attempt === 0);
+      showSuccess(out, payload, out.duplicate && attempt === 0);
     } catch (err) {
       showSummary([apiErrorMessage(err.kind)]);
     } finally {
@@ -557,18 +563,22 @@
     }
   });
 
-  function showSuccess(clubId, p, duplicate) {
-    try { sessionStorage.setItem("unbnd_member", JSON.stringify({ clubId: clubId, phone: p.phone })); } catch (e) {}
-    $("bibId").textContent = clubId;
-    $("bibName").textContent = p.name;
+  function showSuccess(out, p, duplicate) {
+    const status = out.status || "Pending";
+    try { if (out.ref) sessionStorage.setItem("unbnd_member", JSON.stringify({ ref: out.ref })); } catch (e) {}
     $("doneEmail").textContent = p.email;
-    $("doneTitle").textContent = duplicate ? "You're already registered" : "You're registered";
-    $("emailNote").hidden = !!duplicate; // no new email is sent for a repeat registration
-    $("payBtn").href = "pay.html?id=" + encodeURIComponent(clubId);
+    $("pendingBox").hidden = status !== "Pending";
+    $("activeBox").hidden = status !== "Active";
+    $("deactBox").hidden = status !== "Deactivated";
+    $("emailNote").hidden = !!duplicate;
+    if (status === "Active") { $("bibId").textContent = out.clubId; $("bibName").textContent = p.name; }
+    $("doneTitle").textContent = duplicate ? "You're already registered" : "Thank you for registering";
+    if (out.ref) $("payBtn").href = "pay.html?r=" + encodeURIComponent(out.ref);
     form.hidden = true;
     $("done").hidden = false;
     window.scrollTo({ top: 0 });
   }
+
 
 
   // Copies text in one tap. Uses the modern clipboard API, and falls back to the
@@ -588,12 +598,6 @@
     return ok;
   }
 
-  $("copyId").addEventListener("click", async () => {
-    const id = $("bibId").textContent;
-    const ok = await copyText(id);
-    $("copyId").textContent = ok ? "Copied " + id : id;
-    setTimeout(() => ($("copyId").textContent = "Copy Club ID"), 2000);
-  });
 </script>
 </body>
 </html>
