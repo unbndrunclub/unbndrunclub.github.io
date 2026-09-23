@@ -197,13 +197,18 @@
   .spinner { width: 44px; height: 44px; margin: 0 auto; border-radius: 50%; border: 5px solid var(--paper); border-top-color: var(--pink); animation: spin .8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2.4s; } }
+
+  .bar .links { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+  .bar .links a { color: var(--white); text-decoration: none; font: 700 1rem/1 "Barlow Condensed", sans-serif; padding: 9px 12px; border-radius: 999px; }
+  .bar .links a:hover, .bar .links a[aria-current="page"] { background: rgba(255,255,255,.14); }
+  .bar .links a.cta { background: var(--pink); color: var(--black); }
 </style>
 </head>
 <body>
 <section class="hero">
   <div class="bar">
     <a href="index.html"><img src="logo.png" alt="UNBND Run Club home"></a>
-    <p class="fee">Membership<b>₹499</b></p>
+    <nav class="links" aria-label="Site"><a href="index.html">Home</a><a href="races.html">Races</a><a href="support.html">Support</a><a class="cta" href="register.html">Join</a></nav>
   </div>
   <div class="hero-inner">
     <h1>Upload<br>screenshot</h1>
