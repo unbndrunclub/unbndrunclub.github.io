@@ -193,6 +193,21 @@
   .ghostbtn { border: 1.5px solid var(--black); background: var(--white); border-radius: 14px; padding: 15px; font: 700 1.1rem/1 "Barlow Condensed", sans-serif; cursor: pointer; }
   .toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom,0px) + 20px); transform: translateX(-50%); background: var(--black); color: var(--white); padding: 12px 18px; border-radius: 12px; z-index: 60; font-weight: 600; max-width: 90vw; }
   .login { max-width: 380px; margin: 40px auto; }
+  /* Gallery */
+  .upbox { display: block; background: var(--white); border: 2px dashed var(--line); border-radius: 16px; padding: 22px 16px; text-align: center; cursor: pointer; }
+  .upbox:focus-within { outline: 3px solid var(--pink); outline-offset: 2px; }
+  .upbox input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .upbox b { display: block; font: italic 800 1.5rem/1.1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .upbox span { color: var(--muted); font-size: .9rem; }
+  .ghead { display: flex; align-items: baseline; justify-content: space-between; margin: 18px 0 10px; }
+  .ghead b { font: 700 1.2rem "Barlow Condensed", sans-serif; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .ph { background: var(--white); border-radius: 12px; overflow: hidden; }
+  .ph img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--paper); }
+  .ph div { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; }
+  .ph code { font: 700 .85rem "Barlow Condensed", sans-serif; }
+  .ph button { border: 0; background: #fdecee; color: #9c0019; border-radius: 8px; padding: 5px 10px; font: 700 .8rem "Barlow Condensed", sans-serif; cursor: pointer; }
+  .empty { background: var(--white); border-radius: 12px; padding: 18px; color: var(--muted); }
   .busy { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.72); display: grid; place-items: center; padding: 24px; }
   .busy-box { background: var(--white); border-radius: 18px; padding: 26px 24px; max-width: 320px; text-align: center; }
   .busy-box b { display: block; font: italic 800 1.5rem/1.1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin-top: 14px; }
@@ -252,7 +267,13 @@
 
   <section class="panel" id="galleryPanel" hidden>
     <h2 class="sec">Manage Gallery</h2>
-    <div class="soon">Coming next.</div>
+    <label class="upbox">
+      <input id="gFiles" type="file" accept="image/*" multiple>
+      <b>Add photos</b>
+      <span>Choose up to 10 at a time. Photos are resized automatically for the website.</span>
+    </label>
+    <div class="ghead"><b id="gCount">Photos</b><button class="linkbtn" id="gRefresh" type="button" style="color:var(--black);border-color:var(--line)">Refresh</button></div>
+    <div class="grid" id="gGrid"></div>
   </section>
 </div>
 
@@ -427,6 +448,70 @@
     XLSX.utils.book_append_sheet(wb, ws, "Members");
     const d = new Date(), pad = (n) => String(n).padStart(2, "0");
     XLSX.writeFile(wb, "UNBND-members-" + d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + ".xlsx");
+  });
+
+
+  // ---------- Manage Gallery ----------
+  const G_MAX_SIDE = 1920, G_QUALITY = 0.82, G_BATCH = 10;
+  let photos = [], galleryLoaded = false;
+
+  async function loadGallery(busyText) {
+    const out = await api({ action: "adminGalleryList" }, busyText);
+    if (!out.ok) { toast((out.errors || ["Couldn't load photos"])[0]); return; }
+    photos = out.photos; galleryLoaded = true; renderGallery();
+  }
+  function renderGallery() {
+    $("gCount").textContent = photos.length + (photos.length === 1 ? " photo" : " photos");
+    $("gGrid").innerHTML = photos.length ? photos.map((p) =>
+      '<div class="ph"><img loading="lazy" src="' + esc(p.thumb) + '" alt="Gallery photo ' + esc(p.id) + '">' +
+      '<div><code>' + esc(p.id) + '</code><button type="button" data-del="' + esc(p.id) + '">Delete</button></div></div>'
+    ).join("") : '<div class="empty">No photos yet.</div>';
+  }
+  document.querySelector('[data-tab="galleryPanel"]').addEventListener("click", () => { if (!galleryLoaded) loadGallery("Loading photos"); });
+  $("gRefresh").addEventListener("click", () => loadGallery("Refreshing"));
+
+  function compressPhoto(file) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, G_MAX_SIDE / Math.max(img.width, img.height));
+        const c = document.createElement("canvas");
+        c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+        const x = c.getContext("2d");
+        x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height);
+        x.drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        resolve(c.toDataURL("image/jpeg", G_QUALITY).split(",")[1]);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(); };
+      img.src = url;
+    });
+  }
+
+  $("gFiles").addEventListener("change", async () => {
+    const files = [...$("gFiles").files].filter((f) => /^image\//.test(f.type)).slice(0, G_BATCH);
+    $("gFiles").value = "";
+    if (!files.length) return;
+    let done = 0, failed = 0;
+    for (let i = 0; i < files.length; i++) {
+      let data;
+      try { data = await compressPhoto(files[i]); } catch (e) { failed++; continue; }
+      const out = await api({ action: "adminGalleryUpload", mimeType: "image/jpeg", data: data }, "Uploading " + (i + 1) + " of " + files.length);
+      if (out.ok) { photos.unshift(out.photo); done++; renderGallery(); } else failed++;
+    }
+    galleryLoaded = true;
+    toast(done + " uploaded" + (failed ? ", " + failed + " failed" : ""));
+  });
+
+  $("gGrid").addEventListener("click", async (e) => {
+    const btn = e.target.closest("[data-del]"); if (!btn) return;
+    const id = btn.dataset.del;
+    if (!confirm("Delete photo " + id + " from the gallery?")) return;
+    const out = await api({ action: "adminGalleryDelete", photoId: id }, "Deleting " + id);
+    if (!out.ok) { toast((out.errors || ["Delete failed"])[0]); return; }
+    photos = photos.filter((p) => p.id !== id); renderGallery();
+    toast(id + " deleted");
   });
 
   // ---------- Stay logged in while this tab is open ----------
