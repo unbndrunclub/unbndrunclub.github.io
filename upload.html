@@ -219,15 +219,15 @@
         <p class="card-sub" style="margin-top:18px">Use the screenshot of the successful payment from your UPI app.</p>
         <form id="upForm" novalidate>
           <p class="upfor" id="upFor" hidden></p>
-          <div class="row" id="idRow">
-            <div class="field" data-f="clubId">
-              <label class="lbl" for="clubId">Club ID</label>
-              <input id="clubId" type="text" maxlength="6" autocapitalize="characters" autocomplete="off" placeholder="UB0001">
+          <div class="row single" id="idRow">
+            <div class="field" data-f="phone">
+              <label class="lbl" for="phone">Registered mobile number</label>
+              <input id="phone" type="tel" inputmode="numeric" maxlength="10" autocomplete="tel-national" placeholder="10 digits">
               <p class="err"></p>
             </div>
-            <div class="field" data-f="phone">
-              <label class="lbl" for="phone">Registered mobile</label>
-              <input id="phone" type="tel" inputmode="numeric" maxlength="10" autocomplete="tel-national" placeholder="10 digits">
+            <div class="field" data-f="email" id="emailField" hidden>
+              <label class="lbl" for="email">Registered email</label>
+              <input id="email" type="email" maxlength="100" autocapitalize="none" autocomplete="email">
               <p class="err"></p>
             </div>
           </div>
@@ -249,7 +249,7 @@
   <div class="card success" id="doneCard" hidden aria-live="polite">
     <div class="tick" aria-hidden="true">✓</div>
     <h2 class="card-title">Screenshot received</h2>
-    <p>Thank you. We'll check your payment and activate your membership soon. You'll get an email when your membership is active.</p>
+    <p>Thank you. We'll check your payment and activate your membership soon. You'll get an email with your UNBND Club ID once it's active.</p>
     <p class="hint">Can't find our emails? Check your spam or promotions folder.</p>
     <a class="btn pink" href="index.html">Back to home</a>
   </div>
@@ -303,46 +303,29 @@
     $("busy").hidden = !on;
     if (text) $("busyText").textContent = text;
   }
-  const ID_RE = /^UB\d{4}$/;
   const mobile = /^[6-9]\d{9}$/;
+  const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 
-  // Values we already know are sent in the background; their boxes are hidden
-  // and summarised in one line instead.
-  function knownFields(clubId, phone) {
-    $("clubId").closest(".field").hidden = true;
-    if (phone) $("idRow").hidden = true;          // nothing to type: phone goes in the background
-    else $("idRow").classList.add("single");      // only if the phone is genuinely unknown
-    $("upFor").innerHTML = "Uploading for <b>" + clubId + "</b>";
-    $("upFor").hidden = false;
-  }
-
-  // ---- Member details from the email link or the registration tab ----
+  // ---- Who is uploading: a registration ref (from registration or email links),
+  // an older email link (id + phone), or the member types their registered mobile ----
   const params = new URLSearchParams(location.search);
-  const urlId = (params.get("id") || "").toUpperCase().trim();
-  const urlPhone = /^[6-9]\d{9}$/.test(params.get("p") || "") ? params.get("p") : "";
   let session = {};
   try { session = JSON.parse(sessionStorage.getItem("unbnd_member") || "{}"); } catch (e) {}
-
-  if (ID_RE.test(urlId)) {
-    $("clubId").value = urlId;
-    const knownPhone = urlPhone ||
-      (session.clubId === urlId && mobile.test(session.phone || "") ? session.phone : "");
-    if (knownPhone) $("phone").value = knownPhone;
-    knownFields(urlId, knownPhone);
-    $("payLink").href = "pay.html?id=" + encodeURIComponent(urlId) + (knownPhone ? "&p=" + knownPhone : "");
+  const REF = /^[a-f0-9]{12}$/.test(params.get("r") || "") ? params.get("r") : (/^[a-f0-9]{12}$/.test(session.ref || "") ? session.ref : "");
+  const LEGACY_ID = /^UB\d{4}$/i.test(params.get("id") || "") ? params.get("id").toUpperCase() : "";
+  const LEGACY_PHONE = mobile.test(params.get("p") || "") ? params.get("p") : "";
+  if (REF || LEGACY_PHONE) {
+    $("idRow").hidden = true;
+    $("upFor").textContent = "Uploading for your registration.";
+    $("upFor").hidden = false;
+    if (LEGACY_PHONE) $("phone").value = LEGACY_PHONE;
   }
+  $("payLink").href = "pay.html" + (REF ? "?r=" + REF : LEGACY_PHONE ? "?id=" + LEGACY_ID + "&p=" + LEGACY_PHONE : "");
 
   // ---- Strict input filters ----
   function filter(el, fn) {
     el.addEventListener("input", () => { const n = fn(el.value); if (n !== el.value) el.value = n; });
   }
-  // Club ID: always "UB" + up to 4 digits. Typing just the digits works too.
-  filter($("clubId"), (v) => {
-    const up = v.toUpperCase();
-    const digits = up.replace(/\D/g, "").slice(0, 4);
-    if (digits) return "UB" + digits;
-    return up.startsWith("UB") ? "UB" : up.startsWith("U") ? "U" : "";
-  });
   filter($("phone"), (v) => {
     let d = v.replace(/\D/g, "");
     if (d.length === 12 && d.startsWith("91")) d = d.slice(2);
@@ -405,10 +388,11 @@
   $("upForm").addEventListener("submit", async (ev) => {
     ev.preventDefault();
     summary([]);
-    const id = $("clubId").value.trim(), ph = $("phone").value.trim();
+    const ph = $("phone").value.trim(), em = $("email").value.trim();
+    const needFields = !REF && !LEGACY_PHONE;
     let bad = false;
-    if (!ID_RE.test(id)) { setErr("clubId", "Enter your Club ID, like UB0001."); bad = true; } else setErr("clubId", "");
-    if (!mobile.test(ph)) { setErr("phone", "Enter the 10-digit number you registered with."); bad = true; } else setErr("phone", "");
+    if (needFields && !mobile.test(ph)) { setErr("phone", "Enter the 10-digit mobile number you registered with."); bad = true; } else setErr("phone", "");
+    if (needFields && !$("emailField").hidden && !EMAIL_RE.test(em)) { setErr("email", "Enter the email you registered with."); bad = true; } else setErr("email", "");
     if (!imageData) { $("fileBox").classList.add("invalid"); $("fileErr").textContent = "Choose your payment screenshot."; bad = true; }
     if (bad) return;
 
@@ -416,8 +400,15 @@
     btn.disabled = true;
     busy(true, "Uploading screenshot");
     try {
-      const { out } = await callApi({ action: "uploadProof", clubId: id, phone: ph, mimeType: imageData.mimeType, data: imageData.base64 }, 1);
-      if (!out.ok) { summary(out.errors || ["Upload failed. Please try again."]); return; }
+      const { out } = await callApi({
+        action: "uploadProof", ref: REF, clubId: LEGACY_ID, phone: ph, email: em,
+        mimeType: imageData.mimeType, data: imageData.base64,
+      }, 1);
+      if (!out.ok) {
+        if (out.needEmail) { $("idRow").hidden = false; $("emailField").hidden = false; }
+        summary(out.errors || ["Upload failed. Please try again."]);
+        return;
+      }
       $("payCard").hidden = true;
       $("doneCard").hidden = false;
       window.scrollTo({ top: 0 });
@@ -428,6 +419,7 @@
       btn.disabled = false;
     }
   });
+
 </script>
 </body>
 </html>
