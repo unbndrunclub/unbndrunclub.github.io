@@ -193,6 +193,55 @@
   .ghostbtn { border: 1.5px solid var(--black); background: var(--white); border-radius: 14px; padding: 15px; font: 700 1.1rem/1 "Barlow Condensed", sans-serif; cursor: pointer; }
   .toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom,0px) + 20px); transform: translateX(-50%); background: var(--black); color: var(--white); padding: 12px 18px; border-radius: 12px; z-index: 60; font-weight: 600; max-width: 90vw; }
   .login { max-width: 380px; margin: 40px auto; }
+  /* Notes editing + paid column */
+  .ncell { display: flex; gap: 8px; align-items: flex-start; justify-content: space-between; }
+  .ncell span { white-space: pre-line; flex: 1; }
+  .pen { border: 0; background: none; cursor: pointer; font-size: 1rem; line-height: 1; padding: 2px 4px; border-radius: 6px; color: var(--muted); }
+  .pen:hover, .pen:focus-visible { background: rgba(0,0,0,.06); color: var(--black); }
+  .nedit { display: flex; gap: 6px; align-items: flex-start; }
+  .nedit textarea { flex: 1; min-width: 200px; font: inherit; font-size: .82rem; border: 1.5px solid var(--black); border-radius: 8px; padding: 6px 8px; min-height: 54px; background: #fff; }
+  .tick, .cross { border: 0; border-radius: 8px; width: 32px; height: 32px; cursor: pointer; font-size: 1.05rem; font-weight: 700; flex: none; }
+  .tick { background: #0d7a45; color: #fff; }
+  .cross { background: #e9e9ec; color: #333; }
+  td.paid { text-align: center; font-weight: 800; font-size: 1rem; color: #0d7a45; }
+  /* Races */
+  .subseg { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+  .subseg button { border: 1.5px solid var(--black); background: var(--white); border-radius: 999px; padding: 8px 14px; font: 700 .95rem/1 "Barlow Condensed", sans-serif; cursor: pointer; }
+  .subseg button[aria-pressed="true"] { background: var(--black); color: var(--pink); }
+  .rcard { background: var(--white); border-radius: 18px; padding: 16px 18px 20px; max-width: 720px; }
+  .rcard .row { gap: 10px; }
+  .rcard textarea { width: 100%; font: inherit; border: 1.5px solid transparent; border-radius: 12px; padding: 12px 14px; min-height: 110px; background: var(--paper); }
+  .rcard textarea:focus { background: var(--white); border-color: var(--black); outline: none; }
+  .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .free { background: #eaf8ef; color: #0b5e36; border-radius: 12px; padding: 12px 14px; font-weight: 600; margin-top: 16px; }
+  .daytag { font-weight: 600; color: var(--muted); font-size: .9rem; margin-top: 6px; }
+  .pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; margin-top: 8px; }
+  .pgrid label { position: relative; cursor: pointer; border-radius: 10px; overflow: hidden; border: 3px solid transparent; }
+  .pgrid input { position: absolute; opacity: 0; }
+  .pgrid img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--paper); }
+  .pgrid span { position: absolute; left: 4px; bottom: 4px; background: rgba(0,0,0,.7); color: #fff; font: 700 .75rem "Barlow Condensed", sans-serif; padding: 2px 6px; border-radius: 6px; }
+  .pgrid input:checked + img { outline: 3px solid var(--pink); outline-offset: -3px; }
+  .pgrid label:has(input:checked) { border-color: var(--pink); }
+  .pgrid input:focus-visible + img { outline: 3px solid var(--black); outline-offset: -3px; }
+  .idload { display: flex; gap: 8px; align-items: stretch; max-width: 420px; }
+  .idload .idinput { flex: 1; display: flex; border: 2px solid var(--black); border-radius: 12px; overflow: hidden; }
+  .idload .idinput b { background: var(--black); color: var(--pink); font: italic 800 1.6rem/1 "Barlow Condensed", sans-serif; padding: 8px 12px; display: grid; place-items: center; }
+  .idload .idinput input { border: 0; border-radius: 0; font: 800 1.6rem/1 "Barlow Condensed", sans-serif; letter-spacing: .06em; background: var(--white); padding: 6px 12px; }
+  .idload .btn { width: auto; margin: 0; padding: 0 18px; }
+  .rsum { background: var(--paper); border-radius: 12px; padding: 12px 14px; margin-top: 14px; }
+  .rsum b { font: 700 1.2rem "Barlow Condensed", sans-serif; }
+  .ulist { display: grid; gap: 8px; margin-bottom: 16px; max-width: 720px; }
+  .uitem { background: var(--white); border-radius: 12px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .uitem code { font: 800 1.05rem "Barlow Condensed", sans-serif; }
+  .uitem small { color: var(--muted); }
+  .note-exp { color: var(--muted); font-size: .9rem; margin: 0 0 12px; }
+  .danger { background: #c0001f !important; color: #fff !important; }
+  .rcard input[type="date"], .rcard input[type="time"], .rcard input[type="url"] {
+    width: 100%; font: inherit; color: var(--black); background: var(--paper); border: 1.5px solid transparent;
+    border-radius: 12px; padding: 12px 14px; min-height: 48px; -webkit-appearance: none; appearance: none;
+  }
+  .rcard input[type="date"]:focus, .rcard input[type="time"]:focus, .rcard input[type="url"]:focus { background: var(--white); border-color: var(--black); outline: none; }
+  @media (max-width: 480px) { .row3 { grid-template-columns: 1fr 1fr; } }
   /* Gallery */
   .upbox { display: block; background: var(--white); border: 2px dashed var(--line); border-radius: 16px; padding: 22px 16px; text-align: center; cursor: pointer; }
   .upbox:focus-within { outline: 3px solid var(--pink); outline-offset: 2px; }
@@ -262,7 +311,57 @@
 
   <section class="panel" id="racePanel" hidden>
     <h2 class="sec">Manage Races</h2>
-    <div class="soon">Coming next.</div>
+    <p class="note-exp">Expired races are removed from the race schedule automatically after race day.</p>
+    <div class="subseg" role="group" aria-label="Race actions">
+      <button type="button" data-rmode="post" aria-pressed="true">Post a race</button>
+      <button type="button" data-rmode="edit" aria-pressed="false">Edit a race</button>
+      <button type="button" data-rmode="delete" aria-pressed="false">Delete a race</button>
+    </div>
+
+    <div id="upcoming" class="ulist"></div>
+
+    <!-- Load by Race ID (edit + delete) -->
+    <form class="rcard" id="loadBox" hidden novalidate style="margin-bottom:12px">
+      <label class="lbl" for="loadDigits">Race ID</label>
+      <div class="idload">
+        <div class="idinput"><b>RC</b><input id="loadDigits" type="text" inputmode="numeric" maxlength="3" placeholder="001" autocomplete="off"></div>
+        <button class="btn" id="loadBtn" type="submit">Load</button>
+      </div>
+      <div id="delSummary"></div>
+    </form>
+
+    <!-- Post / edit form -->
+    <form class="rcard" id="raceForm" novalidate>
+      <h3 class="card-title" id="rfTitle" style="font-size:1.6rem;margin:6px 0 0">Post a race</h3>
+      <div class="field"><label class="lbl" for="rName">Race name</label><input id="rName" type="text" maxlength="60" placeholder="e.g. Sunday Sunrise 10K"></div>
+      <div class="row">
+        <div class="field"><label class="lbl" for="rDate">Date</label><input id="rDate" type="date"><p class="daytag" id="rDay"></p></div>
+        <div class="field"><label class="lbl" for="rTime">Reporting time</label><input id="rTime" type="time"></div>
+      </div>
+      <div class="row3">
+        <div class="field"><label class="lbl" for="rHours">Duration (hours)</label><input id="rHours" type="number" min="0" max="12" inputmode="numeric" placeholder="1"></div>
+        <div class="field"><label class="lbl" for="rMinutes">Duration (minutes)</label><input id="rMinutes" type="number" min="0" max="59" inputmode="numeric" placeholder="30"></div>
+        <div class="field"><label class="lbl" for="rDistance">Distance (km) <span class="optional">optional</span></label><input id="rDistance" type="number" min="0" step="0.1" inputmode="decimal" placeholder="10"></div>
+      </div>
+      <div class="field"><label class="lbl" for="rStart">Starting location</label><input id="rStart" type="text" maxlength="100" placeholder="e.g. Carter Road Promenade, Bandra West"></div>
+      <div class="field"><label class="lbl" for="rLandmark">Landmark <span class="optional">optional</span></label><input id="rLandmark" type="text" maxlength="100" placeholder="e.g. Near the amphitheatre"></div>
+      <div class="field"><label class="lbl" for="rMap">Google Maps link <span class="optional">optional</span></label><input id="rMap" type="url" placeholder="https://maps.app.goo.gl/..."></div>
+      <div class="row">
+        <div class="field"><label class="lbl" for="rMinAge">Minimum age <span class="optional">optional</span></label><input id="rMinAge" type="number" min="1" max="100" inputmode="numeric" placeholder="No limit"></div>
+        <div class="field"><label class="lbl" for="rMaxAge">Maximum age <span class="optional">optional</span></label><input id="rMaxAge" type="number" min="1" max="100" inputmode="numeric" placeholder="No limit"></div>
+      </div>
+      <p class="free">Free for all members with an active Club ID.</p>
+      <div class="field">
+        <label class="lbl" for="rGoodies">Goodies and awards <span class="optional">optional</span></label>
+        <textarea id="rGoodies" maxlength="1000" placeholder="Start a line with - to make it a bullet point&#10;- Finisher medal&#10;- Breakfast after the run"></textarea>
+      </div>
+      <div class="field">
+        <label class="lbl">Cover photo <span class="optional">optional</span></label>
+        <div class="pgrid" id="rPhotos"></div>
+      </div>
+      <div class="summary" id="rErr" role="alert"></div>
+      <button class="btn" id="rSubmit" type="submit">Post race</button>
+    </form>
   </section>
 
   <section class="panel" id="galleryPanel" hidden>
@@ -372,14 +471,15 @@
   $("search").addEventListener("input", render);
   $("filter").addEventListener("change", render);
   setInterval(async () => {
-    if (!passcode || document.hidden || !$("modal").hidden) return;
+    if (!passcode || document.hidden || !$("modal").hidden || editingK !== -1) return;
     const out = await api({ action: "adminList" });
-    if (out.ok && $("modal").hidden) setData(out);
+    if (out.ok && $("modal").hidden && editingK === -1) setData(out);
   }, 60000);
 
   const iOf = (name) => headers.indexOf(name);
+  let editingK = -1;
   function render() {
-    const iStatus = iOf("Membership status"), iNotes = iOf("Admin notes");
+    const iStatus = iOf("Membership status"), iNotes = iOf("Admin notes"), iPay = iOf("Payment screenshot");
     const q = $("search").value.trim().toLowerCase();
     const f = $("filter").value;
     const counts = { Pending: 0, Active: 0, Deactivated: 0 };
@@ -387,24 +487,53 @@
     $("counts").innerHTML = "<span>Total " + rows.length + "</span>" +
       Object.keys(counts).map((k) => "<span>" + k + " " + counts[k] + "</span>").join("");
 
-    let h = '<thead><tr><th class="act">Action</th>' + headers.map((x) => "<th>" + esc(x) + "</th>").join("") + "</tr></thead><tbody>";
+    let h = '<thead><tr><th class="act">Action</th><th title="Paid and active">₹</th>' + headers.map((x) => "<th>" + esc(x) + "</th>").join("") + "</tr></thead><tbody>";
     let shown = 0;
     rows.forEach((r, k) => {
       const st = r[iStatus];
       if ((f && st !== f) || (q && !r.join(" ").toLowerCase().includes(q))) return;
       shown++;
       const activate = st !== "Active";
+      const paid = st === "Active" && r[iPay] === "Yes";
       h += '<tr class="' + esc(st) + '" data-k="' + k + '"><td class="act"><button type="button" class="tog ' + (activate ? "on" : "off") + '">' +
-        (activate ? "Activate" : "Deactivate") + "</button></td>";
+        (activate ? "Activate" : "Deactivate") + '</button></td><td class="paid">' + (paid ? "₹" : "") + "</td>";
       r.forEach((v, i) => {
-        if (i === iNotes) h += v ? '<td class="notes">' + esc(v) + "</td>" : '<td class="notes muted">No admin remarks</td>';
+        if (i === iNotes) h += '<td class="notes">' + notesCell(k, v) + "</td>";
         else h += "<td>" + (v === "" ? "" : esc(v)) + "</td>";
       });
       h += "</tr>";
     });
-    if (!shown) h += '<tr><td class="act muted" colspan="' + (headers.length + 1) + '">No matching registrations</td></tr>';
+    if (!shown) h += '<tr><td class="act muted" colspan="' + (headers.length + 2) + '">No matching registrations</td></tr>';
     $("table").innerHTML = h + "</tbody>";
   }
+  function notesCell(k, v) {
+    if (k === editingK) {
+      return '<div class="nedit"><textarea aria-label="Edit admin notes" maxlength="1000">' + esc(v) + '</textarea>' +
+        '<button type="button" class="tick" title="Save" aria-label="Save notes">✓</button>' +
+        '<button type="button" class="cross" title="Cancel" aria-label="Cancel">✕</button></div>';
+    }
+    return '<div class="ncell"><span' + (v ? "" : ' class="muted" style="font-style:italic;color:var(--muted)"') + ">" +
+      (v ? esc(v) : "No admin remarks") + '</span><button type="button" class="pen" title="Edit notes" aria-label="Edit notes">✎</button></div>';
+  }
+  $("table").addEventListener("click", async (e) => {
+    const tr = e.target.closest("tr[data-k]"); if (!tr) return;
+    const k = Number(tr.dataset.k);
+    if (e.target.closest(".pen")) {
+      editingK = k; render();
+      const ta = $("table").querySelector('tr[data-k="' + k + '"] textarea');
+      if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+      return;
+    }
+    if (e.target.closest(".cross")) { editingK = -1; render(); return; }
+    if (e.target.closest(".tick")) {
+      const val = tr.querySelector(".nedit textarea").value;
+      const out = await api({ action: "adminNotes", ref: refs[k], notes: val }, "Saving notes");
+      if (!out.ok) { toast((out.errors || ["Couldn't save notes"])[0]); return; }
+      rows[k] = out.row; editingK = -1; render();
+      const fresh = $("table").querySelector('tr[data-k="' + k + '"]'); if (fresh) fresh.classList.add("flash");
+      toast("Notes saved");
+    }
+  });
 
   // Toggle: opens a small confirm box with an optional note
   let pending = null;
@@ -458,7 +587,7 @@
   async function loadGallery(busyText) {
     const out = await api({ action: "adminGalleryList" }, busyText);
     if (!out.ok) { toast((out.errors || ["Couldn't load photos"])[0]); return; }
-    photos = out.photos; galleryLoaded = true; renderGallery();
+    photos = out.photos; galleryLoaded = true; renderGallery(); if (typeof renderPhotoPicker === 'function') renderPhotoPicker();
   }
   function renderGallery() {
     $("gCount").textContent = photos.length + (photos.length === 1 ? " photo" : " photos");
@@ -513,6 +642,135 @@
     photos = photos.filter((p) => p.id !== id); renderGallery();
     toast(id + " deleted");
   });
+
+
+  // ---------- Manage Races ----------
+  let rmode = "post", editingRace = "", racesLoaded = false;
+  const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const rf = (id) => $(id);
+
+  function setMode(m) {
+    rmode = m; editingRace = "";
+    document.querySelectorAll("[data-rmode]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.rmode === m)));
+    $("loadBox").hidden = m === "post";
+    $("raceForm").hidden = m !== "post";
+    $("delSummary").innerHTML = "";
+    $("loadDigits").value = "";
+    $("rErr").innerHTML = "";
+    if (m === "post") fillForm(null);
+  }
+  document.querySelectorAll("[data-rmode]").forEach((b) => b.addEventListener("click", () => setMode(b.dataset.rmode)));
+
+  async function loadRacesTab() {
+    const [list] = await Promise.all([
+      api({ action: "adminRaceList" }, "Loading races"),
+      galleryLoaded ? Promise.resolve() : loadGallery(),
+    ]);
+    racesLoaded = true;
+    renderUpcoming(list.ok ? list.races : []);
+    renderPhotoPicker();
+  }
+  document.querySelector('[data-tab="racePanel"]').addEventListener("click", () => { if (!racesLoaded) loadRacesTab(); });
+
+  function renderUpcoming(list) {
+    $("upcoming").innerHTML = list.length
+      ? "<b style='font:700 1.1rem Barlow Condensed,sans-serif'>Upcoming races</b>" + list.map((r) =>
+        '<div class="uitem"><div><code>' + esc(r.id) + "</code> " + esc(r.name) + "<br><small>" + esc(r.day) + ", " + fmtDate(r.date) + " · " + esc(r.time) + "</small></div>" +
+        '<div style="display:flex;gap:6px"><button class="linkbtn" style="color:var(--black);border-color:var(--line)" type="button" data-quick="edit" data-id="' + esc(r.id) + '">Edit</button>' +
+        '<button class="linkbtn" style="color:#9c0019;border-color:#f3c3ca" type="button" data-quick="delete" data-id="' + esc(r.id) + '">Delete</button></div></div>').join("")
+      : '<div class="empty">No upcoming races yet.</div>';
+  }
+  $("upcoming").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-quick]"); if (!b) return;
+    setMode(b.dataset.quick);
+    $("loadDigits").value = b.dataset.id.replace(/^RC/, "");
+    loadRace();
+  });
+
+  function fmtDate(iso) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || "")) return iso || "";
+    const [y, m, d] = iso.split("-").map(Number);
+    return d + " " + ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][m - 1] + " " + y;
+  }
+  function showDay() {
+    const v = rf("rDate").value;
+    if (!v) { $("rDay").textContent = ""; return; }
+    const [y, m, d] = v.split("-").map(Number);
+    $("rDay").textContent = DAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
+  }
+  rf("rDate").addEventListener("input", showDay);
+
+  function renderPhotoPicker(selected) {
+    const sel = selected !== undefined ? selected : ((document.querySelector('input[name="rPhoto"]:checked') || {}).value || "");
+    $("rPhotos").innerHTML = '<label><input type="radio" name="rPhoto" value=""' + (sel ? "" : " checked") +
+      '><img alt="No photo" src="data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%224%22 height=%223%22><rect width=%224%22 height=%223%22 fill=%22%23000%22/></svg>"><span>No photo</span></label>' +
+      photos.map((p) => '<label><input type="radio" name="rPhoto" value="' + esc(p.id) + '"' + (p.id === sel ? " checked" : "") +
+        '><img loading="lazy" src="' + esc(p.thumb) + '" alt="Photo ' + esc(p.id) + '"><span>' + esc(p.id) + "</span></label>").join("");
+  }
+
+  function fillForm(r) {
+    const v = r || {};
+    rf("rName").value = v.name || ""; rf("rDate").value = v.date || ""; rf("rTime").value = v.time || "";
+    rf("rHours").value = v.hours || ""; rf("rMinutes").value = v.minutes || ""; rf("rDistance").value = v.distance || "";
+    rf("rStart").value = v.start || ""; rf("rLandmark").value = v.landmark || ""; rf("rMap").value = v.map || "";
+    rf("rMinAge").value = v.minAge || ""; rf("rMaxAge").value = v.maxAge || ""; rf("rGoodies").value = v.goodies || "";
+    showDay();
+    renderPhotoPicker(v.photoId || "");
+    $("rfTitle").textContent = r ? "Edit " + r.id : "Post a race";
+    $("rSubmit").textContent = r ? "Save changes" : "Post race";
+  }
+
+  $("loadBox").addEventListener("submit", (e) => { e.preventDefault(); loadRace(); });
+  $("loadDigits").addEventListener("input", (e) => { e.target.value = e.target.value.replace(/\D/g, "").slice(0, 3); });
+  async function loadRace() {
+    const d = $("loadDigits").value;
+    $("delSummary").innerHTML = "";
+    if (!/^\d{1,3}$/.test(d)) { toast("Enter the Race ID digits"); return; }
+    const id = "RC" + d.padStart(3, "0");
+    const out = await api({ action: "adminRaceGet", raceId: id }, "Loading " + id);
+    if (!out.ok) { toast((out.errors || ["Race not found"])[0]); $("raceForm").hidden = true; return; }
+    const r = out.race;
+    if (rmode === "edit") {
+      editingRace = r.id; fillForm(r); $("raceForm").hidden = false;
+      $("raceForm").scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      $("delSummary").innerHTML = '<div class="rsum"><b>' + esc(r.id) + " · " + esc(r.name) + "</b><br>" + esc(r.day) + ", " + fmtDate(r.date) +
+        " · reporting " + esc(r.time) + "<br>" + esc(r.start) + "</div>" +
+        '<button class="btn danger" id="delBtn" type="button">Delete ' + esc(r.id) + "</button>";
+      $("delBtn").addEventListener("click", async () => {
+        if (!confirm("Delete " + r.id + "? It will be removed from the race schedule.")) return;
+        const del = await api({ action: "adminRaceDelete", raceId: r.id }, "Deleting " + r.id);
+        if (!del.ok) { toast((del.errors || ["Delete failed"])[0]); return; }
+        toast(r.id + " deleted"); setMode("delete"); refreshUpcoming();
+      });
+    }
+  }
+  async function refreshUpcoming() {
+    const list = await api({ action: "adminRaceList" });
+    if (list.ok) renderUpcoming(list.races);
+  }
+
+  $("raceForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    $("rErr").innerHTML = "";
+    const race = {
+      id: rmode === "edit" ? editingRace : "",
+      name: rf("rName").value.trim(), date: rf("rDate").value, time: rf("rTime").value,
+      hours: rf("rHours").value, minutes: rf("rMinutes").value, distance: rf("rDistance").value,
+      start: rf("rStart").value.trim(), landmark: rf("rLandmark").value.trim(), map: rf("rMap").value.trim(),
+      minAge: rf("rMinAge").value, maxAge: rf("rMaxAge").value, goodies: rf("rGoodies").value,
+      photoId: (document.querySelector('input[name="rPhoto"]:checked') || {}).value || "",
+    };
+    const out = await api({ action: "adminRaceSave", race: race }, race.id ? "Saving " + race.id : "Posting race");
+    if (!out.ok) {
+      $("rErr").innerHTML = "<ul>" + (out.errors || ["Couldn't save the race"]).map((m) => "<li>" + esc(m) + "</li>").join("") + "</ul>";
+      return;
+    }
+    toast((race.id ? out.race.id + " updated" : out.race.id + " posted"));
+    if (!race.id) fillForm(null); else setMode("edit");
+    refreshUpcoming();
+  });
+  setMode("post");
 
   // ---------- Stay logged in while this tab is open ----------
   (async () => {
