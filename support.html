@@ -146,12 +146,20 @@
     @keyframes pin { from { transform: rotate(-4deg) scale(.94); opacity: 0; } to { transform: none; opacity: 1; } }
   }
 
-  .nav { position: relative; z-index: 3; max-width: 1080px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-  .nav img { width: 56px; height: 56px; display: block; }
+  .nav { position: relative; z-index: 3; max-width: 1080px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 10px 14px; flex-wrap: wrap; }
+  .nav .logo { display: block; flex: none; }
+  .nav img { width: 76px; height: 76px; display: block; }
   .nav .links { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
-  .nav .links a { color: var(--white); text-decoration: none; font: 700 1rem/1 "Barlow Condensed", sans-serif; padding: 9px 12px; border-radius: 999px; }
+  .nav .links a { color: var(--white); text-decoration: none; font: 700 1rem/1 "Barlow Condensed", sans-serif; padding: 9px 12px; border-radius: 999px; white-space: nowrap; }
   .nav .links a:hover, .nav .links a[aria-current="page"] { background: rgba(255,255,255,.14); }
   .nav .links a.cta { background: var(--pink); color: var(--black); }
+  @media (max-width: 560px) {
+    .nav img { width: 64px; height: 64px; }
+    .nav .links { width: 100%; justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; margin: 0 -4px; scrollbar-width: none; }
+    .nav .links::-webkit-scrollbar { display: none; }
+  }
+  /* Keep the logo and headline lined up with the cards on wide screens */
+  @media (min-width: 1110px) { .nav, .hero-inner, .home-hero .inner { padding-left: 14px; padding-right: 14px; } }
   .wide { max-width: 1080px; margin: 0 auto; }
   .facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
   .facts div { background: var(--paper); border-radius: 12px; padding: 10px 12px; }
@@ -165,7 +173,7 @@
   .countdown span { font-size: .75rem; color: rgba(255,255,255,.75); text-transform: uppercase; letter-spacing: .08em; }
   .livebadge { display: inline-block; background: var(--pink); color: var(--black); font: 700 1.1rem/1 "Barlow Condensed", sans-serif; padding: 10px 14px; border-radius: 999px; margin: 4px 0 16px; }
   .site-foot { background: var(--black); color: rgba(255,255,255,.75); padding: 28px 18px calc(env(safe-area-inset-bottom,0px) + 28px); margin-top: 40px; }
-  .site-foot .wide { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .site-foot .wide { padding: 0 14px; display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
   .site-foot a { color: var(--pink); font-weight: 700; text-decoration: none; }
 
   .hero { padding-bottom: 96px; }
@@ -183,9 +191,9 @@
 </head>
 <body>
 <section class="hero">
-  <nav class="nav">
-    <a href="index.html"><img src="logo.png" alt="UNBND Run Club home"></a>
-    <div class="links"><a href="index.html">Home</a><a href="races.html">Races</a><a href="support.html" aria-current="page">Support</a><a class="cta" href="register.html">Join</a></div>
+  <nav class="nav" aria-label="Site">
+    <a class="logo" href="index.html"><img src="logo.png" alt="UNBND Run Club home"></a>
+    <div class="links"><a href="index.html">Home</a><a href="races.html">Races</a><a href="rules.html">Club rules</a><a href="support.html" aria-current="page">Support</a><a class="cta" href="register.html">Join</a></div>
   </nav>
   <div class="hero-inner">
     <h1>Contact<br>support</h1>
@@ -220,7 +228,8 @@
   </section>
 </main>
 
-<footer class="site-foot"><div class="wide"><span>UNBND Run Club</span><span>Follow us on Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></span></div></footer>
+<footer class="site-foot"><div class="wide"><span>&copy; <span class="yr">2026</span> UNBND Run Club. All rights reserved.</span><span>Follow us on Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></span></div></footer>
+<script>document.querySelectorAll(".yr").forEach(function (e) { e.textContent = new Date().getFullYear(); });</script>
 
 <script>
   const API_URL = "https://script.google.com/macros/s/AKfycbzbZCKBa3tIQuXVny1OIx8zpiELks2FqMlwbj6GoEckWIxiJZ-YT0oqfEPfymbl80gG/exec";
