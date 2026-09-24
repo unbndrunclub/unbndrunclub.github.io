@@ -6,7 +6,13 @@
 <title>Support | UNBND Run Club</title>
 <meta name="description" content="Contact UNBND Run Club about registration, payment or races.">
 <link rel="icon" href="logo.png">
-<link rel="apple-touch-icon" href="logo.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="UNBND">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script src="site.js" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
@@ -276,7 +282,50 @@
     } catch (e) { return { ok: false, errors: [e.name === "AbortError" ? "This is taking too long. Please try again." : "We couldn't reach the server. Check your internet and try again."] }; }
     finally { clearTimeout(timer); }
   }
-  async function fetchRaces() { const out = await post({ action: "races" }); return out.ok ? out.races : null; }
+  // ---- Races load from the website itself (data/races.json), fast ----
+  // A remembered copy shows instantly; the latest file is fetched in the background.
+  const todayIST = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date());
+  const upcoming = (list) => (list || []).filter((r) => r.date >= todayIST())
+    .sort((a, b) => (a.date + a.time < b.date + b.time ? -1 : 1));
+  async function fetchLatest() {
+    try {
+      const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), 12000);
+      const res = await fetch("data/races.json?t=" + Date.now(), { cache: "no-store", signal: ctrl.signal });
+      clearTimeout(timer);
+      if (res.ok) return (await res.json()).races || [];
+    } catch (e) { /* fall back below */ }
+    const out = await post({ action: "races" }); // backup route through the backend
+    return out.ok ? out.races : null;
+  }
+  async function loadRaces(render) {
+    let shown = null;
+    try { shown = JSON.parse(localStorage.getItem("unbnd_races") || "null"); } catch (e) {}
+    if (shown) render(upcoming(shown));
+    const latest = await fetchLatest();
+    if (latest === null) { if (!shown) render(null); return; }
+    try { localStorage.setItem("unbnd_races", JSON.stringify(latest)); } catch (e) {}
+    if (JSON.stringify(latest) !== JSON.stringify(shown)) render(upcoming(latest));
+  }
+  // ---- Messages waiting to be sent (contact form), retried on every visit ----
+  function outbox() { try { return JSON.parse(localStorage.getItem("unbnd_outbox") || "[]"); } catch (e) { return []; } }
+  function saveOutbox(list) { try { localStorage.setItem("unbnd_outbox", JSON.stringify(list)); } catch (e) {} }
+  let sending = false;
+  async function sendOutbox() {
+    if (sending) return; sending = true;
+    try {
+      for (const m of outbox()) {
+        let out;
+        try {
+          const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(m), keepalive: true });
+          out = JSON.parse(await res.text());
+        } catch (e) { break; } // offline or slow: try again next visit
+        saveOutbox(outbox().filter((x) => x.id !== m.id)); // sent, or rejected by the server: stop retrying
+      }
+    } finally { sending = false; }
+  }
+  if (outbox().length) setTimeout(sendOutbox, 1500);
+  let ticking = false;
+  function startTicking() { tickCountdowns(); if (!ticking) { ticking = true; setInterval(tickCountdowns, 1000); } }
 
   // ---- Contact support ----
   const NAME_RE = /^[A-Za-z]+(?:(?:\. ?|['\- ])[A-Za-z]+)*\.?$/;
@@ -306,12 +355,14 @@
     Object.keys(errs).forEach((k) => setErr(k, errs[k]));
     const first = Object.keys(errs).find((k) => errs[k]);
     if (first) { $(first).focus(); return; }
-    const btn = $("cBtn"); btn.disabled = true; btn.textContent = "Sending…";
-    const out = await post({ action: "contact", name: v("cName"), email: v("cEmail"), clubId: v("cId") ? "UB" + v("cId") : "",
-      phone: v("cPhone"), subject: v("cSubject"), message: v("cMsg"), website: v("cWebsite") }, 40000);
-    btn.disabled = false; btn.textContent = "Send query";
-    if (!out.ok) { $("cErr").innerHTML = "<ul>" + (out.errors || ["Something went wrong. Please try again."]).map((m) => "<li>" + esc(m) + "</li>").join("") + "</ul>"; return; }
+    // Instant: confirm on screen, then send in the background. If sending fails,
+    // the message is kept on this phone and retried next time the site is opened.
+    const msg = { id: Date.now() + "-" + Math.random().toString(36).slice(2, 8), action: "contact", name: v("cName"), email: v("cEmail"),
+      clubId: v("cId") ? "UB" + v("cId") : "", phone: v("cPhone"), subject: v("cSubject"), message: v("cMsg"), website: "" };
+    saveOutbox(outbox().concat([msg]));
     $("cForm").hidden = true; $("cSent").hidden = false;
+    window.scrollTo({ top: $("cSent").getBoundingClientRect().top + window.scrollY - 120, behavior: "smooth" });
+    sendOutbox();
   });
 </script>
 </body>
