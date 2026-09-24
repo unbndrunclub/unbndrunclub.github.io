@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Pay and activate membership | UNBND Run Club</title>
+<title>Upload payment screenshot | UNBND Run Club</title>
 <link rel="icon" href="logo.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -15,7 +15,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   :root {
     --black: #000000;
@@ -233,52 +232,17 @@
     <nav class="links" aria-label="Site"><a href="index.html">Home</a><a href="races.html">Races</a><a href="rules.html">Club rules</a><a href="support.html">Support</a><a class="cta" href="register.html">Join</a></nav>
   </div>
   <div class="hero-inner">
-    <h1>Activate<br>membership</h1>
-    <p class="tagline">Pay the fee and upload your screenshot. We'll check it, activate your membership and email you your Club ID.</p>
+    <h1>Upload<br>screenshot</h1>
+    <p class="tagline">Already paid? Upload your payment screenshot and we'll activate your membership after checking it.</p>
   </div>
 </section>
 
 <main>
   <div class="card" id="payCard">
-    <!-- Step 1 -->
-    <div class="step">
-      <div class="step-n" aria-hidden="true">1</div>
-      <div>
-        <h3>Pay the membership fee</h3>
-        <p class="amount">₹499</p>
-        <p><b>On your phone:</b> copy the UPI ID, open any UPI app (GPay, PhonePe, Paytm), choose <b>Pay to UPI ID</b>, and paste it.</p>
-        <div class="copyrow">
-          <b id="upiId"></b>
-          <button class="copy" type="button" data-copy="upiId">Copy</button>
-        </div>
-        <p class="hint">The payee name will show as <span id="payeeName"></span>.</p>
-
-        <div class="qrbox">
-          <div class="qr" id="qr" role="img" aria-label="UPI QR code"></div>
-          <div class="side">
-            <p style="margin:0"><b>On a computer:</b> scan this QR code with any UPI app.</p>
-            <p class="or">Paying on this phone? Save the QR, then scan it from your gallery in your UPI app.</p>
-            <button class="ghost" id="saveQr" type="button">Save QR code</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Step 2 -->
-    <div class="step">
-      <div class="step-n" aria-hidden="true">2</div>
-      <div>
-        <h3>Add your mobile number in the payment note</h3>
-        <p>If possible, please add your registered mobile number in the payment note. It helps us match your payment faster.</p>
-      </div>
-    </div>
-
     <!-- Step 3 -->
-    <div class="step">
-      <div class="step-n" aria-hidden="true">3</div>
+    <div>
       <div>
-        <h3>Upload your payment screenshot</h3>
-        <p>Take a screenshot of the successful payment in your UPI app and upload it here.</p>
+        <p class="card-sub" style="margin-top:18px">Use the screenshot of the successful payment from your UPI app.</p>
         <form id="upForm" novalidate>
           <p class="upfor" id="upFor" hidden></p>
           <div class="row single" id="idRow">
@@ -302,6 +266,7 @@
           <p class="err" id="fileErr"></p>
           <div class="summary" id="summary" role="alert"></div>
           <button class="btn" id="upBtn" type="submit">Upload payment screenshot</button>
+          <p class="hint" style="text-align:center;margin-top:14px">Haven't paid yet? <a href="pay.html" id="payLink" style="color:inherit;font-weight:600">See how to pay</a>.</p>
         </form>
       </div>
     </div>
@@ -332,8 +297,6 @@
 
   // Wake the backend while the page is being read/filled, so the real request is quick
   try { fetch(API_URL + "?warm=1", { mode: "no-cors", cache: "no-store" }).catch(() => {}); } catch (e) {}
-  const UPI_ID = "7289967411@ptaxis";
-  const PAYEE_NAME = "Mona Singh";
   const MAX_SIDE = 1280;       // screenshots are resized to this before upload
   const JPEG_QUALITY = 0.75;
 
@@ -389,90 +352,7 @@
     $("upFor").hidden = false;
     if (LEGACY_PHONE) $("phone").value = LEGACY_PHONE;
   }
-
-  // ---- UPI details ----
-  $("upiId").textContent = UPI_ID;
-  $("payeeName").textContent = PAYEE_NAME;
-
-  // ---- QR code: the same UPI details as her own QR ----
-  const upiUri = "upi://pay?pa=" + UPI_ID + "&cu=INR"; // @ left as-is: some UPI apps misread %40
-  let qrOk = false;
-  if (window.QRCode) {
-    new QRCode($("qr"), { text: upiUri, width: 300, height: 300, correctLevel: QRCode.CorrectLevel.M });
-    qrOk = true;
-  } else {
-    $("qr").textContent = "QR unavailable. Use the UPI ID above.";
-    $("saveQr").hidden = true;
-  }
-
-  // Builds a shareable image: QR + UPI ID + amount
-  function qrImageBlob() {
-    return new Promise((resolve) => {
-      const src = $("qr").querySelector("canvas");
-      const W = 600, H = 760, c = document.createElement("canvas");
-      c.width = W; c.height = H;
-      const x = c.getContext("2d");
-      x.fillStyle = "#000"; x.fillRect(0, 0, W, H);
-      x.fillStyle = "#fe90ae"; x.font = "italic 800 54px 'Barlow Condensed', Arial Narrow, sans-serif";
-      x.textAlign = "center"; x.fillText("UNBND RUN CLUB", W / 2, 80);
-      x.fillStyle = "#fff"; x.fillRect(90, 115, 420, 420);
-      x.drawImage(src, 110, 135, 380, 380);
-      x.fillStyle = "#fff"; x.font = "600 30px Barlow, Arial, sans-serif";
-      x.fillText(UPI_ID, W / 2, 600);
-      x.fillStyle = "#fe90ae"; x.font = "italic 800 64px 'Barlow Condensed', Arial Narrow, sans-serif";
-      x.fillText("₹499", W / 2, 690);
-      c.toBlob(resolve, "image/png");
-    });
-  }
-
-  $("saveQr").addEventListener("click", async () => {
-    if (!qrOk) return;
-    const blob = await qrImageBlob();
-    const file = new File([blob], "unbnd-upi-qr.png", { type: "image/png" });
-    // Phones: the share sheet offers "Save Image", which puts it in the gallery
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try { await navigator.share({ files: [file], title: "UNBND UPI QR" }); return; }
-      catch (e) { if (e.name === "AbortError") return; }
-    }
-    // Computers and older phones: a normal download
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob); a.download = "unbnd-upi-qr.png";
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-  });
-
-  // ---- Copy buttons ----
-
-  // Copies text in one tap. Uses the modern clipboard API, and falls back to the
-  // older method that works in in-app browsers (Gmail, WhatsApp, Instagram) and older iPhones.
-  async function copyText(text) {
-    try {
-      if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return true; }
-    } catch (e) { /* fall through */ }
-    const ta = document.createElement("textarea");
-    ta.value = text; ta.setAttribute("readonly", "");
-    ta.style.cssText = "position:fixed;top:0;left:0;opacity:0;font-size:16px";
-    document.body.appendChild(ta);
-    ta.focus(); ta.select(); ta.setSelectionRange(0, text.length);
-    let ok = false;
-    try { ok = document.execCommand("copy"); } catch (e) {}
-    ta.remove();
-    return ok;
-  }
-
-  document.querySelectorAll("[data-copy]").forEach((btn) => {
-    const label = btn.textContent;
-    btn.addEventListener("click", async () => {
-      const el = $(btn.dataset.copy);
-      const ok = await copyText(el.textContent.trim());
-      if (!ok) { // last resort: highlight the text so the member can copy it manually
-        const r = document.createRange(); r.selectNodeContents(el);
-        const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
-      }
-      btn.textContent = ok ? "Copied" : "Selected";
-      setTimeout(() => (btn.textContent = label), 2000);
-    });
-  });
+  $("payLink").href = "pay.html" + (REF ? "?r=" + REF : LEGACY_PHONE ? "?id=" + LEGACY_ID + "&p=" + LEGACY_PHONE : "");
 
   // ---- Strict input filters ----
   function filter(el, fn) {
