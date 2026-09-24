@@ -193,6 +193,39 @@
   .ghostbtn { border: 1.5px solid var(--black); background: var(--white); border-radius: 14px; padding: 15px; font: 700 1.1rem/1 "Barlow Condensed", sans-serif; cursor: pointer; }
   .toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom,0px) + 20px); transform: translateX(-50%); background: var(--black); color: var(--white); padding: 12px 18px; border-radius: 12px; z-index: 60; font-weight: 600; max-width: 90vw; }
   .login { max-width: 380px; margin: 40px auto; }
+  .login input[type="password"] { width: 100%; font: inherit; color: var(--black); background: var(--paper); border: 1.5px solid transparent; border-radius: 12px; padding: 13px 14px; }
+  .login input[type="password"]:focus { background: var(--white); border-color: var(--black); outline: none; }
+  /* Dashboard */
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+  .kpi { background: var(--white); border-radius: 16px; padding: 14px 16px; }
+  .kpi b { display: block; font: italic 800 2.4rem/1 "Barlow Condensed", sans-serif; }
+  .kpi span { color: var(--muted); font-size: .9rem; }
+  .kpi.hi { background: var(--black); color: var(--white); } .kpi.hi b { color: var(--pink); } .kpi.hi span { color: rgba(255,255,255,.75); }
+  .dgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-top: 14px; }
+  .dcard { background: var(--white); border-radius: 16px; padding: 14px 16px 16px; }
+  .dcard h3 { font: 700 1.2rem "Barlow Condensed", sans-serif; margin: 0 0 8px; padding-left: 10px; border-left: 4px solid var(--pink); }
+  .hb { display: grid; grid-template-columns: 110px 1fr 70px; gap: 8px; align-items: center; margin: 6px 0; font-size: .9rem; }
+  .hb .meter { display: block; background: var(--paper); height: 12px; border-radius: 6px; overflow: hidden; }
+  .hb .meter i { display: block; height: 100%; background: var(--black); border-radius: 6px; }
+  .hb .v { text-align: right; font-weight: 700; } .hb .v em { font-style: normal; color: var(--muted); font-weight: 400; }
+  .dtoggle { display: flex; gap: 6px; margin: 14px 0 0; flex-wrap: wrap; }
+  .dtoggle button { border: 1.5px solid var(--black); background: var(--white); border-radius: 999px; padding: 7px 14px; font: 700 .95rem "Barlow Condensed", sans-serif; cursor: pointer; }
+  .dtoggle button[aria-pressed="true"] { background: var(--black); color: var(--pink); }
+  /* Announcement */
+  .acard { background: var(--white); border-radius: 18px; padding: 16px 18px 20px; max-width: 720px; }
+  .acard textarea { width: 100%; font: inherit; border: 1.5px solid transparent; border-radius: 12px; padding: 12px 14px; min-height: 90px; background: var(--paper); }
+  .acard input[type="url"] { width: 100%; font: inherit; border: 1.5px solid transparent; border-radius: 12px; padding: 12px 14px; background: var(--paper); }
+  .acard textarea:focus, .acard input[type="url"]:focus { background: var(--white); border-color: var(--black); outline: none; }
+  .apreview { background: #fe90ae; color: #000; border-radius: 12px; padding: 10px 14px; margin-top: 12px; font-weight: 600; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .apreview b { font: italic 800 1rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; background: #000; color: #fe90ae; padding: 5px 8px; border-radius: 6px; }
+  .acount { text-align: right; color: var(--muted); font-size: .85rem; }
+  /* Menu after login */
+  .menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 16px; }
+  .menu button { font: inherit; color: var(--black); text-align: left; background: var(--white); border: 0; border-radius: 18px; padding: 20px 18px; cursor: pointer; box-shadow: 0 18px 40px -28px rgba(0,0,0,.4); }
+  .menu button b { display: block; font: italic 800 1.7rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .menu button span { display: block; color: var(--muted); margin-top: 6px; }
+  .menu button:focus-visible { outline: 3px solid var(--pink); outline-offset: 2px; }
+  .panel-loading { background: var(--white); border-radius: 14px; padding: 18px; color: var(--muted); }
   /* Notes editing + paid column */
   .ncell { display: flex; gap: 8px; align-items: flex-start; justify-content: space-between; }
   .ncell span { white-space: pre-line; flex: 1; }
@@ -318,12 +351,58 @@
 
 <div class="wrap" id="adminView" hidden>
   <div class="seg" role="tablist">
-    <button type="button" role="tab" aria-selected="true" data-tab="regPanel">Manage Registrations</button>
+    <button type="button" role="tab" aria-selected="false" data-tab="dashPanel">Dashboard</button>
+    <button type="button" role="tab" aria-selected="false" data-tab="regPanel">Manage Registrations</button>
     <button type="button" role="tab" aria-selected="false" data-tab="racePanel">Post or Manage Races</button>
     <button type="button" role="tab" aria-selected="false" data-tab="galleryPanel">Manage Gallery</button>
+    <button type="button" role="tab" aria-selected="false" data-tab="annPanel">Announcement</button>
   </div>
 
-  <section class="panel" id="regPanel">
+  <section class="panel" id="menuPanel">
+    <div class="menu">
+      <button type="button" data-go="dashPanel"><b>Dashboard</b><span>Member totals and breakdowns by age, experience and more.</span></button>
+      <button type="button" data-go="regPanel"><b>Manage Registrations</b><span>Activate or deactivate members, add notes, download Excel.</span></button>
+      <button type="button" data-go="racePanel"><b>Post or Manage Races</b><span>Post a new race, view, edit or delete races.</span></button>
+      <button type="button" data-go="galleryPanel"><b>Manage Gallery</b><span>Add, view or delete photos for race covers.</span></button>
+      <button type="button" data-go="annPanel"><b>Announcement</b><span>Show or clear a notice ribbon at the top of the website.</span></button>
+    </div>
+  </section>
+
+  <section class="panel" id="dashPanel" hidden>
+    <h2 class="sec">Dashboard</h2>
+    <div class="kpis" id="kpis"><div class="panel-loading">Loading…</div></div>
+    <div class="dtoggle" role="group" aria-label="Breakdown for">
+      <button type="button" data-dset="all" aria-pressed="true">All registrations</button>
+      <button type="button" data-dset="active" aria-pressed="false">Active members only</button>
+      <button type="button" id="dRefresh" style="margin-left:auto">Refresh</button>
+    </div>
+    <div class="dgrid" id="dgrid"></div>
+  </section>
+
+  <section class="panel" id="annPanel" hidden>
+    <h2 class="sec">Announcement</h2>
+    <p class="note-exp">Shows as a ribbon at the top of every page of the website, within about a minute of publishing.</p>
+    <form class="acard" id="annForm" novalidate>
+      <div class="field">
+        <label class="lbl" for="annText">Announcement text</label>
+        <textarea id="annText" maxlength="200" placeholder="e.g. Saturday's run moves to 10 PM because of rain. Same start point."></textarea>
+        <p class="acount" id="annCount">0 / 200</p>
+      </div>
+      <div class="field">
+        <label class="lbl" for="annLink">Link <span class="optional">optional</span></label>
+        <input id="annLink" type="url" placeholder="https://...">
+      </div>
+      <p class="lbl" style="margin:14px 0 0">Preview</p>
+      <div class="apreview" id="annPreview"><b>Announcement</b><span id="annPrevText">Nothing to show</span></div>
+      <p class="hint" id="annStatus" style="margin-top:10px"></p>
+      <div class="modal-actions" style="margin-top:16px">
+        <button class="ghostbtn" id="annClear" type="button">Clear announcement</button>
+        <button class="btn" id="annPublish" type="submit" style="margin:0">Publish</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel" id="regPanel" hidden>
     <h2 class="sec">Manage Registrations</h2>
     <div class="tools">
       <input id="search" type="text" placeholder="Search name, Club ID, phone, email">
@@ -342,6 +421,7 @@
 
   <section class="panel" id="racePanel" hidden>
     <h2 class="sec">Post or Manage Races</h2>
+    <p class="note-exp">Changes appear on the website within about a minute. <button class="linkbtn" id="pubBtn" type="button" style="color:var(--black);border-color:var(--line);margin-left:6px">Update website now</button></p>
     <div class="subseg" role="group" aria-label="Race sections">
       <button type="button" data-rmode="post" aria-pressed="true">Post a Race</button>
       <button type="button" data-rmode="manage" aria-pressed="false">Manage a Race</button>
@@ -413,7 +493,7 @@
     <label class="upbox">
       <input id="gFiles" type="file" accept="image/*" multiple>
       <b>Add photos</b>
-      <span>Choose up to 10 at a time. Photos are resized automatically for the website.</span>
+      <span>Choose up to 10 at a time. Photos are resized automatically and appear on the website within about a minute.</span>
     </label>
     <div class="ghead"><b id="gCount">Photos</b><button class="linkbtn" id="gRefresh" type="button" style="color:var(--black);border-color:var(--line)">Refresh</button></div>
     <div class="grid" id="gGrid"></div>
@@ -448,29 +528,54 @@
 
 <script>
   const API_URL = "https://script.google.com/macros/s/AKfycbzbZCKBa3tIQuXVny1OIx8zpiELks2FqMlwbj6GoEckWIxiJZ-YT0oqfEPfymbl80gG/exec";
+
+  // Wake the backend while the page is being read/filled, so the real request is quick
+  try { fetch(API_URL + "?warm=1", { mode: "no-cors", cache: "no-store" }).catch(() => {}); } catch (e) {}
   const $ = (id) => document.getElementById(id);
   const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   let passcode = "";
   let headers = [], rows = [], refs = [];
 
-  async function api(payload, busyText) {
+  // Reads can be retried safely; writes are sent once.
+  async function api(payload, busyText, opts) {
+    const o = Object.assign({ retries: 0, timeout: 40000 }, opts || {});
     if (busyText) { $("busyText").textContent = busyText; $("busy").hidden = false; }
     try {
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 40000);
-      const res = await fetch(API_URL, {
-        method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(Object.assign({ passcode: passcode }, payload)), signal: ctrl.signal,
-      });
-      clearTimeout(timer);
-      const out = JSON.parse(await res.text());
-      if (out.auth === false && !$("adminView").hidden) logout(out.errors && out.errors[0]);
-      return out;
-    } catch (e) {
-      return { ok: false, errors: [e.name === "AbortError" ? "This took too long. Please try again." : "Couldn't reach the server. Check your internet and try again."] };
+      for (let attempt = 0; ; attempt++) {
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), o.timeout);
+          const res = await fetch(API_URL, {
+            method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(Object.assign({ passcode: passcode }, payload)), signal: ctrl.signal,
+          });
+          clearTimeout(timer);
+          const out = JSON.parse(await res.text());
+          if (out.auth === false && !$("adminView").hidden) logout(out.errors && out.errors[0]);
+          return out;
+        } catch (e) {
+          if (attempt < o.retries) continue;
+          return { ok: false, errors: [e.name === "AbortError" ? "This took too long. Please try again." : "Couldn't reach the server. Check your internet and try again."] };
+        }
+      }
     } finally {
       if (busyText) $("busy").hidden = true;
     }
+  }
+  const READ = { retries: 1, timeout: 20000 };
+  const RAW = "https://raw.githubusercontent.com/unbndrunclub/unbndrunclub.github.io/main/";
+  const rawOf = (p) => !p ? "" : /^https?:/.test(p) ? p : RAW + p;
+  // Races and gallery load from the website files; right after a change, from the backend
+  // (the website takes about a minute to catch up).
+  let lastChange = 0;
+  const changedRecently = () => Date.now() - lastChange < 150000;
+  async function siteFile(path) {
+    try {
+      const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 10000);
+      const res = await fetch(path + "?t=" + Date.now(), { cache: "no-store", signal: ctrl.signal });
+      clearTimeout(t);
+      return res.ok ? await res.json() : null;
+    } catch (e) { return null; }
   }
   function toast(msg) {
     $("toast").textContent = msg; $("toast").hidden = false;
@@ -482,18 +587,18 @@
     e.preventDefault();
     passcode = $("pass").value;
     $("loginErr").textContent = "";
-    const out = await api({ action: "adminList" }, "Logging in");
+    const out = await api({ action: "adminLogin" }, "Logging in", READ);
     if (!out.ok) { passcode = ""; $("loginErr").textContent = (out.errors || ["Login failed."])[0]; return; }
     try { sessionStorage.setItem("unbnd_admin", passcode); } catch (x) {}
-    enter(out);
+    enter();
   });
-  function enter(out) {
+  function enter() {
     $("loginView").hidden = true; $("adminView").hidden = false; $("logout").hidden = false;
     $("pass").value = "";
-    setData(out);
+    showSection("menuPanel");
   }
   function logout(msg) {
-    passcode = ""; headers = []; rows = []; refs = [];
+    passcode = ""; headers = []; rows = []; refs = []; regLoaded = false;
     try { sessionStorage.removeItem("unbnd_admin"); sessionStorage.removeItem("unbnd_admin_data"); } catch (x) {}
     $("adminView").hidden = true; $("loginView").hidden = false; $("logout").hidden = true;
     $("table").innerHTML = "";
@@ -502,27 +607,41 @@
   $("logout").addEventListener("click", () => logout());
 
   // ---------- Tabs ----------
-  document.querySelectorAll(".seg button").forEach((b) => b.addEventListener("click", () => {
-    document.querySelectorAll(".seg button").forEach((x) => {
-      x.setAttribute("aria-selected", String(x === b));
-      $(x.dataset.tab).hidden = x !== b;
-    });
-  }));
+  function showSection(id) {
+    ["menuPanel", "dashPanel", "regPanel", "racePanel", "galleryPanel", "annPanel"].forEach((p) => ($(p).hidden = p !== id));
+    document.querySelectorAll(".seg button").forEach((x) => x.setAttribute("aria-selected", String(x.dataset.tab === id)));
+    if (id === "regPanel" && !regLoaded) loadRegistrations();
+    if (id === "racePanel") openRaces();
+    if (id === "galleryPanel" && !galleryLoaded) loadGallery("Loading photos");
+    if (id === "dashPanel") openDashboard();
+    if (id === "annPanel") openAnnouncement();
+  }
+  document.querySelectorAll(".seg button").forEach((b) => b.addEventListener("click", () => showSection(b.dataset.tab)));
+  document.querySelectorAll("[data-go]").forEach((b) => b.addEventListener("click", () => showSection(b.dataset.go)));
 
   // ---------- Manage Registrations ----------
+  let regLoaded = false;
+  async function loadRegistrations() {
+    let cached = null; try { cached = JSON.parse(sessionStorage.getItem("unbnd_admin_data") || "null"); } catch (x) {}
+    if (cached && cached.refs) { setData(cached); regLoaded = true; }
+    else $("table").innerHTML = '<tbody><tr><td class="muted" style="padding:16px">Loading registrations…</td></tr></tbody>';
+    const out = await api({ action: "adminList" }, cached ? "" : "Loading registrations", READ);
+    if (out.ok) { setData(out); regLoaded = true; }
+    else if (!cached) { $("table").innerHTML = '<tbody><tr><td class="muted" style="padding:16px">' + esc((out.errors || ["Couldn't load"])[0]) + ' Tap Refresh to try again.</td></tr></tbody>'; }
+  }
   function setData(out) {
     headers = out.headers; rows = out.rows; refs = out.refs || [];
     try { sessionStorage.setItem("unbnd_admin_data", JSON.stringify({ headers: headers, rows: rows, refs: refs })); } catch (x) {}
     render();
   }
   $("refresh").addEventListener("click", async () => {
-    const out = await api({ action: "adminList" }, "Refreshing");
-    if (out.ok) { setData(out); toast("Up to date"); } else toast((out.errors || ["Refresh failed"])[0]);
+    const out = await api({ action: "adminList" }, "Refreshing", READ);
+    if (out.ok) { setData(out); regLoaded = true; toast("Up to date"); } else toast((out.errors || ["Refresh failed"])[0]);
   });
   $("search").addEventListener("input", render);
   $("filter").addEventListener("change", render);
   setInterval(async () => {
-    if (!passcode || document.hidden || !$("modal").hidden || editingK !== -1) return;
+    if (!passcode || !regLoaded || $("regPanel").hidden || document.hidden || !$("modal").hidden || editingK !== -1) return;
     const out = await api({ action: "adminList" });
     if (out.ok && $("modal").hidden && editingK === -1) setData(out);
   }, 60000);
@@ -616,7 +735,7 @@
     const tr = $("table").querySelector('tr[data-k="' + p.k + '"]');
     if (tr) tr.classList.add("flash");
     const id = out.row[iOf("Club ID")];
-    toast(p.status === "Active" ? (id + " activated") : "Deactivated");
+    toast(p.status === "Active" ? (id + " activated. Welcome email goes out within a minute.") : "Deactivated");
   });
 
   // ---------- Excel download ----------
@@ -636,9 +755,17 @@
   let photos = [], galleryLoaded = false;
 
   async function loadGallery(busyText) {
-    const out = await api({ action: "adminGalleryList" }, busyText);
-    if (!out.ok) { toast((out.errors || ["Couldn't load photos"])[0]); return; }
-    photos = out.photos; galleryLoaded = true; renderGallery(); if (typeof renderPhotoPicker === 'function') renderPhotoPicker();
+    let list = null;
+    if (!changedRecently()) {
+      const f = await siteFile("data/gallery.json");
+      if (f) list = (f.photos || []).map((p) => ({ id: p.id, path: p.path, url: rawOf(p.path || p.url), thumb: rawOf(p.path || p.url) }));
+    }
+    if (!list) {
+      const out = await api({ action: "adminGalleryList" }, busyText, READ);
+      if (!out.ok) { toast((out.errors || ["Couldn't load photos"])[0]); return; }
+      list = out.photos;
+    }
+    photos = list; galleryLoaded = true; renderGallery(); if (typeof renderPhotoPicker === "function") renderPhotoPicker();
   }
   function renderGallery() {
     $("gCount").textContent = photos.length + (photos.length === 1 ? " photo" : " photos");
@@ -647,8 +774,7 @@
       '<div><code>' + esc(p.id) + '</code><span><button type="button" class="vbtn" data-viewp="' + esc(p.id) + '">View</button><button type="button" data-del="' + esc(p.id) + '">Delete</button></span></div></div>'
     ).join("") : '<div class="empty">No photos yet.</div>';
   }
-  document.querySelector('[data-tab="galleryPanel"]').addEventListener("click", () => { if (!galleryLoaded) loadGallery("Loading photos"); });
-  $("gRefresh").addEventListener("click", () => loadGallery("Refreshing"));
+  $("gRefresh").addEventListener("click", () => { lastChange = Date.now(); loadGallery("Refreshing"); });
 
   function compressPhoto(file) {
     return new Promise((resolve, reject) => {
@@ -673,15 +799,15 @@
     const files = [...$("gFiles").files].filter((f) => /^image\//.test(f.type)).slice(0, G_BATCH);
     $("gFiles").value = "";
     if (!files.length) return;
-    let done = 0, failed = 0;
+    let done = 0, failed = 0, lastErr = "";
     for (let i = 0; i < files.length; i++) {
       let data;
       try { data = await compressPhoto(files[i]); } catch (e) { failed++; continue; }
       const out = await api({ action: "adminGalleryUpload", mimeType: "image/jpeg", data: data }, "Uploading " + (i + 1) + " of " + files.length);
-      if (out.ok) { photos.unshift(out.photo); done++; renderGallery(); } else failed++;
+      if (out.ok) { photos.unshift(out.photo); done++; lastChange = Date.now(); renderGallery(); } else { failed++; lastErr = (out.errors || [""])[0]; }
     }
     galleryLoaded = true;
-    toast(done + " uploaded" + (failed ? ", " + failed + " failed" : ""));
+    toast(done + " uploaded" + (failed ? ", " + failed + " failed. " + lastErr : ""));
   });
 
   $("gGrid").addEventListener("click", async (e) => {
@@ -696,7 +822,7 @@
     if (!confirm("Delete photo " + id + " from the gallery?")) return;
     const out = await api({ action: "adminGalleryDelete", photoId: id }, "Deleting " + id);
     if (!out.ok) { toast((out.errors || ["Delete failed"])[0]); return; }
-    photos = photos.filter((p) => p.id !== id); renderGallery();
+    photos = photos.filter((p) => p.id !== id); lastChange = Date.now(); renderGallery();
     toast(id + " deleted");
   });
 
@@ -751,13 +877,26 @@
     if (m === "manage") loadRaceList();
   }
   document.querySelectorAll("[data-rmode]").forEach((b) => b.addEventListener("click", () => setMode(b.dataset.rmode)));
-  document.querySelector('[data-tab="racePanel"]').addEventListener("click", async () => {
+  async function openRaces() {
     if (!racesLoaded) { racesLoaded = true; if (!galleryLoaded) await loadGallery("Loading photos"); renderPhotoPicker(); }
-  });
+    if (rmode === "manage") loadRaceList();
+  }
 
   async function loadRaceList() {
-    const out = await api({ action: "adminRaceList" }, "Loading races");
-    raceCache = out.ok ? out.races : [];
+    let list = null;
+    if (!changedRecently()) {
+      const f = await siteFile("data/races.json");
+      if (f) {
+        const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date());
+        list = (f.races || []).map((r) => Object.assign({}, r, { photo: rawOf(r.photo), thumb: rawOf(r.thumb), expired: r.date < today }))
+          .sort((a, b) => (a.date + a.time < b.date + b.time ? 1 : -1));
+      }
+    }
+    if (!list) {
+      const out = await api({ action: "adminRaceList" }, "Loading races", READ);
+      list = out.ok ? out.races : [];
+    }
+    raceCache = list;
     $("raceList").innerHTML = raceCache.length ? raceCache.map((r) =>
       '<div class="uitem' + (r.expired ? " exp" : "") + '"><div><code>' + esc(r.id) + "</code> " + esc(r.name) +
       "<br><small>" + isoToDmy(r.date) + " · " + esc(r.day) + "</small></div>" +
@@ -782,7 +921,8 @@
       if (!confirm("Delete " + id + "? It will be removed from the race schedule.")) return;
       const out = await api({ action: "adminRaceDelete", raceId: id }, "Deleting " + id);
       if (!out.ok) { toast((out.errors || ["Delete failed"])[0]); return; }
-      toast(id + " deleted"); loadRaceList();
+      lastChange = Date.now();
+      publishToast(out, id + " deleted"); loadRaceList();
     }
   });
 
@@ -864,20 +1004,116 @@
       $("rErr").innerHTML = "<ul>" + (out.errors || ["Couldn't save the race"]).map((m) => "<li>" + esc(m) + "</li>").join("") + "</ul>";
       return;
     }
-    toast(race.id ? out.race.id + " updated" : out.race.id + " posted");
+    lastChange = Date.now();
+    publishToast(out, race.id ? out.race.id + " updated" : out.race.id + " posted");
     if (race.id) setMode("manage"); else fillForm(null);
   });
   setMode("post");
 
-  // ---------- Stay logged in while this tab is open ----------
-  (async () => {
+
+  // ---------- Website publishing status ----------
+  function publishToast(out, doneMsg) {
+    if (out.published === false) toast(doneMsg + ", but the website wasn't updated. Tap \"Update website now\". (" + (out.publishError || "error") + ")");
+    else toast(doneMsg + ". Live on the website in about a minute.");
+  }
+  $("pubBtn").addEventListener("click", async () => {
+    const out = await api({ action: "adminPublish" }, "Updating website");
+    if (!out.ok) { toast((out.errors || ["Couldn't update"])[0]); return; }
+    publishToast(out, "Race schedule sent");
+  });
+
+
+  // ---------- Dashboard ----------
+  let dset = "all";
+  async function openDashboard() {
+    if (!regLoaded) await loadRegistrations();
+    renderDashboard();
+  }
+  document.querySelectorAll("[data-dset]").forEach((b) => b.addEventListener("click", () => {
+    dset = b.dataset.dset;
+    document.querySelectorAll("[data-dset]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    renderDashboard();
+  }));
+  $("dRefresh").addEventListener("click", async () => {
+    const out = await api({ action: "adminList" }, "Refreshing", READ);
+    if (out.ok) { setData(out); regLoaded = true; renderDashboard(); } else toast((out.errors || ["Refresh failed"])[0]);
+  });
+  function renderDashboard() {
+    if (!headers.length) { $("kpis").innerHTML = '<div class="panel-loading">Couldn\'t load member data. Tap Refresh.</div>'; $("dgrid").innerHTML = ""; return; }
+    const I = (h) => headers.indexOf(h);
+    const st = I("Membership status");
+    const count = (k) => rows.filter((r) => r[st] === k).length;
+    const weekAgo = Date.now() - 7 * 864e5;
+    const recent = rows.filter((r) => {
+      const m = /^(\d{2})\/(\d{2})\/(\d{4})/.exec(r[I("Timestamp")] || ""); return m && new Date(+m[3], +m[2] - 1, +m[1]).getTime() >= weekAgo;
+    }).length;
+    $("kpis").innerHTML = [["Total registrations", rows.length, true], ["Active members", count("Active")], ["Pending activation", count("Pending")],
+      ["Deactivated", count("Deactivated")], ["New in the last 7 days", recent]]
+      .map((k) => '<div class="kpi' + (k[2] ? " hi" : "") + '"><b>' + k[1] + "</b><span>" + k[0] + "</span></div>").join("");
+
+    const set = dset === "active" ? rows.filter((r) => r[st] === "Active") : rows;
+    const n = set.length || 1;
+    const ageBand = (a) => { a = Number(a); return !a ? "Unknown" : a < 18 ? "Under 18" : a < 25 ? "18 to 24" : a < 30 ? "25 to 29" : a < 40 ? "30 to 39" : a < 50 ? "40 to 49" : "50 and over"; };
+    function breakdown(title, order, fn) {
+      const c = {}; set.forEach((r) => { const k = fn(r); c[k] = (c[k] || 0) + 1; });
+      const keys = order.filter((k) => c[k]).concat(Object.keys(c).filter((k) => order.indexOf(k) === -1));
+      const max = Math.max(1, ...keys.map((k) => c[k]));
+      return '<div class="dcard"><h3>' + title + "</h3>" + (keys.length ? keys.map((k) =>
+        '<div class="hb"><span>' + esc(k) + '</span><span class="meter"><i style="width:' + (c[k] / max * 100).toFixed(1) + '%"></i></span><span class="v">' + c[k] + " <em>" + Math.round(c[k] / n * 100) + "%</em></span></div>").join("")
+        : '<p class="hint">No data yet.</p>') + "</div>";
+    }
+    $("dgrid").innerHTML =
+      breakdown("Age group", ["Under 18", "18 to 24", "25 to 29", "30 to 39", "40 to 49", "50 and over"], (r) => ageBand(r[I("Age")])) +
+      breakdown("Running experience", ["Beginner", "Intermediate", "Advanced"], (r) => r[I("Experience")] || "Unknown") +
+      breakdown("Usual pace (min/km)", ["Under 5:00", "5:00-6:00", "6:00-7:00", "7:00+", "Not sure"], (r) => r[I("Pace")] || "Unknown") +
+      breakdown("T-shirt size", ["XS", "S", "M", "L", "XL", "XXL", "XXXL"], (r) => r[I("T-shirt size")] || "Unknown") +
+      breakdown("Minors and adults", ["Adult", "Under 18"], (r) => (r[I("Minor")] === "Yes" ? "Under 18" : "Adult")) +
+      breakdown("Photo consent", ["Yes", "No"], (r) => r[I("Photo consent")] || "No");
+  }
+
+  // ---------- Announcement ----------
+  let annLoaded = false;
+  function annPreview() {
+    const t = $("annText").value.trim();
+    $("annCount").textContent = $("annText").value.length + " / 200";
+    $("annPrevText").textContent = t || "Nothing to show";
+  }
+  $("annText").addEventListener("input", annPreview);
+  async function openAnnouncement() {
+    if (annLoaded) return;
+    let a = changedRecently() ? null : await siteFile("data/announcement.json");
+    if (!a) { const out = await api({ action: "adminAnnounceGet" }, "Loading", READ); a = out.ok ? out.announcement : {}; }
+    annLoaded = true;
+    $("annText").value = (a && a.text) || ""; $("annLink").value = (a && a.link) || "";
+    $("annStatus").textContent = a && a.text ? "Currently showing on the website." : "No announcement is showing right now.";
+    annPreview();
+  }
+  function annResult(out, msg) {
+    if (!out.ok) { toast((out.errors || ["Couldn't save"])[0]); return; }
+    lastChange = Date.now();
+    $("annStatus").textContent = out.published === false ? "Saved, but the website wasn't updated (" + (out.publishError || "error") + "). Try again." : msg;
+    toast(out.published === false ? "Website not updated. Try again." : msg);
+  }
+  $("annForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const text = $("annText").value.trim(), link = $("annLink").value.trim();
+    if (!text) { toast("Type the announcement first, or use Clear."); return; }
+    if (link && !/^https:\/\/\S+$/.test(link)) { toast("The link should start with https://"); return; }
+    annResult(await api({ action: "adminAnnounceSet", text: text, link: link }, "Publishing"), "Published. Live on the website in about a minute.");
+  });
+  $("annClear").addEventListener("click", async () => {
+    if (!confirm("Remove the announcement from the website?")) return;
+    const out = await api({ action: "adminAnnounceClear" }, "Clearing");
+    if (out.ok) { $("annText").value = ""; $("annLink").value = ""; annPreview(); }
+    annResult(out, "Cleared. Gone from the website in about a minute.");
+  });
+
+  // ---------- Stay logged in while this tab is open (no data is fetched until a section is opened) ----------
+  (() => {
     let saved = ""; try { saved = sessionStorage.getItem("unbnd_admin") || ""; } catch (x) {}
     if (!saved) return;
     passcode = saved;
-    let cached = null; try { cached = JSON.parse(sessionStorage.getItem("unbnd_admin_data") || "null"); } catch (x) {}
-    if (cached && cached.refs) enter(cached);
-    const out = await api({ action: "adminList" }, cached ? "" : "Loading");
-    if (out.ok) { if (cached) setData(out); else enter(out); } else if (!cached) logout();
+    enter();
   })();
 </script>
 </body>
