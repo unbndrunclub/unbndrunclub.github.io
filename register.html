@@ -6,6 +6,13 @@
 <title>Register | UNBND Run Club</title>
 <meta name="description" content="Register for UNBND Run Club, Mumbai.">
 <link rel="icon" href="logo.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="UNBND">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script src="site.js" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
@@ -172,6 +179,8 @@
   .site-foot { background: var(--black); color: rgba(255,255,255,.75); padding: 28px 18px calc(env(safe-area-inset-bottom,0px) + 28px); margin-top: 40px; }
   .site-foot .wide { max-width: 1080px; margin: 0 auto; padding: 0 14px; display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
   .site-foot a { color: var(--pink); font-weight: 700; text-decoration: none; }
+  .rulesum { background: var(--paper); border-left: 4px solid var(--pink); border-radius: 10px; padding: 10px 12px; margin-top: 14px; font-size: .95rem; }
+  .check a { color: inherit; font-weight: 700; text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -320,6 +329,13 @@
         <input id="decData" type="checkbox">
         <span>I agree to UNBND storing my details to manage my membership and contact me about club activities.</span>
       </label>
+      <div class="rulesum">
+        <b>Club rules, the short version:</b> be on time, follow road rules, look out for each other, be kind to everyone, and no alcohol, drugs or smoking at club runs.
+      </div>
+      <label class="check" data-f="decRules">
+        <input id="decRules" type="checkbox">
+        <span>I have read the <a href="rules.html" target="_blank" rel="noopener">club rules</a> and agree to follow them.</span>
+      </label>
       <label class="check">
         <input id="photoConsent" type="checkbox">
         <span>I'm okay with photos or videos of me from club runs being shared on UNBND's social media. <span class="optional">(Optional)</span></span>
@@ -376,6 +392,9 @@
 </div>
 <script>
   const API_URL = "https://script.google.com/macros/s/AKfycbzbZCKBa3tIQuXVny1OIx8zpiELks2FqMlwbj6GoEckWIxiJZ-YT0oqfEPfymbl80gG/exec";
+
+  // Wake the backend while the page is being read/filled, so the real request is quick
+  try { fetch(API_URL + "?warm=1", { mode: "no-cors", cache: "no-store" }).catch(() => {}); } catch (e) {}
 
   const $ = (id) => document.getElementById(id);
 
@@ -514,6 +533,7 @@
     if (!$("decHealth").checked) e.decHealth = "Accept the fitness declaration.";
     if (!$("decRefund").checked) e.decRefund = "Accept the refund policy.";
     if (!$("decData").checked) e.decData = "Agree to how we use your details.";
+    if (!$("decRules").checked) e.decRules = "Please read and accept the club rules.";
     return e;
   }
 
@@ -564,13 +584,15 @@
       guardianName: minor ? $("guardianName").value.trim() : "",
       guardianPhone: minor ? cleanPhone($("guardianPhone").value) : "",
       parentalConsent: minor ? $("parentalConsent").checked : false,
-      declarations: $("decHealth").checked && $("decRefund").checked && $("decData").checked,
+      declarations: $("decHealth").checked && $("decRefund").checked && $("decData").checked && $("decRules").checked,
       photoConsent: $("photoConsent").checked,
     };
 
     const btn = $("submit");
     btn.disabled = true;
-    busy(true, "Registering");
+    busy(true, "Saving your details");
+    const t1 = setTimeout(() => $("busyText").textContent = "Almost there", 4000);
+    const t2 = setTimeout(() => $("busyText").textContent = "Still working, please wait", 10000);
     try {
       // One automatic retry is safe: a repeat registration returns the same Club ID
       const { out, attempt } = await callApi(payload, 1);
@@ -581,6 +603,7 @@
     } catch (err) {
       showSummary([apiErrorMessage(err.kind)]);
     } finally {
+      clearTimeout(t1); clearTimeout(t2);
       busy(false);
       btn.disabled = false;
     }
