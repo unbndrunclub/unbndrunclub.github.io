@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="UNBND">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script src="config.js"></script>
 <script src="site.js" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -316,7 +317,7 @@
   </div>
 </main>
 
-<footer class="site-foot"><div class="wide"><span>&copy; <span class="yr">2026</span> UNBND Run Club. All rights reserved.</span><span>Follow us on Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></span></div></footer>
+<footer class="site-foot"><div class="wide"><span>&copy; <span class="yr">2026</span> UNBND Run Club. All rights reserved.</span><span><a href="https://chat.whatsapp.com/F031vsoBQIXANVwAoXJLbn" rel="noopener">Join our WhatsApp group</a> &nbsp;·&nbsp; Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></span></div></footer>
 <script>document.querySelectorAll(".yr").forEach(function (e) { e.textContent = new Date().getFullYear(); });</script>
 
 
@@ -328,7 +329,7 @@
   </div>
 </div>
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbzbZCKBa3tIQuXVny1OIx8zpiELks2FqMlwbj6GoEckWIxiJZ-YT0oqfEPfymbl80gG/exec";
+  const API_URL = window.UNBND_API;
 
   // Wake the backend while the page is being read/filled, so the real request is quick
   try { fetch(API_URL + "?warm=1", { mode: "no-cors", cache: "no-store" }).catch(() => {}); } catch (e) {}
