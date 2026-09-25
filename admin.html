@@ -6,6 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <title>UNBND Admin</title>
 <link rel="icon" href="logo.png">
+<script src="config.js"></script>
 <link rel="apple-touch-icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -159,6 +160,9 @@
   .seg button { flex: 1; border: 0; background: none; padding: 11px 12px; border-radius: 10px; font: 700 1.05rem/1 "Barlow Condensed", sans-serif; cursor: pointer; color: var(--muted); white-space: nowrap; }
   .seg button[aria-selected="true"] { background: var(--black); color: var(--pink); }
   .panel { margin-top: 16px; }
+  .sechead { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; flex-wrap: wrap; }
+  .sechead h2.sec { margin: 0 !important; }
+  .backbtn { border: 1.5px solid var(--black); background: var(--white); border-radius: 999px; padding: 7px 12px; font: 700 .95rem "Barlow Condensed", sans-serif; cursor: pointer; }
   .panel h2.sec { font: italic 800 1.8rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 0 0 12px; }
   .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
   .tools input, .tools select { width: auto; flex: 1 1 180px; background: var(--white); padding: 10px 12px; }
@@ -173,6 +177,9 @@
   td.muted { color: var(--muted); font-style: italic; }
   tr.Active td { background: #eaf8ef; }
   tr.Pending td { background: #fff8dc; }
+  tr.Proof td { background: #e6f1fd; }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; font-size: .82rem; color: var(--muted); margin: 0 0 10px; }
+  .legend i { display: inline-block; width: 14px; height: 14px; border-radius: 4px; border: 1px solid rgba(0,0,0,.12); margin-right: -6px; }
   tr.Deactivated td { background: #fdecee; }
   .act { position: sticky; left: 0; z-index: 1; border-right: 2px solid rgba(0,0,0,.08); }
   th.act { z-index: 3; }
@@ -204,7 +211,11 @@
   .dgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-top: 14px; }
   .dcard { background: var(--white); border-radius: 16px; padding: 14px 16px 16px; }
   .dcard h3 { font: 700 1.2rem "Barlow Condensed", sans-serif; margin: 0 0 8px; padding-left: 10px; border-left: 4px solid var(--pink); }
-  .hb { display: grid; grid-template-columns: 110px 1fr 70px; gap: 8px; align-items: center; margin: 6px 0; font-size: .9rem; }
+  .hb { display: grid; grid-template-columns: 96px 1fr 34px 52px; gap: 10px; align-items: center; margin: 8px 0; font-size: .9rem; }
+  .hb .num { text-align: right; font: 700 1.05rem/1 "Barlow", sans-serif; }
+  .hb .pct { justify-self: end; background: var(--paper); color: #333; border-radius: 999px; padding: 3px 8px; font-size: .8rem; font-weight: 600; min-width: 46px; text-align: center; }
+  .dhead { display: grid; grid-template-columns: 96px 1fr 34px 52px; gap: 10px; font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .dhead span:nth-child(3), .dhead span:nth-child(4) { text-align: right; }
   .hb .meter { display: block; background: var(--paper); height: 12px; border-radius: 6px; overflow: hidden; }
   .hb .meter i { display: block; height: 100%; background: var(--black); border-radius: 6px; }
   .hb .v { text-align: right; font-weight: 700; } .hb .v em { font-style: normal; color: var(--muted); font-weight: 400; }
@@ -350,13 +361,7 @@
 </div>
 
 <div class="wrap" id="adminView" hidden>
-  <div class="seg" role="tablist">
-    <button type="button" role="tab" aria-selected="false" data-tab="dashPanel">Dashboard</button>
-    <button type="button" role="tab" aria-selected="false" data-tab="regPanel">Manage Registrations</button>
-    <button type="button" role="tab" aria-selected="false" data-tab="racePanel">Post or Manage Races</button>
-    <button type="button" role="tab" aria-selected="false" data-tab="galleryPanel">Manage Gallery</button>
-    <button type="button" role="tab" aria-selected="false" data-tab="annPanel">Announcement</button>
-  </div>
+
 
   <section class="panel" id="menuPanel">
     <div class="menu">
@@ -369,7 +374,7 @@
   </section>
 
   <section class="panel" id="dashPanel" hidden>
-    <h2 class="sec">Dashboard</h2>
+    <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Dashboard</h2></div>
     <div class="kpis" id="kpis"><div class="panel-loading">Loading…</div></div>
     <div class="dtoggle" role="group" aria-label="Breakdown for">
       <button type="button" data-dset="all" aria-pressed="true">All registrations</button>
@@ -380,7 +385,7 @@
   </section>
 
   <section class="panel" id="annPanel" hidden>
-    <h2 class="sec">Announcement</h2>
+    <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Announcement</h2></div>
     <p class="note-exp">Shows as a ribbon at the top of every page of the website, within about a minute of publishing.</p>
     <form class="acard" id="annForm" novalidate>
       <div class="field">
@@ -403,7 +408,7 @@
   </section>
 
   <section class="panel" id="regPanel" hidden>
-    <h2 class="sec">Manage Registrations</h2>
+    <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Manage Registrations</h2></div>
     <div class="tools">
       <input id="search" type="text" placeholder="Search name, Club ID, phone, email">
       <select id="filter">
@@ -416,12 +421,13 @@
       <button class="btn" id="download" type="button">Download Excel</button>
     </div>
     <div class="counts" id="counts"></div>
+    <p class="legend"><i style="background:#eaf8ef"></i>Active <i style="background:#e6f1fd"></i>Screenshot uploaded, waiting for review <i style="background:#fff8dc"></i>Pending, no screenshot <i style="background:#fdecee"></i>Deactivated</p>
     <div class="tablewrap"><table id="table"></table></div>
   </section>
 
   <section class="panel" id="racePanel" hidden>
-    <h2 class="sec">Post or Manage Races</h2>
-    <p class="note-exp">Changes appear on the website within about a minute. <button class="linkbtn" id="pubBtn" type="button" style="color:var(--black);border-color:var(--line);margin-left:6px">Update website now</button></p>
+    <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Post or Manage Races</h2></div>
+    <p class="note-exp">Changes appear on the website within about a minute.</p>
     <div class="subseg" role="group" aria-label="Race sections">
       <button type="button" data-rmode="post" aria-pressed="true">Post a Race</button>
       <button type="button" data-rmode="manage" aria-pressed="false">Manage a Race</button>
@@ -489,7 +495,7 @@
   </section>
 
   <section class="panel" id="galleryPanel" hidden>
-    <h2 class="sec">Manage Gallery</h2>
+    <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Manage Gallery</h2></div>
     <label class="upbox">
       <input id="gFiles" type="file" accept="image/*" multiple>
       <b>Add photos</b>
@@ -521,13 +527,29 @@
   <div class="lightbox"><button class="xbtn" type="button" data-close="photoView" aria-label="Close">✕</button><img id="photoViewImg" alt=""><p id="photoViewId"></p></div>
 </div>
 
+<div class="overlay" id="promoView" hidden role="dialog" aria-modal="true" aria-label="Instagram image">
+  <div class="rbanner" style="max-width:460px;padding:18px 18px 20px">
+    <button class="xbtn" type="button" data-close="promoView" aria-label="Close">✕</button>
+    <h3 style="font:italic 800 1.7rem/1 'Barlow Condensed',sans-serif;text-transform:uppercase;margin:4px 0 10px">Instagram image</h3>
+    <div class="subseg" role="group" aria-label="Format">
+      <button type="button" data-fmt="story" aria-pressed="true">Story 1080 × 1920</button>
+      <button type="button" data-fmt="post" aria-pressed="false">Post 1080 × 1350</button>
+    </div>
+    <img id="promoImg" alt="Race image preview" style="display:block;width:100%;max-width:300px;margin:6px auto 0;border-radius:12px;box-shadow:0 16px 40px -20px rgba(0,0,0,.5)">
+    <div class="modal-actions" style="margin-top:14px">
+      <button class="ghostbtn" id="promoShare" type="button">Share</button>
+      <button class="btn" id="promoSave" type="button" style="margin:0">Download</button>
+    </div>
+  </div>
+</div>
+
 <div class="busy" id="busy" hidden role="status" aria-live="polite">
   <div class="busy-box"><div class="spinner" aria-hidden="true"></div><b id="busyText">Please wait</b></div>
 </div>
 <div class="toast" id="toast" hidden></div>
 
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbzbZCKBa3tIQuXVny1OIx8zpiELks2FqMlwbj6GoEckWIxiJZ-YT0oqfEPfymbl80gG/exec";
+  const API_URL = window.UNBND_API;
 
   // Wake the backend while the page is being read/filled, so the real request is quick
   try { fetch(API_URL + "?warm=1", { mode: "no-cors", cache: "no-store" }).catch(() => {}); } catch (e) {}
@@ -609,14 +631,13 @@
   // ---------- Tabs ----------
   function showSection(id) {
     ["menuPanel", "dashPanel", "regPanel", "racePanel", "galleryPanel", "annPanel"].forEach((p) => ($(p).hidden = p !== id));
-    document.querySelectorAll(".seg button").forEach((x) => x.setAttribute("aria-selected", String(x.dataset.tab === id)));
+    window.scrollTo({ top: 0 });
     if (id === "regPanel" && !regLoaded) loadRegistrations();
     if (id === "racePanel") openRaces();
     if (id === "galleryPanel" && !galleryLoaded) loadGallery("Loading photos");
     if (id === "dashPanel") openDashboard();
     if (id === "annPanel") openAnnouncement();
   }
-  document.querySelectorAll(".seg button").forEach((b) => b.addEventListener("click", () => showSection(b.dataset.tab)));
   document.querySelectorAll("[data-go]").forEach((b) => b.addEventListener("click", () => showSection(b.dataset.go)));
 
   // ---------- Manage Registrations ----------
@@ -654,8 +675,9 @@
     const f = $("filter").value;
     const counts = { Pending: 0, Active: 0, Deactivated: 0 };
     rows.forEach((r) => { if (counts[r[iStatus]] !== undefined) counts[r[iStatus]]++; });
+    const review = rows.filter((r) => r[iStatus] === "Pending" && r[iPay] === "Yes").length;
     $("counts").innerHTML = "<span>Total " + rows.length + "</span>" +
-      Object.keys(counts).map((k) => "<span>" + k + " " + counts[k] + "</span>").join("");
+      Object.keys(counts).map((k) => "<span>" + k + " " + counts[k] + "</span>").join("") + "<span>Waiting for review " + review + "</span>";
 
     let h = '<thead><tr><th class="act">Action</th><th title="Paid and active">₹</th>' + headers.map((x) => "<th>" + esc(x) + "</th>").join("") + "</tr></thead><tbody>";
     let shown = 0;
@@ -665,7 +687,8 @@
       shown++;
       const activate = st !== "Active";
       const paid = st === "Active" && r[iPay] === "Yes";
-      h += '<tr class="' + esc(st) + '" data-k="' + k + '"><td class="act"><button type="button" class="tog ' + (activate ? "on" : "off") + '">' +
+      const rowClass = st === "Pending" && r[iPay] === "Yes" ? "Proof" : st;
+      h += '<tr class="' + esc(rowClass) + '" data-k="' + k + '"><td class="act"><button type="button" class="tog ' + (activate ? "on" : "off") + '">' +
         (activate ? "Activate" : "Deactivate") + '</button></td><td class="paid">' + (paid ? "₹" : "") + "</td>";
       r.forEach((v, i) => {
         if (i === iNotes) h += '<td class="notes">' + notesCell(k, v) + "</td>";
@@ -888,7 +911,7 @@
       const f = await siteFile("data/races.json");
       if (f) {
         const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date());
-        list = (f.races || []).map((r) => Object.assign({}, r, { photo: rawOf(r.photo), thumb: rawOf(r.thumb), expired: r.date < today }))
+        list = (f.races || []).map((r) => Object.assign({}, r, { sitePhoto: /^https?:/.test(r.photo || "") ? "" : r.photo, photo: rawOf(r.photo), thumb: rawOf(r.thumb), expired: r.date < today }))
           .sort((a, b) => (a.date + a.time < b.date + b.time ? 1 : -1));
       }
     }
@@ -902,6 +925,7 @@
       "<br><small>" + isoToDmy(r.date) + " · " + esc(r.day) + "</small></div>" +
       (r.expired ? '<span class="exptag">Expired</span>' :
         '<div class="btns"><button type="button" data-view="' + esc(r.id) + '">View</button>' +
+        '<button type="button" data-promo="' + esc(r.id) + '">Instagram image</button>' +
         '<button type="button" data-edit="' + esc(r.id) + '">Edit</button>' +
         '<button type="button" class="del" data-delr="' + esc(r.id) + '">Delete</button></div>') + "</div>"
     ).join("") : '<div class="empty">No races posted yet.</div>';
@@ -952,8 +976,8 @@
     $("raceView").hidden = false;
   }
   document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", () => ($(b.dataset.close).hidden = true)));
-  ["raceView", "photoView"].forEach((id) => $(id).addEventListener("click", (e) => { if (e.target.id === id) $(id).hidden = true; }));
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { $("raceView").hidden = true; $("photoView").hidden = true; } });
+  ["raceView", "photoView", "promoView"].forEach((id) => $(id).addEventListener("click", (e) => { if (e.target.id === id) $(id).hidden = true; }));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { $("raceView").hidden = true; $("photoView").hidden = true; $("promoView").hidden = true; } });
 
   function renderPhotoPicker(selected) {
     const sel = selected !== undefined ? selected : ((document.querySelector('input[name="rPhoto"]:checked') || {}).value || "");
@@ -1011,17 +1035,112 @@
   setMode("post");
 
 
-  // ---------- Website publishing status ----------
-  function publishToast(out, doneMsg) {
-    if (out.published === false) toast(doneMsg + ", but the website wasn't updated. Tap \"Update website now\". (" + (out.publishError || "error") + ")");
-    else toast(doneMsg + ". Live on the website in about a minute.");
+
+  // ---------- Instagram image for a race (Story 1080x1920, Post 1080x1350) ----------
+  let promoRace = null, promoFmt = "story", promoBlob = null;
+  if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+      this.moveTo(x + r, y); this.arcTo(x + w, y, x + w, y + h, r); this.arcTo(x + w, y + h, x, y + h, r);
+      this.arcTo(x, y + h, x, y, r); this.arcTo(x, y, x + w, y, r); this.closePath(); return this;
+    };
   }
-  $("pubBtn").addEventListener("click", async () => {
-    const out = await api({ action: "adminPublish" }, "Updating website");
-    if (!out.ok) { toast((out.errors || ["Couldn't update"])[0]); return; }
-    publishToast(out, "Race schedule sent");
+  function imgLoad(src, cross) {
+    return new Promise((res) => { if (!src) return res(null); const i = new Image(); if (cross) i.crossOrigin = "anonymous"; i.onload = () => res(i); i.onerror = () => res(null); i.src = src; });
+  }
+  function wrapText(x, text, maxW) {
+    const words = String(text).split(/\s+/), lines = []; let line = "";
+    words.forEach((w) => { const t = line ? line + " " + w : w; if (x.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t; });
+    if (line) lines.push(line); return lines;
+  }
+  async function drawPromo(r, fmt, withPhoto) {
+    try { await Promise.all([document.fonts.load('italic 800 100px "Barlow Condensed"'), document.fonts.load('700 40px "Barlow Condensed"'), document.fonts.load('600 40px "Barlow"')]); } catch (e) {}
+    const W = 1080, H = fmt === "story" ? 1920 : 1350, s = H / 1920 < 1 ? 0.82 : 1;
+    const c = document.createElement("canvas"); c.width = W; c.height = H;
+    const x = c.getContext("2d"), PINK = "#fe90ae", C = '"Barlow Condensed", "Arial Narrow", sans-serif', B = 'Barlow, Arial, sans-serif';
+    x.fillStyle = "#000"; x.fillRect(0, 0, W, H);
+    if (withPhoto) {
+      const img = r.sitePhoto ? await imgLoad(r.sitePhoto, false) : await imgLoad(r.photo, true);
+      if (img) {
+        const k = Math.max(W / img.width, H / img.height), iw = img.width * k, ih = img.height * k;
+        x.drawImage(img, (W - iw) / 2, (H - ih) / 2, iw, ih);
+      }
+    }
+    const g = x.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, "rgba(0,0,0,.55)"); g.addColorStop(.35, "rgba(0,0,0,.72)"); g.addColorStop(1, "rgba(0,0,0,.92)");
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    x.save(); x.strokeStyle = "rgba(254,144,174,.18)"; x.lineWidth = 3;
+    for (let i = -H; i < W + H; i += 70) { x.beginPath(); x.moveTo(i, H); x.lineTo(i + H * 0.53, 0); x.stroke(); }
+    x.restore();
+    const L = 84; let y = fmt === "story" ? 150 : 90;
+    const logo = await imgLoad("logo.png", false);
+    if (logo) x.drawImage(logo, L, y, 130 * s, 130 * s);
+    x.fillStyle = "#fff"; x.font = "700 " + Math.round(40 * s) + "px " + C; x.textBaseline = "alphabetic";
+    x.fillText("UNBND RUN CLUB · MUMBAI", L + 150 * s, y + 78 * s);
+    y += (fmt === "story" ? 470 : 200) * s;
+    x.fillStyle = PINK; x.beginPath(); x.roundRect(L, y, 330 * s, 64 * s, 10); x.fill();
+    x.fillStyle = "#000"; x.font = "italic 800 " + Math.round(44 * s) + "px " + C; x.fillText("UPCOMING RACE", L + 22 * s, y + 47 * s);
+    y += 64 * s + 110 * s;
+    x.fillStyle = PINK; x.font = "italic 800 " + Math.round(128 * s) + "px " + C;
+    wrapText(x, r.name.toUpperCase(), W - 2 * L).slice(0, 4).forEach((l) => { x.fillText(l, L, y); y += 118 * s; });
+    y += 30 * s;
+    const dur = (Number(r.hours) || Number(r.minutes)) ? ((Number(r.hours) ? r.hours + " hr " : "") + (Number(r.minutes) ? r.minutes + " min" : "")).trim() : "";
+    const rows = [["WHEN", r.day + ", " + niceDate(r.date)], ["REPORTING", to12(r.time).text], ["START", r.start + (r.landmark ? ", " + r.landmark : "")]];
+    if (r.distance || dur) rows.push(["RACE", [r.distance ? r.distance + " km" : "", dur].filter(Boolean).join(" · ")]);
+    rows.forEach(([k, v]) => {
+      x.fillStyle = PINK; x.font = "700 " + Math.round(34 * s) + "px " + C; x.fillText(k, L, y);
+      x.fillStyle = "#fff"; x.font = "600 " + Math.round(48 * s) + "px " + B;
+      const lines = wrapText(x, v, W - 2 * L - 250 * s).slice(0, 2);
+      lines.forEach((l, i) => x.fillText(l, L + 250 * s, y + i * 58 * s));
+      y += (lines.length * 58 + 34) * s;
+    });
+    // free banner + footer
+    const fy = H - (fmt === "story" ? 400 : 290);
+    x.fillStyle = "#fff"; x.beginPath(); x.roundRect(L, fy, W - 2 * L, 96 * s, 16); x.fill();
+    x.fillStyle = "#000"; x.textAlign = "center"; x.font = "italic 800 " + Math.round(50 * s) + "px " + C;
+    x.fillText("FREE FOR MEMBERS WITH AN ACTIVE CLUB ID", W / 2, fy + 64 * s);
+    x.fillStyle = "#fff"; x.font = "600 " + Math.round(38 * s) + "px " + B;
+    x.fillText("Details and your race card: unbndrunclub.github.io", W / 2, fy + 180 * s);
+    x.fillStyle = PINK; x.font = "italic 800 " + Math.round(60 * s) + "px " + C;
+    x.fillText("@UNBNDRUNCLUB", W / 2, fy + 262 * s);
+    return await new Promise((res) => { try { c.toBlob((b) => res(b), "image/png"); } catch (e) { res(null); } });
+  }
+  async function renderPromo() {
+    $("busyText").textContent = "Creating image"; $("busy").hidden = false;
+    try {
+      promoBlob = await drawPromo(promoRace, promoFmt, true);
+      if (!promoBlob) promoBlob = await drawPromo(promoRace, promoFmt, false); // photo couldn't be used
+      $("promoImg").src = URL.createObjectURL(promoBlob);
+    } finally { $("busy").hidden = true; }
+  }
+  $("raceList").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-promo]"); if (!b) return;
+    promoRace = raceCache.find((r) => r.id === b.dataset.promo); promoFmt = "story";
+    document.querySelectorAll("[data-fmt]").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.fmt === "story")));
+    $("promoView").hidden = false; renderPromo();
+  });
+  document.querySelectorAll("[data-fmt]").forEach((b) => b.addEventListener("click", () => {
+    promoFmt = b.dataset.fmt;
+    document.querySelectorAll("[data-fmt]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    renderPromo();
+  }));
+  const promoName = () => "UNBND-" + promoRace.id + "-" + (promoFmt === "story" ? "story" : "post") + ".png";
+  $("promoSave").addEventListener("click", () => {
+    if (!promoBlob) return;
+    const a = document.createElement("a"); a.href = URL.createObjectURL(promoBlob); a.download = promoName();
+    document.body.appendChild(a); a.click(); a.remove();
+  });
+  $("promoShare").addEventListener("click", async () => {
+    if (!promoBlob) return;
+    const file = new File([promoBlob], promoName(), { type: "image/png" });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file] }); return; } catch (e) { if (e.name === "AbortError") return; } }
+    $("promoSave").click();
   });
 
+  // ---------- Website publishing status ----------
+  function publishToast(out, doneMsg) {
+    if (out.published === false) toast(doneMsg + " in the records, but the website couldn't be updated. Please save again in a minute.");
+    else toast(doneMsg + ". Live on the website in about a minute.");
+  }
 
   // ---------- Dashboard ----------
   let dset = "all";
@@ -1047,8 +1166,10 @@
     const recent = rows.filter((r) => {
       const m = /^(\d{2})\/(\d{2})\/(\d{4})/.exec(r[I("Timestamp")] || ""); return m && new Date(+m[3], +m[2] - 1, +m[1]).getTime() >= weekAgo;
     }).length;
-    $("kpis").innerHTML = [["Total registrations", rows.length, true], ["Active members", count("Active")], ["Pending activation", count("Pending")],
-      ["Deactivated", count("Deactivated")], ["New in the last 7 days", recent]]
+    const pay = I("Payment screenshot");
+    const paidActive = rows.filter((r) => r[st] === "Active" && r[pay] === "Yes").length;
+    $("kpis").innerHTML = [["Total registrations", rows.length, true], ["Active members", count("Active")], ["Paid active members", paidActive],
+      ["Pending activation", count("Pending")], ["Deactivated", count("Deactivated")], ["New in the last 7 days", recent]]
       .map((k) => '<div class="kpi' + (k[2] ? " hi" : "") + '"><b>' + k[1] + "</b><span>" + k[0] + "</span></div>").join("");
 
     const set = dset === "active" ? rows.filter((r) => r[st] === "Active") : rows;
@@ -1058,8 +1179,8 @@
       const c = {}; set.forEach((r) => { const k = fn(r); c[k] = (c[k] || 0) + 1; });
       const keys = order.filter((k) => c[k]).concat(Object.keys(c).filter((k) => order.indexOf(k) === -1));
       const max = Math.max(1, ...keys.map((k) => c[k]));
-      return '<div class="dcard"><h3>' + title + "</h3>" + (keys.length ? keys.map((k) =>
-        '<div class="hb"><span>' + esc(k) + '</span><span class="meter"><i style="width:' + (c[k] / max * 100).toFixed(1) + '%"></i></span><span class="v">' + c[k] + " <em>" + Math.round(c[k] / n * 100) + "%</em></span></div>").join("")
+      return '<div class="dcard"><h3>' + title + "</h3>" + (keys.length ? '<div class="dhead"><span></span><span></span><span>Count</span><span>Share</span></div>' + keys.map((k) =>
+        '<div class="hb"><span class="lbl2">' + esc(k) + '</span><span class="meter"><i style="width:' + (c[k] / max * 100).toFixed(1) + '%"></i></span><span class="num">' + c[k] + '</span><span class="pct">' + Math.round(c[k] / n * 100) + "%</span></div>").join("")
         : '<p class="hint">No data yet.</p>') + "</div>";
     }
     $("dgrid").innerHTML =
