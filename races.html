@@ -12,6 +12,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="UNBND">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script src="config.js"></script>
 <script src="site.js" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -240,7 +241,7 @@
   </nav>
   <div class="hero-inner">
     <h1>Race<br>schedule</h1>
-    <p class="tagline">Every race is free for members with an active Club ID. Pick your start line.</p>
+    <p class="tagline">UNBND races across Mumbai. Club races are free to join for members with an active Club ID.</p>
   </div>
 </section>
 
@@ -271,11 +272,11 @@
   </div>
 </div>
 
-<footer class="site-foot"><div class="wide"><span>&copy; <span class="yr">2026</span> UNBND Run Club. All rights reserved.</span><span>Follow us on Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></span></div></footer>
+<footer class="site-foot"><div class="wide"><span>&copy; <span class="yr">2026</span> UNBND Run Club. All rights reserved.</span><span><a href="https://chat.whatsapp.com/F031vsoBQIXANVwAoXJLbn" rel="noopener">Join our WhatsApp group</a> &nbsp;·&nbsp; Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></span></div></footer>
 <script>document.querySelectorAll(".yr").forEach(function (e) { e.textContent = new Date().getFullYear(); });</script>
 
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbzbZCKBa3tIQuXVny1OIx8zpiELks2FqMlwbj6GoEckWIxiJZ-YT0oqfEPfymbl80gG/exec";
+  const API_URL = window.UNBND_API;
 
   const $ = (id) => document.getElementById(id);
   const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -418,7 +419,8 @@
   const where = (r) => r.start + (r.landmark ? " (" + r.landmark + ")" : "");
   const calText = (r) => "UNBND Run Club race " + r.id + ". Free for members with an active Club ID." + (r.map ? "\nDirections: " + r.map : "") + "\nDetails: " + SITE + "races.html#" + r.id;
   function googleCal(r) {
-    return "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + encodeURIComponent(r.name) +
+    // www.google.com opens in the browser (the Calendar app ignores event details from links)
+    return "https://www.google.com/calendar/render?action=TEMPLATE&ctz=Asia/Kolkata&text=" + encodeURIComponent(r.name) +
       "&dates=" + utcStamp(raceStart(r)) + "/" + utcStamp(raceEnd(r)) +
       "&details=" + encodeURIComponent(calText(r)) + "&location=" + encodeURIComponent(where(r));
   }
