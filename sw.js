@@ -1,9 +1,9 @@
 // UNBND Run Club: makes the site installable and usable offline.
 // Pages and race data: fresh from the network first, saved copy if offline.
 // Images and fonts: saved copy first, refreshed in the background.
-const CACHE = "unbnd-v1";
+const CACHE = "unbnd-v2";
 const CORE = ["./", "index.html", "races.html", "rules.html", "support.html", "register.html", "pay.html", "upload.html",
-  "site.js", "logo.png", "hero.jpg", "icon-192.png", "manifest.webmanifest"];
+  "site.js", "config.js", "logo.png", "hero.jpg", "icon-192.png", "manifest.webmanifest"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE).catch(() => {})).then(() => self.skipWaiting()));
