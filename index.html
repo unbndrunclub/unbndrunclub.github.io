@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>UNBND Run Club | Run unbound.</title>
-<meta name="description" content="UNBND Run Club, Mumbai. Join the club, complete your membership payment and see upcoming races.">
+<title>UNBND Run Club | Mumbai run club</title>
+<meta name="description" content="UNBND Run Club is a Mumbai run club organising group runs and races across the city. Every pace welcome.">
 <link rel="icon" href="logo.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -12,6 +12,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="UNBND">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script src="config.js"></script>
 <script src="site.js" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -191,6 +192,7 @@
   .home-hero .inner { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; padding-top: 56px; }
   .home-hero h1 { font-size: clamp(4.2rem, 21vw, 9rem); }
   .home-hero .tagline { max-width: 30ch; }
+  .city { display: inline-block; margin: 0 0 14px; background: var(--pink); color: #000; font: 700 1rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .04em; padding: 7px 10px; border-radius: 6px; }
   .ctas { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 26px; }
   .ctas .btn { width: auto; margin: 0; padding: 16px 22px; }
   .btn.light { background: var(--white); color: var(--black); }
@@ -226,7 +228,12 @@
   .next-ribbon .lbl { font: italic 800 1.05rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; background: #000; color: var(--pink); padding: 6px 9px; border-radius: 6px; }
   .next-ribbon .what { flex: 1; min-width: 220px; }
   .next-ribbon .what b { display: block; font: italic 800 1.35rem/1.05 "Barlow Condensed", sans-serif; text-transform: uppercase; }
-  .next-ribbon .what small { color: #444; font-weight: 600; }
+  .next-ribbon .what small { color: #444; font-weight: 600; display: block; }
+  .next-ribbon .mini { display: flex; gap: 6px; }
+  .next-ribbon .mini div { background: #000; color: #fff; border-radius: 8px; padding: 5px 7px; text-align: center; min-width: 46px; }
+  .next-ribbon .mini b { display: block; font: italic 800 1.25rem/1 "Barlow Condensed", sans-serif; color: var(--pink); font-variant-numeric: tabular-nums; }
+  .next-ribbon .mini span { font-size: .62rem; text-transform: uppercase; letter-spacing: .06em; opacity: .8; }
+  .next-ribbon .today { background: var(--pink); color: #000; font: 700 .95rem "Barlow Condensed", sans-serif; padding: 7px 10px; border-radius: 8px; }
   .next-ribbon a { background: var(--pink); color: #000; text-decoration: none; font: italic 800 1.05rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; padding: 11px 16px; border-radius: 10px; white-space: nowrap; }
   @media (max-width: 760px) { .support { grid-template-columns: 1fr; } }
 </style>
@@ -239,8 +246,9 @@
     <div class="links"><a href="index.html" aria-current="page">Home</a><a href="races.html">Races</a><a href="rules.html">Club rules</a><a href="support.html">Support</a><a class="cta" href="register.html">Join</a></div>
   </nav>
   <div class="inner">
+    <p class="city">Mumbai's run club</p>
     <h1>Run<br>unbound.</h1>
-    <p class="tagline">Every pace. Every distance. One club.</p>
+    <p class="tagline">Group runs and races across Mumbai. Every pace, every distance, one club.</p>
     <div class="ctas">
       <a class="btn pink" href="register.html">Join the club</a>
       <a class="btn light" href="races.html">Upcoming races</a>
@@ -274,19 +282,26 @@
     <article class="tile">
       <span class="kicker">On the calendar</span>
       <h2>Upcoming races</h2>
-      <p>See every upcoming run with dates, start points, race-day weather and a live countdown.</p>
-      <p>Every race is free for members with an active Club ID.</p>
+      <p>See every upcoming UNBND race in Mumbai, with start points, race-day weather and a live countdown.</p>
+      <p>Club races are free to join for members with an active Club ID.</p>
       <a class="btn" href="races.html">View all races</a>
+    </article>
+
+    <article class="tile">
+      <span class="kicker">Stay in the loop</span>
+      <h2>WhatsApp group</h2>
+      <p>Run plans, race updates and last-minute changes are shared in the club's WhatsApp group.</p>
+      <a class="btn" href="https://chat.whatsapp.com/F031vsoBQIXANVwAoXJLbn" rel="noopener">Join the WhatsApp group</a>
     </article>
   </div>
 
 </main>
 
-<footer class="site-foot"><div class="wide"><span>&copy; <span class="yr">2026</span> UNBND Run Club. All rights reserved.</span><span>Follow us on Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></span></div></footer>
+<footer class="site-foot"><div class="wide"><span>&copy; <span class="yr">2026</span> UNBND Run Club. All rights reserved.</span><span><a href="https://chat.whatsapp.com/F031vsoBQIXANVwAoXJLbn" rel="noopener">Join our WhatsApp group</a> &nbsp;·&nbsp; Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></span></div></footer>
 <script>document.querySelectorAll(".yr").forEach(function (e) { e.textContent = new Date().getFullYear(); });</script>
 
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbzbZCKBa3tIQuXVny1OIx8zpiELks2FqMlwbj6GoEckWIxiJZ-YT0oqfEPfymbl80gG/exec";
+  const API_URL = window.UNBND_API;
 
   const $ = (id) => document.getElementById(id);
   const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -376,15 +391,26 @@
   function startTicking() { tickCountdowns(); if (!ticking) { ticking = true; setInterval(tickCountdowns, 1000); } }
 
   // ---- Next race teaser ----
+  // Next race ribbon: moves to the following race once a race day has passed, and hides when none are scheduled
   function renderNext(list) {
     const el = $("nextRibbon");
     if (!list || !list.length) { el.hidden = true; if (!document.getElementById("unbndAnnc")) document.documentElement.classList.remove("has-ribbon"); return; }
     const r = list[0];
     el.innerHTML = '<div class="in"><span class="lbl">Next race</span><div class="what"><b>' + esc(r.name) + "</b><small>" +
-      esc(r.day) + ", " + niceDate(r.date) + " at " + time12(r.time) + "</small></div>" +
+      esc(r.day) + ", " + niceDate(r.date) + " at " + time12(r.time) + "</small><small>Start: " + esc(r.start) + (r.landmark ? " (" + esc(r.landmark) + ")" : "") + "</small></div>" +
+      '<div class="mini" data-mini="' + raceStart(r).toISOString() + '"></div>' +
       '<a href="races.html#' + encodeURIComponent(r.id) + '">View details</a></div>';
     el.hidden = false;
     document.documentElement.classList.add("has-ribbon");
+    tickMini(); if (!renderNext.t) renderNext.t = setInterval(tickMini, 1000);
+  }
+  function tickMini() {
+    document.querySelectorAll("[data-mini]").forEach((m) => {
+      const ms = new Date(m.dataset.mini) - new Date();
+      if (ms <= 0) { m.outerHTML = '<span class="today">Race day is here</span>'; return; }
+      const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, mi = Math.floor(ms / 6e4) % 60, s = Math.floor(ms / 1e3) % 60;
+      m.innerHTML = [[d, "days"], [h, "hrs"], [mi, "mins"], [s, "secs"]].map((x) => "<div><b>" + String(x[0]).padStart(2, "0") + "</b><span>" + x[1] + "</span></div>").join("");
+    });
   }
   loadRaces(renderNext);
 
