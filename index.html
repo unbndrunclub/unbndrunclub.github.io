@@ -235,6 +235,27 @@
   .next-ribbon .mini span { font-size: .62rem; text-transform: uppercase; letter-spacing: .06em; opacity: .8; }
   .next-ribbon .today { background: var(--pink); color: #000; font: 700 .95rem "Barlow Condensed", sans-serif; padding: 7px 10px; border-radius: 8px; }
   .next-ribbon a { background: var(--pink); color: #000; text-decoration: none; font: italic 800 1.05rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; padding: 11px 16px; border-radius: 10px; white-space: nowrap; }
+  #fForm input { width: 100%; font: inherit; color: var(--black); background: var(--paper); border: 1.5px solid transparent; border-radius: 12px; padding: 13px 14px; margin-top: 6px; }
+  #fForm input:focus { background: #fff; border-color: #000; outline: none; }
+  .fres { background: var(--paper); border-radius: 14px; padding: 12px 14px; margin-top: 12px; }
+  .fres b.id { display: block; font: italic 800 2rem/1 "Barlow Condensed", sans-serif; }
+  .fres .st { display: inline-block; font: 700 .9rem "Barlow Condensed", sans-serif; padding: 4px 9px; border-radius: 6px; margin-bottom: 6px; }
+  .fres .st.Active { background: #d8f3e4; color: #0b5e36; } .fres .st.Pending { background: #fff1c2; color: #7a5a00; } .fres .st.Deactivated { background: #ffd9de; color: #9c0019; }
+  .fres small { display: block; color: var(--muted); margin-top: 4px; }
+  .rdp { margin-top: 34px; }
+  .rdp-title { font: italic 800 clamp(2.2rem, 9vw, 3.4rem)/.95 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 0; }
+  .rdp-sub { color: var(--muted); margin: 6px 0 16px; }
+  .rgroup { background: #fff; border-radius: 20px; padding: 16px; margin-bottom: 14px; }
+  .rgroup h3 { font: italic 800 1.6rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 0; }
+  .rgroup .meta { color: var(--muted); font-size: .92rem; margin: 6px 0 12px; }
+  .rgroup .meta b { background: #000; color: var(--pink); font: 700 .85rem "Barlow Condensed", sans-serif; padding: 3px 7px; border-radius: 5px; margin-right: 6px; }
+  .pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+  .pgrid button { padding: 0; border: 0; background: var(--paper); border-radius: 12px; overflow: hidden; cursor: zoom-in; aspect-ratio: 1; }
+  .pgrid img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .lb { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,.92); display: grid; place-items: center; padding: 16px; }
+  .lb[hidden] { display: none; }
+  .lb img { max-width: 96vw; max-height: 88vh; border-radius: 10px; }
+  .lbx { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 12px); right: 12px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(255,255,255,.18); color: #fff; font-size: 1.3rem; cursor: pointer; }
   @media (max-width: 760px) { .support { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -288,16 +309,31 @@
     </article>
 
     <article class="tile">
-      <span class="kicker">Stay in the loop</span>
-      <h2>WhatsApp group</h2>
-      <p>Run plans, race updates and last-minute changes are shared in the club's WhatsApp group.</p>
-      <a class="btn" href="https://chat.whatsapp.com/F031vsoBQIXANVwAoXJLbn" rel="noopener">Join the WhatsApp group</a>
+      <span class="kicker">Already a member?</span>
+      <h2>Find your Club ID</h2>
+      <p>Enter the mobile number you registered with.</p>
+      <form id="fForm" novalidate>
+        <input id="fPhone" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number" autocomplete="tel-national" aria-label="Registered mobile number">
+        <p class="err" id="fErr"></p>
+        <button class="btn" id="fBtn" type="submit" style="margin-top:12px">Find my Club ID</button>
+      </form>
+      <div id="fOut" aria-live="polite"></div>
     </article>
   </div>
 
+  <section class="rdp" id="rdp" hidden>
+    <h2 class="rdp-title">Race day photos</h2>
+    <p class="rdp-sub">Moments from UNBND races around Mumbai.</p>
+    <div id="rdpList"></div>
+  </section>
 </main>
 
-<footer class="site-foot"><div class="wide"><span>&copy; <span class="yr">2026</span> UNBND Run Club. All rights reserved.</span><span><a href="https://chat.whatsapp.com/F031vsoBQIXANVwAoXJLbn" rel="noopener">Join our WhatsApp group</a> &nbsp;·&nbsp; Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></span></div></footer>
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Photo">
+  <button class="lbx" type="button" id="lbClose" aria-label="Close">✕</button>
+  <img id="lbImg" alt="">
+</div>
+
+<footer class="site-foot"><div class="wide"><span>&copy; <span class="yr">2026</span> UNBND Run Club. All rights reserved.</span><span>Follow us on Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></span></div></footer>
 <script>document.querySelectorAll(".yr").forEach(function (e) { e.textContent = new Date().getFullYear(); });</script>
 
 <script>
@@ -413,6 +449,48 @@
     });
   }
   loadRaces(renderNext);
+
+  // ---- Find your Club ID ----
+  const fmtD = (dmy) => { const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(dmy || ""); return m ? Number(m[1]) + " " + MONTHS[Number(m[2]) - 1] + " " + m[3] : ""; };
+  $("fPhone").addEventListener("input", (e) => { let d = e.target.value.replace(/\D/g, ""); if (d.length === 12 && d.startsWith("91")) d = d.slice(2); e.target.value = d.slice(0, 10); });
+  $("fForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    $("fErr").textContent = ""; $("fOut").innerHTML = "";
+    const ph = $("fPhone").value;
+    if (!/^[6-9]\d{9}$/.test(ph)) { $("fErr").textContent = "Enter your 10-digit registered mobile number."; return; }
+    const btn = $("fBtn"); btn.disabled = true; btn.textContent = "Searching…";
+    const out = await post({ action: "lookup", phone: ph }, 25000);
+    btn.disabled = false; btn.textContent = "Find my Club ID";
+    if (!out.ok) { $("fErr").textContent = (out.errors || ["Something went wrong. Please try again."])[0]; return; }
+    if (!out.members.length) { $("fOut").innerHTML = '<div class="fres">No registration found for this number. <a href="register.html">Register here</a>.</div>'; return; }
+    $("fOut").innerHTML = out.members.map((m) => {
+      const label = { Active: "Active", Pending: "Pending activation", Deactivated: "Deactivated" }[m.status] || m.status;
+      return '<div class="fres"><span class="st ' + esc(m.status) + '">' + esc(label) + "</span>" +
+        (m.clubId ? '<b class="id">' + esc(m.clubId) + "</b>" : "") + "<div>" + esc(m.name) + "</div>" +
+        "<small>Registered on " + esc(fmtD(m.registered)) + "</small>" + (m.activated ? "<small>Activated on " + esc(fmtD(m.activated)) + "</small>" : "") + "</div>";
+    }).join("");
+  });
+  try { $("fPhone").addEventListener("focus", () => fetch(API_URL + "?warm=1", { mode: "no-cors", cache: "no-store" }).catch(() => {}), { once: true }); } catch (e) {}
+
+  // ---- Race day photos ----
+  (async () => {
+    let data = null;
+    try { const res = await fetch("data/home-gallery.json?t=" + Date.now(), { cache: "no-store" }); if (res.ok) data = await res.json(); } catch (e) {}
+    const races = (data && data.races || []).filter((r) => r.photos && r.photos.length);
+    if (!races.length) return;
+    $("rdpList").innerHTML = races.map((r) =>
+      '<div class="rgroup"><h3>' + esc(r.name) + '</h3><p class="meta"><b>' + esc(r.id) + "</b>" +
+      (r.date ? esc(r.day ? r.day + ", " : "") + niceDate(r.date) : "") + (r.start ? " · " + esc(r.start) : "") + "</p>" +
+      '<div class="pgrid">' + r.photos.map((p) => '<button type="button" data-full="' + esc(p.path) + '"><img loading="lazy" src="' + esc(p.path) + '" alt="Race day photo, ' + esc(r.name) + '"></button>').join("") + "</div></div>").join("");
+    $("rdp").hidden = false;
+  })();
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-full]"); if (!b) return;
+    $("lbImg").src = b.dataset.full; $("lb").hidden = false;
+  });
+  $("lbClose").addEventListener("click", () => ($("lb").hidden = true));
+  $("lb").addEventListener("click", (e) => { if (e.target.id === "lb") $("lb").hidden = true; });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") $("lb").hidden = true; });
 
 </script>
 </body>
