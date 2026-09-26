@@ -207,6 +207,18 @@
   .kpi { background: var(--white); border-radius: 16px; padding: 14px 16px; }
   .kpi b { display: block; font: italic 800 2.4rem/1 "Barlow Condensed", sans-serif; }
   .kpi span { color: var(--muted); font-size: .9rem; }
+  .kpi.green { background: #eaf8ef; } .kpi.red { background: #fdecee; } .kpi.neutral { background: #fff; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px; }
+  .split div { border-radius: 10px; padding: 7px 8px; background: rgba(255,255,255,.7); }
+  .split .sub-b { background: #e6f1fd; } .split .sub-y { background: #fff8dc; } .split .sub-g, .split .sub-g2 { background: #d8f3e4; }
+  .split b { display: block; font: 800 1.3rem/1 "Barlow Condensed", sans-serif; } .split span { font-size: .78rem; color: #444; }
+  .tlegend { display: flex; gap: 12px; align-items: center; font-size: .85rem; color: var(--muted); margin: 0 0 6px; }
+  .tlegend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: -6px; }
+  .tlegend i.p, .stack i.p { background: #000; } .tlegend i.u, .stack i.u { background: var(--pink); }
+  .tb { display: grid; grid-template-columns: 96px 1fr; gap: 4px 10px; align-items: center; margin: 10px 0; }
+  .stack { display: flex; height: 14px; background: var(--paper); border-radius: 7px; overflow: hidden; }
+  .stack i { display: block; height: 100%; }
+  .tv { grid-column: 2; font-size: .85rem; } .tv em { font-style: normal; color: var(--muted); }
   .kpi.hi { background: var(--black); color: var(--white); } .kpi.hi b { color: var(--pink); } .kpi.hi span { color: rgba(255,255,255,.75); }
   .dgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-top: 14px; }
   .dcard { background: var(--white); border-radius: 16px; padding: 14px 16px 16px; }
@@ -231,6 +243,17 @@
   .apreview b { font: italic 800 1rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; background: #000; color: #fe90ae; padding: 5px 8px; border-radius: 6px; }
   .acount { text-align: right; color: var(--muted); font-size: .85rem; }
   /* Menu after login */
+  .mhero { position: relative; overflow: hidden; background: #000; color: #fff; border-radius: 22px; padding: 26px 22px 24px; }
+  .mhero::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(118deg, transparent 0 42px, rgba(254,144,174,.24) 42px 44px);
+    -webkit-mask-image: linear-gradient(to left, #000, transparent 75%); mask-image: linear-gradient(to left, #000, transparent 75%); }
+  .mhero > * { position: relative; z-index: 1; }
+  .mhero .mk { display: inline-block; margin: 0 0 12px; background: var(--pink); color: #000; font: 700 .9rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; padding: 6px 9px; border-radius: 6px; }
+  .mhero h2 { font: italic 800 clamp(2rem, 8vw, 3.2rem)/.95 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--pink); margin: 0; }
+  .mhero .ml { margin: 12px 0 0; color: rgba(255,255,255,.85); font-weight: 600; max-width: 40ch; }
+  .menu button i { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; background: #000; margin-bottom: 12px; }
+  .menu button i svg { width: 26px; height: 26px; fill: none; stroke: var(--pink); stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+  .menu button:hover i { background: var(--pink); } .menu button:hover i svg { stroke: #000; }
   .menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 16px; }
   .menu button { font: inherit; color: var(--black); text-align: left; background: var(--white); border: 0; border-radius: 18px; padding: 20px 18px; cursor: pointer; box-shadow: 0 18px 40px -28px rgba(0,0,0,.4); }
   .menu button b { display: block; font: italic 800 1.7rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
@@ -317,6 +340,20 @@
   .lightbox img { display: block; max-width: 96vw; max-height: 86vh; border-radius: 12px; }
   .lightbox p { color: #fff; text-align: center; margin: 8px 0 0; font-weight: 700; }
   .ph .vbtn { background: var(--paper); color: var(--black); margin-right: 6px; }
+  /* Homepage gallery */
+  #hRace { width: 100%; background: var(--paper); }
+  .hgroup { background: #fff; border-radius: 16px; padding: 14px; margin-bottom: 12px; }
+  .hgroup h3 { font: italic 800 1.4rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 0; }
+  .hgroup .meta { color: var(--muted); font-size: .88rem; margin: 4px 0 10px; }
+  .hgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .hph { border-radius: 12px; overflow: hidden; background: var(--paper); border: 3px solid transparent; }
+  .hph.on { border-color: #0d7a45; }
+  .hph img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; cursor: zoom-in; }
+  .hph .cap { padding: 6px 8px; font-size: .8rem; }
+  .hph .cap b { font: 700 .9rem "Barlow Condensed", sans-serif; }
+  .hph .warn { display: block; color: #9c0019; font-weight: 700; font-size: .75rem; }
+  .hph button.feat { width: 100%; border: 0; padding: 8px; font: 700 .9rem "Barlow Condensed", sans-serif; cursor: pointer; background: #000; color: var(--pink); }
+  .hph.on button.feat { background: #0d7a45; color: #fff; }
   /* Gallery */
   .upbox { display: block; background: var(--white); border: 2px dashed var(--line); border-radius: 16px; padding: 22px 16px; text-align: center; cursor: pointer; }
   .upbox:focus-within { outline: 3px solid var(--pink); outline-offset: 2px; }
@@ -364,24 +401,42 @@
 
 
   <section class="panel" id="menuPanel">
+    <div class="mhero">
+      <p class="mk">UNBND Run Club · Mumbai</p>
+      <h2>Every runner who joins<br>makes the club stronger.</h2>
+      <p class="ml" id="mhLine">Let's build Mumbai's most loved run club, one start line at a time.</p>
+    </div>
     <div class="menu">
-      <button type="button" data-go="dashPanel"><b>Dashboard</b><span>Member totals and breakdowns by age, experience and more.</span></button>
-      <button type="button" data-go="regPanel"><b>Manage Registrations</b><span>Activate or deactivate members, add notes, download Excel.</span></button>
-      <button type="button" data-go="racePanel"><b>Post or Manage Races</b><span>Post a new race, view, edit or delete races.</span></button>
-      <button type="button" data-go="galleryPanel"><b>Manage Gallery</b><span>Add, view or delete photos for race covers.</span></button>
-      <button type="button" data-go="annPanel"><b>Announcement</b><span>Show or clear a notice ribbon at the top of the website.</span></button>
+      <button type="button" data-go="dashPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></i><b>Dashboard</b><span>Member totals, sign-up trends and breakdowns.</span></button>
+      <button type="button" data-go="regPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.3-6 6.5-6s5.9 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16.5 14.2c2.6.2 4.5 2.3 5 5.3"/></svg></i><b>Manage Registrations</b><span>Activate or deactivate members, add notes, download Excel.</span></button>
+      <button type="button" data-go="racePanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h11l-2 3.5L16 11H5"/><circle cx="17" cy="18" r="2.2"/><path d="M8 21c1.5-2 3.2-2.8 6.8-3"/></svg></i><b>Post or Manage Races</b><span>Post, view, edit or delete races, and manage race covers.</span></button>
+      <button type="button" data-go="homePanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="2"/><path d="M3 17l5-4.5 4 3.5 3-2.5 6 5"/></svg></i><b>Manage Homepage Gallery</b><span>Choose race day photos to show on the homepage.</span></button>
+      <button type="button" data-go="annPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4h3l7 5V5L6 10H3z"/><path d="M17 8.5a5 5 0 0 1 0 7M19.5 6a8.5 8.5 0 0 1 0 12"/></svg></i><b>Announcement</b><span>Show or clear a notice ribbon at the top of the website.</span></button>
     </div>
   </section>
 
   <section class="panel" id="dashPanel" hidden>
     <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Dashboard</h2></div>
     <div class="kpis" id="kpis"><div class="panel-loading">Loading…</div></div>
+    <div class="dcard" id="trend" style="margin-top:12px"></div>
     <div class="dtoggle" role="group" aria-label="Breakdown for">
       <button type="button" data-dset="all" aria-pressed="true">All registrations</button>
       <button type="button" data-dset="active" aria-pressed="false">Active members only</button>
       <button type="button" id="dRefresh" style="margin-left:auto">Refresh</button>
     </div>
     <div class="dgrid" id="dgrid"></div>
+  </section>
+
+  <section class="panel" id="homePanel" hidden>
+    <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Manage Homepage Gallery</h2></div>
+    <p class="note-exp">Photos members upload after a race appear here, grouped by race. Choose which ones show on the homepage. Please skip photos of members who opted out of photo sharing.</p>
+    <form class="acard" id="hUpForm" novalidate style="margin-bottom:14px">
+      <p class="lbl" style="margin:0 0 6px">Add your own photos to a race</p>
+      <select id="hRace" aria-label="Race"></select>
+      <label class="upbox" style="margin-top:10px"><input id="hFiles" type="file" accept="image/*" multiple><b>Upload and feature</b><span>Up to 10 at a time. These go straight onto the homepage.</span></label>
+    </form>
+    <div class="ghead"><b>Race day photos</b><button class="linkbtn" id="hRefresh" type="button" style="color:var(--black);border-color:var(--line)">Refresh</button></div>
+    <div id="hList"><div class="panel-loading">Loading…</div></div>
   </section>
 
   <section class="panel" id="annPanel" hidden>
@@ -413,15 +468,18 @@
       <input id="search" type="text" placeholder="Search name, Club ID, phone, email">
       <select id="filter">
         <option value="">All statuses</option>
-        <option>Pending</option>
-        <option>Active</option>
-        <option>Deactivated</option>
+        <option value="active">All Active</option>
+        <option value="activePaid">Active (Paid)</option>
+        <option value="activeUnpaid">Active (Unpaid)</option>
+        <option value="pendingPaid">Pending (Paid)</option>
+        <option value="pendingUnpaid">Pending (Unpaid)</option>
+        <option value="deactivated">Deactivated</option>
       </select>
       <button class="btn pink" id="refresh" type="button">Refresh</button>
       <button class="btn" id="download" type="button">Download Excel</button>
     </div>
     <div class="counts" id="counts"></div>
-    <p class="legend"><i style="background:#eaf8ef"></i>Active <i style="background:#e6f1fd"></i>Screenshot uploaded, waiting for review <i style="background:#fff8dc"></i>Pending, no screenshot <i style="background:#fdecee"></i>Deactivated</p>
+    <p class="legend"><i style="background:#eaf8ef"></i>Active <i style="background:#e6f1fd"></i>Pending Review (Paid) <i style="background:#fff8dc"></i>Pending Review (Unpaid) <i style="background:#fdecee"></i>Deactivated</p>
     <div class="tablewrap"><table id="table"></table></div>
   </section>
 
@@ -431,6 +489,7 @@
     <div class="subseg" role="group" aria-label="Race sections">
       <button type="button" data-rmode="post" aria-pressed="true">Post a Race</button>
       <button type="button" data-rmode="manage" aria-pressed="false">Manage a Race</button>
+      <button type="button" data-rmode="covers" aria-pressed="false">Manage Race Covers</button>
     </div>
 
     <!-- Manage a Race: list -->
@@ -438,6 +497,17 @@
       <p class="note-exp">Expired races are removed from the race schedule automatically after race day.</p>
       <div id="raceList" class="ulist"></div>
     </div>
+
+  <div id="coversBox" hidden>
+    <p class="note-exp">Race covers are the photos you choose from when posting a race.</p>
+    <label class="upbox">
+      <input id="gFiles" type="file" accept="image/*" multiple>
+      <b>Add race covers</b>
+      <span>Choose up to 10 at a time. Photos are resized automatically.</span>
+    </label>
+    <div class="ghead"><b id="gCount">Photos</b><button class="linkbtn" id="gRefresh" type="button" style="color:var(--black);border-color:var(--line)">Refresh</button></div>
+    <div class="grid" id="gGrid"></div>
+  </div>
 
     <!-- Post / edit form -->
     <form class="rcard" id="raceForm" novalidate>
@@ -494,16 +564,6 @@
     </form>
   </section>
 
-  <section class="panel" id="galleryPanel" hidden>
-    <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Manage Gallery</h2></div>
-    <label class="upbox">
-      <input id="gFiles" type="file" accept="image/*" multiple>
-      <b>Add photos</b>
-      <span>Choose up to 10 at a time. Photos are resized automatically and appear on the website within about a minute.</span>
-    </label>
-    <div class="ghead"><b id="gCount">Photos</b><button class="linkbtn" id="gRefresh" type="button" style="color:var(--black);border-color:var(--line)">Refresh</button></div>
-    <div class="grid" id="gGrid"></div>
-  </section>
 </div>
 
 <!-- Activate / deactivate confirmation with an optional note -->
@@ -630,11 +690,11 @@
 
   // ---------- Tabs ----------
   function showSection(id) {
-    ["menuPanel", "dashPanel", "regPanel", "racePanel", "galleryPanel", "annPanel"].forEach((p) => ($(p).hidden = p !== id));
+    ["menuPanel", "dashPanel", "regPanel", "racePanel", "homePanel", "annPanel"].forEach((p) => ($(p).hidden = p !== id));
     window.scrollTo({ top: 0 });
     if (id === "regPanel" && !regLoaded) loadRegistrations();
     if (id === "racePanel") openRaces();
-    if (id === "galleryPanel" && !galleryLoaded) loadGallery("Loading photos");
+    if (id === "homePanel") openHomeGallery();
     if (id === "dashPanel") openDashboard();
     if (id === "annPanel") openAnnouncement();
   }
@@ -675,15 +735,27 @@
     const f = $("filter").value;
     const counts = { Pending: 0, Active: 0, Deactivated: 0 };
     rows.forEach((r) => { if (counts[r[iStatus]] !== undefined) counts[r[iStatus]]++; });
-    const review = rows.filter((r) => r[iStatus] === "Pending" && r[iPay] === "Yes").length;
     $("counts").innerHTML = "<span>Total " + rows.length + "</span>" +
-      Object.keys(counts).map((k) => "<span>" + k + " " + counts[k] + "</span>").join("") + "<span>Waiting for review " + review + "</span>";
+      Object.keys(counts).map((k) => "<span>" + k + " " + counts[k] + "</span>").join("");
 
     let h = '<thead><tr><th class="act">Action</th><th title="Paid and active">₹</th>' + headers.map((x) => "<th>" + esc(x) + "</th>").join("") + "</tr></thead><tbody>";
     let shown = 0;
-    rows.forEach((r, k) => {
+    // Group by colour (green, blue, yellow, red); active members by Club ID, others in registration order
+    const iId = iOf("Club ID");
+    const band = (r) => r[iStatus] === "Active" ? 0 : r[iStatus] === "Pending" ? (r[iPay] === "Yes" ? 1 : 2) : 3;
+    const FILTERS = {
+      active: (r) => r[iStatus] === "Active", activePaid: (r) => r[iStatus] === "Active" && r[iPay] === "Yes", activeUnpaid: (r) => r[iStatus] === "Active" && r[iPay] !== "Yes",
+      pendingPaid: (r) => r[iStatus] === "Pending" && r[iPay] === "Yes", pendingUnpaid: (r) => r[iStatus] === "Pending" && r[iPay] !== "Yes", deactivated: (r) => r[iStatus] === "Deactivated",
+    };
+    const order = rows.map((r, k) => k).sort((a, b) => {
+      const d = band(rows[a]) - band(rows[b]); if (d) return d;
+      if (band(rows[a]) === 0) return String(rows[a][iId]).localeCompare(String(rows[b][iId]));
+      return a - b;
+    });
+    order.forEach((k) => {
+      const r = rows[k];
       const st = r[iStatus];
-      if ((f && st !== f) || (q && !r.join(" ").toLowerCase().includes(q))) return;
+      if ((f && FILTERS[f] && !FILTERS[f](r)) || (q && !r.join(" ").toLowerCase().includes(q))) return;
       shown++;
       const activate = st !== "Active";
       const paid = st === "Active" && r[iPay] === "Yes";
@@ -895,6 +967,8 @@
     document.querySelectorAll("[data-rmode]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.rmode === m)));
     $("manageBox").hidden = m !== "manage";
     $("raceForm").hidden = m !== "post";
+    $("coversBox").hidden = m !== "covers";
+    if (m === "covers" && !galleryLoaded) loadGallery("Loading photos");
     $("rErr").innerHTML = "";
     if (m === "post") fillForm(null);
     if (m === "manage") loadRaceList();
@@ -1136,6 +1210,55 @@
     $("promoSave").click();
   });
 
+
+  // ---------- Manage Homepage Gallery ----------
+  let homeData = null;
+  async function openHomeGallery(force) {
+    if (homeData && !force) return renderHome();
+    const out = await api({ action: "adminHomeList" }, "Loading photos", READ);
+    if (!out.ok) { $("hList").innerHTML = '<div class="panel-loading">' + esc((out.errors || ["Couldn't load"])[0]) + "</div>"; return; }
+    homeData = out;
+    $("hRace").innerHTML = '<option value="">Choose a race</option>' + out.races.map((r) => '<option value="' + esc(r.id) + '">' + esc(r.id + " · " + r.name + " · " + isoToDmy(r.date)) + "</option>").join("");
+    renderHome();
+  }
+  $("hRefresh").addEventListener("click", () => openHomeGallery(true));
+  function renderHome() {
+    const g = homeData.groups;
+    $("hList").innerHTML = g.length ? g.map((r) =>
+      '<div class="hgroup"><h3>' + esc(r.name) + '</h3><p class="meta">' + esc(r.id) + (r.date ? " · " + esc(r.day ? r.day + ", " : "") + niceDate(r.date) : "") + (r.start ? " · " + esc(r.start) : "") +
+      " · " + r.photos.filter((p) => p.featured).length + " of " + r.photos.length + ' on homepage</p><div class="hgrid">' +
+      r.photos.map((p) => '<div class="hph' + (p.featured ? " on" : "") + '"><img loading="lazy" src="' + esc(p.thumb) + '" alt="' + esc(p.name) + '" data-big="' + esc(p.url) + '">' +
+        '<div class="cap"><b>' + esc(p.name) + "</b>" + (p.consent === "No" ? '<span class="warn">Uploader opted out of photo sharing</span>' : "") + "</div>" +
+        '<button class="feat" type="button" data-feat="' + esc(p.fileId) + '" data-on="' + (p.featured ? "1" : "0") + '">' + (p.featured ? "On homepage · Remove" : "Show on homepage") + "</button></div>").join("") +
+      "</div></div>").join("") : '<div class="empty">No race day photos yet. Members can upload them on the races page for 3 days after each race.</div>';
+  }
+  $("hList").addEventListener("click", async (e) => {
+    const big = e.target.closest("[data-big]");
+    if (big) { $("photoViewImg").src = big.dataset.big; $("photoViewId").textContent = big.alt; $("photoView").hidden = false; return; }
+    const b = e.target.closest("[data-feat]"); if (!b) return;
+    const on = b.dataset.on !== "1";
+    const out = await api({ action: "adminHomeFeature", fileId: b.dataset.feat, featured: on }, on ? "Adding to homepage" : "Removing from homepage");
+    if (!out.ok) { toast((out.errors || ["Couldn't update"])[0]); return; }
+    homeData.groups.forEach((g) => g.photos.forEach((p) => { if (p.fileId === b.dataset.feat) p.featured = on; }));
+    renderHome();
+    toast(out.published === false ? "Saved, but the homepage wasn't updated. Please try again." : (on ? "Added. Live on the homepage in about a minute." : "Removed. Gone from the homepage in about a minute."));
+  });
+  $("hFiles").addEventListener("change", async () => {
+    const raceId = $("hRace").value;
+    const files = [...$("hFiles").files].filter((f) => /^image\//.test(f.type)).slice(0, 10);
+    $("hFiles").value = "";
+    if (!raceId) { toast("Choose a race first."); return; }
+    if (!files.length) return;
+    let done = 0, failed = 0, lastErr = "";
+    for (let i = 0; i < files.length; i++) {
+      let data; try { data = await compressPhoto(files[i]); } catch (x) { failed++; continue; }
+      const out = await api({ action: "adminHomeUpload", raceId: raceId, mimeType: "image/jpeg", data: data }, "Uploading " + (i + 1) + " of " + files.length);
+      if (out.ok) done++; else { failed++; lastErr = (out.errors || [""])[0]; }
+    }
+    toast(done + " uploaded to the homepage" + (failed ? ", " + failed + " failed. " + lastErr : ""));
+    openHomeGallery(true);
+  });
+
   // ---------- Website publishing status ----------
   function publishToast(out, doneMsg) {
     if (out.published === false) toast(doneMsg + " in the records, but the website couldn't be updated. Please save again in a minute.");
@@ -1162,15 +1285,30 @@
     const I = (h) => headers.indexOf(h);
     const st = I("Membership status");
     const count = (k) => rows.filter((r) => r[st] === k).length;
-    const weekAgo = Date.now() - 7 * 864e5;
-    const recent = rows.filter((r) => {
-      const m = /^(\d{2})\/(\d{2})\/(\d{4})/.exec(r[I("Timestamp")] || ""); return m && new Date(+m[3], +m[2] - 1, +m[1]).getTime() >= weekAgo;
-    }).length;
     const pay = I("Payment screenshot");
-    const paidActive = rows.filter((r) => r[st] === "Active" && r[pay] === "Yes").length;
-    $("kpis").innerHTML = [["Total registrations", rows.length, true], ["Active members", count("Active")], ["Paid active members", paidActive],
-      ["Pending activation", count("Pending")], ["Deactivated", count("Deactivated")], ["New in the last 7 days", recent]]
-      .map((k) => '<div class="kpi' + (k[2] ? " hi" : "") + '"><b>' + k[1] + "</b><span>" + k[0] + "</span></div>").join("");
+    const isPaid = (r) => r[pay] === "Yes";
+    const grp = (k) => rows.filter((r) => r[st] === k);
+    const act = grp("Active"), pen = grp("Pending"), dea = grp("Deactivated");
+    const split = (list, a, b) => '<div class="split"><div class="' + a + '"><b>' + list.filter(isPaid).length + '</b><span>Paid</span></div><div class="' + b + '"><b>' + list.filter((r) => !isPaid(r)).length + "</b><span>Unpaid</span></div></div>";
+    $("kpis").innerHTML =
+      '<div class="kpi hi"><b>' + rows.length + "</b><span>Total registrations</span></div>" +
+      '<div class="kpi green"><b>' + act.length + "</b><span>Active members</span>" + split(act, "sub-g", "sub-g2") + "</div>" +
+      '<div class="kpi neutral"><b>' + pen.length + "</b><span>Pending activation</span>" + split(pen, "sub-b", "sub-y") + "</div>" +
+      '<div class="kpi red"><b>' + dea.length + "</b><span>Deactivated</span></div>";
+
+    // Registrations received: time windows in India time, split paid / unpaid
+    const todayIso = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date());
+    const dayNo = (iso) => Math.round(Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) / 864e5);
+    const tNo = dayNo(todayIso);
+    const ago = (r) => { const m = /^(\d{2})\/(\d{2})\/(\d{4})/.exec(r[I("Timestamp")] || ""); return m ? tNo - dayNo(m[3] + "-" + m[2] + "-" + m[1]) : 9999; };
+    const buckets = [["Today", (a) => a === 0], ["Yesterday", (a) => a === 1], ["Last 3 days", (a) => a <= 2], ["Last 1 week", (a) => a <= 6], ["Last 2 weeks", (a) => a <= 13], ["Last 1 month", (a) => a <= 29]];
+    const bdata = buckets.map(([label, fn]) => { const l = rows.filter((r) => fn(ago(r))); return { label: label, paid: l.filter(isPaid).length, unpaid: l.filter((r) => !isPaid(r)).length }; });
+    const bmax = Math.max(1, ...bdata.map((b) => b.paid + b.unpaid));
+    $("trend").innerHTML = "<h3>Registrations received</h3>" +
+      '<p class="tlegend"><i class="p"></i>Paid <i class="u"></i>Unpaid</p>' +
+      bdata.map((b) => '<div class="tb"><span class="lbl2">' + b.label + '</span><span class="stack">' +
+        '<i class="p" style="width:' + (b.paid / bmax * 100).toFixed(1) + '%"></i><i class="u" style="width:' + (b.unpaid / bmax * 100).toFixed(1) + '%"></i></span>' +
+        '<span class="tv"><b>' + (b.paid + b.unpaid) + "</b> <em>" + b.paid + " paid · " + b.unpaid + " unpaid</em></span></div>").join("");
 
     const set = dset === "active" ? rows.filter((r) => r[st] === "Active") : rows;
     const n = set.length || 1;
