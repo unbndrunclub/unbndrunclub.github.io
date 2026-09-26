@@ -207,6 +207,13 @@
   .kpi { background: var(--white); border-radius: 16px; padding: 14px 16px; }
   .kpi b { display: block; font: italic 800 2.4rem/1 "Barlow Condensed", sans-serif; }
   .kpi span { color: var(--muted); font-size: .9rem; }
+  .regkpis [data-filter] { cursor: pointer; }
+  .regkpis .sel { outline: 3px solid var(--pink); outline-offset: 1px; }
+  .ttable { width: 100%; border-collapse: collapse; font-size: .95rem; }
+  .ttable th { background: none; color: var(--muted); position: static; font: 700 .8rem "Barlow", sans-serif; text-transform: uppercase; letter-spacing: .05em; text-align: right; padding: 6px 8px; border-bottom: 1.5px solid var(--line); }
+  .ttable td { text-align: right; padding: 9px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  .ttable th:first-child, .ttable td:first-child { text-align: left; }
+  .ttable tr:last-child td { border-bottom: 0; }
   .kpi.green { background: #eaf8ef; } .kpi.red { background: #fdecee; } .kpi.neutral { background: #fff; }
   .split { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px; }
   .split div { border-radius: 10px; padding: 7px 8px; background: rgba(255,255,255,.7); }
@@ -340,6 +347,25 @@
   .lightbox img { display: block; max-width: 96vw; max-height: 86vh; border-radius: 12px; }
   .lightbox p { color: #fff; text-align: center; margin: 8px 0 0; font-weight: 700; }
   .ph .vbtn { background: var(--paper); color: var(--black); margin-right: 6px; }
+  /* Race feedback */
+  .fbg { background: #fff; border-radius: 18px; padding: 16px; margin-bottom: 14px; }
+  .fbg h3 { font: italic 800 1.5rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 0; }
+  .fbg .meta { color: var(--muted); font-size: .9rem; margin: 6px 0 12px; }
+  .fbg .meta b { background: #000; color: var(--pink); font: 700 .85rem "Barlow Condensed", sans-serif; padding: 3px 7px; border-radius: 5px; margin-right: 6px; }
+  .fsum { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-bottom: 12px; }
+  .fsum > div { background: var(--paper); border-radius: 12px; padding: 10px 12px; }
+  .fsum b { display: block; font: italic 800 1.8rem/1 "Barlow Condensed", sans-serif; }
+  .fsum span { font-size: .8rem; color: var(--muted); }
+  .fsum .nps { background: #000; color: #fff; } .fsum .nps b { color: var(--pink); } .fsum .nps span { color: rgba(255,255,255,.75); }
+  .npsbar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; margin-top: 8px; }
+  .npsbar i { display: block; height: 100%; }
+  .fresp { border-top: 1px solid var(--line); padding: 10px 0; font-size: .92rem; }
+  .fresp .top { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+  .fresp .who { font: 700 1rem "Barlow Condensed", sans-serif; }
+  .fresp .when { color: var(--muted); font-size: .8rem; }
+  .chip { background: var(--paper); border-radius: 999px; padding: 2px 8px; font-size: .8rem; font-weight: 600; }
+  .chip.r { background: #fde3e6; color: #9c0019; } .chip.y { background: #fff3c4; color: #7a5a00; } .chip.g { background: #d8f3e4; color: #0b5e36; }
+  .fresp p { margin: 6px 0 0; } .fresp p small { display: block; color: var(--muted); font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; }
   /* Homepage gallery */
   #hRace { width: 100%; background: var(--paper); }
   .hgroup { background: #fff; border-radius: 16px; padding: 14px; margin-bottom: 12px; }
@@ -411,6 +437,7 @@
       <button type="button" data-go="regPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.3-6 6.5-6s5.9 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16.5 14.2c2.6.2 4.5 2.3 5 5.3"/></svg></i><b>Manage Registrations</b><span>Activate or deactivate members, add notes, download Excel.</span></button>
       <button type="button" data-go="racePanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h11l-2 3.5L16 11H5"/><circle cx="17" cy="18" r="2.2"/><path d="M8 21c1.5-2 3.2-2.8 6.8-3"/></svg></i><b>Post or Manage Races</b><span>Post, view, edit or delete races, and manage race covers.</span></button>
       <button type="button" data-go="homePanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="2"/><path d="M3 17l5-4.5 4 3.5 3-2.5 6 5"/></svg></i><b>Manage Homepage Gallery</b><span>Choose race day photos to show on the homepage.</span></button>
+      <button type="button" data-go="fbPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12.5h5"/></svg></i><b>Race Feedback</b><span>Ratings, recommend score and comments from each race.</span></button>
       <button type="button" data-go="annPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4h3l7 5V5L6 10H3z"/><path d="M17 8.5a5 5 0 0 1 0 7M19.5 6a8.5 8.5 0 0 1 0 12"/></svg></i><b>Announcement</b><span>Show or clear a notice ribbon at the top of the website.</span></button>
     </div>
   </section>
@@ -437,6 +464,12 @@
     </form>
     <div class="ghead"><b>Race day photos</b><button class="linkbtn" id="hRefresh" type="button" style="color:var(--black);border-color:var(--line)">Refresh</button></div>
     <div id="hList"><div class="panel-loading">Loading…</div></div>
+  </section>
+
+  <section class="panel" id="fbPanel" hidden>
+    <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Race Feedback</h2></div>
+    <div class="ghead" style="margin-top:0"><b>Grouped by race, newest first</b><button class="linkbtn" id="fbRefresh" type="button" style="color:var(--black);border-color:var(--line)">Refresh</button></div>
+    <div id="fbList"><div class="panel-loading">Loading…</div></div>
   </section>
 
   <section class="panel" id="annPanel" hidden>
@@ -471,6 +504,7 @@
         <option value="active">All Active</option>
         <option value="activePaid">Active (Paid)</option>
         <option value="activeUnpaid">Active (Unpaid)</option>
+        <option value="pending">All Pending</option>
         <option value="pendingPaid">Pending (Paid)</option>
         <option value="pendingUnpaid">Pending (Unpaid)</option>
         <option value="deactivated">Deactivated</option>
@@ -478,8 +512,8 @@
       <button class="btn pink" id="refresh" type="button">Refresh</button>
       <button class="btn" id="download" type="button">Download Excel</button>
     </div>
-    <div class="counts" id="counts"></div>
-    <p class="legend"><i style="background:#eaf8ef"></i>Active <i style="background:#e6f1fd"></i>Pending Review (Paid) <i style="background:#fff8dc"></i>Pending Review (Unpaid) <i style="background:#fdecee"></i>Deactivated</p>
+    <div class="kpis regkpis" id="regKpis"></div>
+    <p class="hint" style="margin:6px 0 10px">Tap a box to show only those members. Row colours match the boxes.</p>
     <div class="tablewrap"><table id="table"></table></div>
   </section>
 
@@ -690,13 +724,14 @@
 
   // ---------- Tabs ----------
   function showSection(id) {
-    ["menuPanel", "dashPanel", "regPanel", "racePanel", "homePanel", "annPanel"].forEach((p) => ($(p).hidden = p !== id));
+    ["menuPanel", "dashPanel", "regPanel", "racePanel", "homePanel", "fbPanel", "annPanel"].forEach((p) => ($(p).hidden = p !== id));
     window.scrollTo({ top: 0 });
     if (id === "regPanel" && !regLoaded) loadRegistrations();
     if (id === "racePanel") openRaces();
     if (id === "homePanel") openHomeGallery();
     if (id === "dashPanel") openDashboard();
     if (id === "annPanel") openAnnouncement();
+    if (id === "fbPanel") openFeedback();
   }
   document.querySelectorAll("[data-go]").forEach((b) => b.addEventListener("click", () => showSection(b.dataset.go)));
 
@@ -720,6 +755,11 @@
     if (out.ok) { setData(out); regLoaded = true; toast("Up to date"); } else toast((out.errors || ["Refresh failed"])[0]);
   });
   $("search").addEventListener("input", render);
+  $("regKpis").addEventListener("click", (e) => {
+    const el = e.target.closest("[data-filter]"); if (!el) return;
+    e.stopPropagation();
+    $("filter").value = el.dataset.filter; render();
+  });
   $("filter").addEventListener("change", render);
   setInterval(async () => {
     if (!passcode || !regLoaded || $("regPanel").hidden || document.hidden || !$("modal").hidden || editingK !== -1) return;
@@ -733,10 +773,8 @@
     const iStatus = iOf("Membership status"), iNotes = iOf("Admin notes"), iPay = iOf("Payment screenshot");
     const q = $("search").value.trim().toLowerCase();
     const f = $("filter").value;
-    const counts = { Pending: 0, Active: 0, Deactivated: 0 };
-    rows.forEach((r) => { if (counts[r[iStatus]] !== undefined) counts[r[iStatus]]++; });
-    $("counts").innerHTML = "<span>Total " + rows.length + "</span>" +
-      Object.keys(counts).map((k) => "<span>" + k + " " + counts[k] + "</span>").join("");
+    statCards("regKpis");
+    document.querySelectorAll("#regKpis [data-filter]").forEach((el) => el.classList.toggle("sel", el.dataset.filter === f));
 
     let h = '<thead><tr><th class="act">Action</th><th title="Paid and active">₹</th>' + headers.map((x) => "<th>" + esc(x) + "</th>").join("") + "</tr></thead><tbody>";
     let shown = 0;
@@ -745,7 +783,7 @@
     const band = (r) => r[iStatus] === "Active" ? 0 : r[iStatus] === "Pending" ? (r[iPay] === "Yes" ? 1 : 2) : 3;
     const FILTERS = {
       active: (r) => r[iStatus] === "Active", activePaid: (r) => r[iStatus] === "Active" && r[iPay] === "Yes", activeUnpaid: (r) => r[iStatus] === "Active" && r[iPay] !== "Yes",
-      pendingPaid: (r) => r[iStatus] === "Pending" && r[iPay] === "Yes", pendingUnpaid: (r) => r[iStatus] === "Pending" && r[iPay] !== "Yes", deactivated: (r) => r[iStatus] === "Deactivated",
+      pending: (r) => r[iStatus] === "Pending", pendingPaid: (r) => r[iStatus] === "Pending" && r[iPay] === "Yes", pendingUnpaid: (r) => r[iStatus] === "Pending" && r[iPay] !== "Yes", deactivated: (r) => r[iStatus] === "Deactivated",
     };
     const order = rows.map((r, k) => k).sort((a, b) => {
       const d = band(rows[a]) - band(rows[b]); if (d) return d;
@@ -1259,10 +1297,65 @@
     openHomeGallery(true);
   });
 
+
+  // ---------- Race Feedback ----------
+  let fbData = null;
+  async function openFeedback(force) {
+    if (fbData && !force) return renderFeedback();
+    const out = await api({ action: "adminFeedbackList" }, "Loading feedback", READ);
+    if (!out.ok) { $("fbList").innerHTML = '<div class="panel-loading">' + esc((out.errors || ["Couldn't load"])[0]) + "</div>"; return; }
+    fbData = out; renderFeedback();
+  }
+  $("fbRefresh").addEventListener("click", () => openFeedback(true));
+  function renderFeedback() {
+    const g = fbData.groups;
+    if (!g.length) { $("fbList").innerHTML = '<div class="empty">No feedback yet. Members can share feedback on the races page for 3 days after each race.</div>'; return; }
+    const avg = (list, k) => (list.reduce((a, r) => a + Number(r[k] || 0), 0) / list.length).toFixed(1);
+    $("fbList").innerHTML = g.map((race) => {
+      const rs = race.responses, n = rs.length;
+      const pro = rs.filter((r) => Number(r.nps) >= 9).length, pas = rs.filter((r) => Number(r.nps) >= 7 && Number(r.nps) <= 8).length, det = n - pro - pas;
+      const nps = Math.round((pro - det) / n * 100);
+      const pc = (x) => (x / n * 100).toFixed(1);
+      const tone = (v) => (v <= 6 ? "r" : v <= 8 ? "y" : "g");
+      return '<div class="fbg"><h3>' + esc(race.name) + '</h3><p class="meta"><b>' + esc(race.id) + "</b>" +
+        (race.date ? esc(race.day ? race.day + ", " : "") + niceDate(race.date) : "") + (race.time ? " · " + to12(race.time).text : "") + (race.start ? " · " + esc(race.start) : "") + "</p>" +
+        '<div class="fsum">' +
+        '<div class="nps"><b>' + (nps > 0 ? "+" : "") + nps + '</b><span>Recommend score (NPS)</span><div class="npsbar"><i style="width:' + pc(det) + '%;background:#d7263d"></i><i style="width:' + pc(pas) + '%;background:#f5b800"></i><i style="width:' + pc(pro) + '%;background:#20c46b"></i></div></div>' +
+        "<div><b>" + n + "</b><span>Responses</span></div>" +
+        "<div><b>" + avg(rs, "overall") + "</b><span>Overall (out of 5)</span></div>" +
+        "<div><b>" + avg(rs, "org") + "</b><span>Organisation and timing</span></div>" +
+        "<div><b>" + avg(rs, "route") + "</b><span>Route and start point</span></div></div>" +
+        '<p class="hint" style="margin:0 0 6px">' + pro + " promoters (9 to 10), " + pas + " passives (7 to 8), " + det + " detractors (0 to 6)</p>" +
+        rs.map((r) => '<div class="fresp"><div class="top"><span class="who">' + esc(r.who) + '</span><span class="when">' + esc(r.at) + "</span>" +
+          '<span class="chip">Overall ' + esc(r.overall) + '/5</span><span class="chip">Organisation ' + esc(r.org) + '/5</span><span class="chip">Route ' + esc(r.route) + "/5</span>" +
+          '<span class="chip ' + tone(Number(r.nps)) + '">Recommend ' + esc(r.nps) + "/10</span></div>" +
+          (r.liked ? "<p><small>Enjoyed most</small>" + esc(r.liked) + "</p>" : "") + (r.improve ? "<p><small>Could do better</small>" + esc(r.improve) + "</p>" : "") + "</div>").join("") +
+        "</div>";
+    }).join("");
+  }
+
   // ---------- Website publishing status ----------
   function publishToast(out, doneMsg) {
     if (out.published === false) toast(doneMsg + " in the records, but the website couldn't be updated. Please save again in a minute.");
     else toast(doneMsg + ". Live on the website in about a minute.");
+  }
+
+
+  // ---------- Member stat cards (Dashboard and Manage Registrations) ----------
+  // In Manage Registrations the cards also filter the table when tapped.
+  function statCards(target) {
+    const I = (h) => headers.indexOf(h), st = I("Membership status"), pay = I("Payment screenshot");
+    const isPaid = (r) => r[pay] === "Yes";
+    const grp = (k) => rows.filter((r) => r[st] === k);
+    const act = grp("Active"), pen = grp("Pending"), dea = grp("Deactivated");
+    const f = (key) => ' data-filter="' + key + '"';
+    const split = (list, a, b, fa, fb) => '<div class="split"><div class="' + a + '"' + f(fa) + '><b>' + list.filter(isPaid).length + '</b><span>Paid</span></div><div class="' + b + '"' + f(fb) + "><b>" +
+      list.filter((r) => !isPaid(r)).length + "</b><span>Unpaid</span></div></div>";
+    $(target).innerHTML =
+      '<div class="kpi hi"' + f("") + "><b>" + rows.length + "</b><span>Total registrations</span></div>" +
+      '<div class="kpi green"' + f("active") + "><b>" + act.length + "</b><span>Active members</span>" + split(act, "sub-g", "sub-g2", "activePaid", "activeUnpaid") + "</div>" +
+      '<div class="kpi neutral"' + f("pending") + "><b>" + pen.length + "</b><span>Pending activation</span>" + split(pen, "sub-b", "sub-y", "pendingPaid", "pendingUnpaid") + "</div>" +
+      '<div class="kpi red"' + f("deactivated") + "><b>" + dea.length + "</b><span>Deactivated</span></div>";
   }
 
   // ---------- Dashboard ----------
@@ -1287,14 +1380,7 @@
     const count = (k) => rows.filter((r) => r[st] === k).length;
     const pay = I("Payment screenshot");
     const isPaid = (r) => r[pay] === "Yes";
-    const grp = (k) => rows.filter((r) => r[st] === k);
-    const act = grp("Active"), pen = grp("Pending"), dea = grp("Deactivated");
-    const split = (list, a, b) => '<div class="split"><div class="' + a + '"><b>' + list.filter(isPaid).length + '</b><span>Paid</span></div><div class="' + b + '"><b>' + list.filter((r) => !isPaid(r)).length + "</b><span>Unpaid</span></div></div>";
-    $("kpis").innerHTML =
-      '<div class="kpi hi"><b>' + rows.length + "</b><span>Total registrations</span></div>" +
-      '<div class="kpi green"><b>' + act.length + "</b><span>Active members</span>" + split(act, "sub-g", "sub-g2") + "</div>" +
-      '<div class="kpi neutral"><b>' + pen.length + "</b><span>Pending activation</span>" + split(pen, "sub-b", "sub-y") + "</div>" +
-      '<div class="kpi red"><b>' + dea.length + "</b><span>Deactivated</span></div>";
+    statCards("kpis");
 
     // Registrations received: time windows in India time, split paid / unpaid
     const todayIso = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date());
@@ -1303,12 +1389,10 @@
     const ago = (r) => { const m = /^(\d{2})\/(\d{2})\/(\d{4})/.exec(r[I("Timestamp")] || ""); return m ? tNo - dayNo(m[3] + "-" + m[2] + "-" + m[1]) : 9999; };
     const buckets = [["Today", (a) => a === 0], ["Yesterday", (a) => a === 1], ["Last 3 days", (a) => a <= 2], ["Last 1 week", (a) => a <= 6], ["Last 2 weeks", (a) => a <= 13], ["Last 1 month", (a) => a <= 29]];
     const bdata = buckets.map(([label, fn]) => { const l = rows.filter((r) => fn(ago(r))); return { label: label, paid: l.filter(isPaid).length, unpaid: l.filter((r) => !isPaid(r)).length }; });
-    const bmax = Math.max(1, ...bdata.map((b) => b.paid + b.unpaid));
     $("trend").innerHTML = "<h3>Registrations received</h3>" +
-      '<p class="tlegend"><i class="p"></i>Paid <i class="u"></i>Unpaid</p>' +
-      bdata.map((b) => '<div class="tb"><span class="lbl2">' + b.label + '</span><span class="stack">' +
-        '<i class="p" style="width:' + (b.paid / bmax * 100).toFixed(1) + '%"></i><i class="u" style="width:' + (b.unpaid / bmax * 100).toFixed(1) + '%"></i></span>' +
-        '<span class="tv"><b>' + (b.paid + b.unpaid) + "</b> <em>" + b.paid + " paid · " + b.unpaid + " unpaid</em></span></div>").join("");
+      '<table class="ttable"><thead><tr><th>Period</th><th>Total</th><th>Paid</th><th>Unpaid</th></tr></thead><tbody>' +
+      bdata.map((b) => "<tr><td>" + b.label + "</td><td><b>" + (b.paid + b.unpaid) + "</b></td><td>" + b.paid + "</td><td>" + b.unpaid + "</td></tr>").join("") +
+      "</tbody></table>";
 
     const set = dset === "active" ? rows.filter((r) => r[st] === "Active") : rows;
     const n = set.length || 1;
