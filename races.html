@@ -216,13 +216,23 @@
   .rdi .t small { color: rgba(255,255,255,.7); }
   .rdi button { border: 0; border-radius: 12px; padding: 11px 14px; font: 700 1rem/1 "Barlow Condensed", sans-serif; cursor: pointer; background: var(--pink); color: #000; }
   .rdi button.alt { background: #fff; }
-  .rates { display: flex; gap: 6px; flex-wrap: wrap; }
-  .rates label { position: relative; }
+  /* Buttons stretch across the full row so the end labels sit under the first and last button */
+  .rates { display: flex; gap: 5px; }
+  .rates label { position: relative; flex: 1 1 0; min-width: 0; }
   .rates input { position: absolute; opacity: 0; }
-  .rates span { display: grid; place-items: center; min-width: 40px; height: 40px; border-radius: 10px; background: var(--paper); font-weight: 700; cursor: pointer; }
+  .rates span { display: grid; place-items: center; width: 100%; height: 42px; border-radius: 10px; background: var(--paper); font-weight: 700; cursor: pointer; border: 2px solid transparent; }
   .rates input:checked + span { background: #000; color: var(--pink); }
+  .rates[data-q="nps"] { gap: 3px; }
+  .rates[data-q="nps"] span { height: 40px; font-size: .92rem; border-radius: 8px; }
+  .rates .n-red { background: #fde3e6; color: #9c0019; }
+  .rates .n-yel { background: #fff3c4; color: #7a5a00; }
+  .rates .n-grn { background: #d8f3e4; color: #0b5e36; }
+  .rates input:checked + .n-red { background: #d7263d; color: #fff; border-color: #000; }
+  .rates input:checked + .n-yel { background: #f5b800; color: #000; border-color: #000; }
+  .rates input:checked + .n-grn { background: #0d7a45; color: #fff; border-color: #000; }
   .rates input:focus-visible + span { outline: 3px solid var(--pink); outline-offset: 2px; }
-  .scale { display: flex; justify-content: space-between; font-size: .8rem; color: var(--muted); margin-top: 4px; }
+  .scale { display: flex; justify-content: space-between; font-size: .8rem; color: var(--muted); margin-top: 6px; }
+  .scale span:last-child { text-align: right; }
   .mbox textarea { width: 100%; font: inherit; border: 1.5px solid transparent; border-radius: 12px; padding: 12px 14px; min-height: 80px; background: var(--paper); }
   .mbox textarea:focus { background: #fff; border-color: #000; outline: none; }
   .anon { display: flex; gap: 10px; align-items: center; margin: 12px 0 4px; }
@@ -721,7 +731,10 @@
   // Feedback form
   document.querySelectorAll(".rates").forEach((box) => {
     const lo = Number(box.dataset.min || 1), hi = Number(box.dataset.max || 5), q = box.dataset.q;
-    for (let i = lo; i <= hi; i++) box.insertAdjacentHTML("beforeend", '<label><input type="radio" name="q_' + q + '" value="' + i + '"><span>' + i + "</span></label>");
+    for (let i = lo; i <= hi; i++) {
+      const tone = q === "nps" ? (i <= 6 ? ' class="n-red"' : i <= 8 ? ' class="n-yel"' : ' class="n-grn"') : "";
+      box.insertAdjacentHTML("beforeend", '<label><input type="radio" name="q_' + q + '" value="' + i + '" aria-label="' + i + '"><span' + tone + ">" + i + "</span></label>");
+    }
   });
   $("fbAnon").addEventListener("change", () => ($("fbWho").hidden = $("fbAnon").checked));
   $("fbForm").addEventListener("submit", async (e) => {
