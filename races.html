@@ -209,6 +209,26 @@
   .state b { display: block; font: italic 800 1.8rem/1.1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin-bottom: 6px; }
   .skeleton { height: 360px; border-radius: 22px; background: linear-gradient(90deg, #e6e6ea, #f3f3f5, #e6e6ea); background-size: 200% 100%; animation: sk 1.2s infinite linear; }
   @keyframes sk { to { background-position: -200% 0; } }
+  .raceday { background: #000; color: #fff; border: 2px solid var(--pink); border-radius: 22px; padding: 18px 18px 8px; margin-bottom: 16px; }
+  .raceday h2 { font: italic 800 2rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--pink); margin: 0 0 4px; }
+  .rdi { border-top: 1px solid rgba(255,255,255,.15); padding: 12px 0; display: flex; gap: 10px 14px; align-items: center; flex-wrap: wrap; }
+  .rdi .t { flex: 1; min-width: 200px; } .rdi .t b { display: block; font: italic 800 1.35rem/1.1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .rdi .t small { color: rgba(255,255,255,.7); }
+  .rdi button { border: 0; border-radius: 12px; padding: 11px 14px; font: 700 1rem/1 "Barlow Condensed", sans-serif; cursor: pointer; background: var(--pink); color: #000; }
+  .rdi button.alt { background: #fff; }
+  .rates { display: flex; gap: 6px; flex-wrap: wrap; }
+  .rates label { position: relative; }
+  .rates input { position: absolute; opacity: 0; }
+  .rates span { display: grid; place-items: center; min-width: 40px; height: 40px; border-radius: 10px; background: var(--paper); font-weight: 700; cursor: pointer; }
+  .rates input:checked + span { background: #000; color: var(--pink); }
+  .rates input:focus-visible + span { outline: 3px solid var(--pink); outline-offset: 2px; }
+  .scale { display: flex; justify-content: space-between; font-size: .8rem; color: var(--muted); margin-top: 4px; }
+  .mbox textarea { width: 100%; font: inherit; border: 1.5px solid transparent; border-radius: 12px; padding: 12px 14px; min-height: 80px; background: var(--paper); }
+  .mbox textarea:focus { background: #fff; border-color: #000; outline: none; }
+  .anon { display: flex; gap: 10px; align-items: center; margin: 12px 0 4px; }
+  .anon input { width: 20px; height: 20px; accent-color: #000; }
+  .prog { background: var(--paper); border-radius: 999px; height: 10px; overflow: hidden; margin-top: 12px; }
+  .prog i { display: block; height: 100%; width: 0; background: #000; transition: width .3s; }
   .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
   .actions button, .actions a { border: 1.5px solid var(--black); background: var(--white); color: var(--black); border-radius: 12px; padding: 11px 14px;
     font: 700 1rem/1 "Barlow Condensed", sans-serif; cursor: pointer; text-decoration: none; }
@@ -246,9 +266,56 @@
 </section>
 
 <main>
+  <section class="raceday" id="raceday" hidden>
+    <h2>Race day</h2>
+    <p class="hint" style="color:rgba(255,255,255,.8)">Ran with us? Share your photos and tell us how it went. Open for 3 days after each race.</p>
+    <div id="raceDayList"></div>
+  </section>
   <div id="featured"><div class="skeleton" aria-label="Loading races"></div></div>
   <div class="more" id="moreWrap" hidden><h2>More upcoming races</h2><div class="rgrid" id="more"></div></div>
 </main>
+
+<div class="modal" id="photoModal" hidden role="dialog" aria-modal="true" aria-labelledby="phTitle">
+  <div class="mbox">
+    <button class="xbtn" type="button" data-x="photoModal" aria-label="Close">✕</button>
+    <h3 id="phTitle">Upload race day photos</h3>
+    <p class="hint" id="phRace" style="margin:0 0 6px"></p>
+    <p class="hint" style="margin:0">We'll do our best to feature you on our Instagram page and website. We always respect members who opted out of photo sharing when they registered.</p>
+    <form id="phForm" novalidate>
+      <div class="field"><label class="lbl" for="pId">Club ID</label><div class="idin"><b>UB</b><input id="pId" type="text" inputmode="numeric" maxlength="4" placeholder="0001" autocomplete="off"></div></div>
+      <div class="field"><label class="lbl" for="pPhone">Registered mobile number</label><input id="pPhone" type="tel" inputmode="numeric" maxlength="10" placeholder="10 digits" autocomplete="tel-national"></div>
+      <div class="field"><label class="lbl" for="pFiles">Photos <span class="optional">(up to 10 at a time, photos only)</span></label><input id="pFiles" type="file" accept="image/*" multiple></div>
+      <div class="summary" id="phErr" role="alert"></div>
+      <div class="prog" id="phProg" hidden><i></i></div>
+      <p class="hint" id="phStatus"></p>
+      <button class="btn" id="phBtn" type="submit">Upload photos</button>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="fbModal" hidden role="dialog" aria-modal="true" aria-labelledby="fbTitle">
+  <div class="mbox">
+    <button class="xbtn" type="button" data-x="fbModal" aria-label="Close">✕</button>
+    <h3 id="fbTitle">Race day feedback</h3>
+    <p class="hint" id="fbRace" style="margin:0 0 6px"></p>
+    <form id="fbForm" novalidate>
+      <label class="anon"><input id="fbAnon" type="checkbox"><span>Send my feedback anonymously</span></label>
+      <div id="fbWho">
+        <div class="field"><label class="lbl" for="fbId">Club ID</label><div class="idin"><b>UB</b><input id="fbId" type="text" inputmode="numeric" maxlength="4" placeholder="0001" autocomplete="off"></div></div>
+        <div class="field"><label class="lbl" for="fbPhone">Registered mobile number</label><input id="fbPhone" type="tel" inputmode="numeric" maxlength="10" placeholder="10 digits" autocomplete="tel-national"></div>
+      </div>
+      <div class="field"><span class="lbl">How was the race overall?</span><div class="rates" data-q="overall"></div><div class="scale"><span>Poor</span><span>Excellent</span></div></div>
+      <div class="field"><span class="lbl">Organisation and timing</span><div class="rates" data-q="organisation"></div><div class="scale"><span>Poor</span><span>Excellent</span></div></div>
+      <div class="field"><span class="lbl">Route and start point</span><div class="rates" data-q="route"></div><div class="scale"><span>Poor</span><span>Excellent</span></div></div>
+      <div class="field"><span class="lbl">How likely are you to recommend UNBND to a friend?</span><div class="rates" data-q="nps" data-min="0" data-max="10"></div><div class="scale"><span>Not likely</span><span>Very likely</span></div></div>
+      <div class="field"><label class="lbl" for="fbLiked">What did you enjoy most? <span class="optional">optional</span></label><textarea id="fbLiked" maxlength="1000"></textarea></div>
+      <div class="field"><label class="lbl" for="fbImprove">What could we do better? <span class="optional">optional</span></label><textarea id="fbImprove" maxlength="1000"></textarea></div>
+      <div class="summary" id="fbErr" role="alert"></div>
+      <button class="btn" id="fbBtn" type="submit">Send feedback</button>
+    </form>
+    <div id="fbDone" hidden style="text-align:center;padding:10px 0"><h3 style="margin:10px 0 6px">Thank you!</h3><p>Your feedback helps us make every run better.</p></div>
+  </div>
+</div>
 
 <div class="modal" id="cardModal" hidden role="dialog" aria-modal="true" aria-labelledby="cardTitle">
   <div class="mbox">
@@ -272,7 +339,7 @@
   </div>
 </div>
 
-<footer class="site-foot"><div class="wide"><span>&copy; <span class="yr">2026</span> UNBND Run Club. All rights reserved.</span><span><a href="https://chat.whatsapp.com/F031vsoBQIXANVwAoXJLbn" rel="noopener">Join our WhatsApp group</a> &nbsp;·&nbsp; Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></span></div></footer>
+<footer class="site-foot"><div class="wide"><span>&copy; <span class="yr">2026</span> UNBND Run Club. All rights reserved.</span><span>Follow us on Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></span></div></footer>
 <script>document.querySelectorAll(".yr").forEach(function (e) { e.textContent = new Date().getFullYear(); });</script>
 
 <script>
@@ -433,6 +500,20 @@
       "END:VEVENT", "END:VCALENDAR"].join("\r\n");
   }
 
+  function downloadIcs(r) {
+    const url = URL.createObjectURL(new Blob([icsFile(r)], { type: "text/calendar" }));
+    const a = document.createElement("a"); a.href = url; a.download = "UNBND-" + r.id + ".ics";
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 5000);
+  }
+  // Android: opens the phone's calendar app with the event filled in
+  function androidCal(r) {
+    const e = (t) => encodeURIComponent(t).replace(/;/g, "%3B");
+    return "intent:#Intent;action=android.intent.action.INSERT;type=vnd.android.cursor.dir/event;" +
+      "S.title=" + e(r.name) + ";S.eventLocation=" + e(where(r)) + ";S.description=" + e(calText(r)) + ";" +
+      "l.beginTime=" + raceStart(r).getTime() + ";l.endTime=" + raceEnd(r).getTime() + ";" +
+      "S.browser_fallback_url=" + encodeURIComponent(googleCal(r)) + ";end";
+  }
+
   // ---- Share on WhatsApp ----
   function waLink(r) {
     const t = r.name + "\n" + r.day + ", " + niceDate(r.date) + " at " + time12(r.time) + "\nStart: " + where(r) +
@@ -443,13 +524,14 @@
   document.addEventListener("click", (e) => {
     const find = (id) => lastList.find((x) => x.id === id);
     const cal = e.target.closest("[data-cal]"), ics = e.target.closest("[data-ics]"), wa = e.target.closest("[data-wa]"), card = e.target.closest("[data-card]");
-    if (cal) { const m = $("cal-" + cal.dataset.cal); m.hidden = !m.hidden; }
-    if (ics) {
-      const r = find(ics.dataset.ics);
-      const url = URL.createObjectURL(new Blob([icsFile(r)], { type: "text/calendar" }));
-      const a = document.createElement("a"); a.href = url; a.download = "UNBND-" + r.id + ".ics";
-      document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 5000);
+    if (cal) {
+      const r = find(cal.dataset.cal);
+      // Phones: Google's web links don't pass event details to the Calendar app, so use the phone's own route
+      if (/Android/i.test(navigator.userAgent)) { location.href = androidCal(r); return; }
+      if (/iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) { downloadIcs(r); return; }
+      const m = $("cal-" + cal.dataset.cal); m.hidden = !m.hidden;
     }
+    if (ics) downloadIcs(find(ics.dataset.ics));
     if (wa) window.open(waLink(find(wa.dataset.wa)), "_blank", "noopener");
     if (card) openCard(find(card.dataset.card));
   });
@@ -565,6 +647,99 @@
     document.body.appendChild(a); a.click(); a.remove();
   });
   loadRaces(renderRaces);
+
+  // ---- Race day: photos and feedback (race day and the 3 days after) ----
+  const addDaysIso = (iso, n) => { const [y, m, d] = iso.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10); };
+  let dayRaces = [], activeRace = null;
+  async function loadRaceDay() {
+    let all = null;
+    try { const res = await fetch("data/races.json?t=" + Date.now(), { cache: "no-store" }); if (res.ok) all = (await res.json()).races; } catch (e) {}
+    if (!all) { try { all = JSON.parse(localStorage.getItem("unbnd_races") || "null"); } catch (e) {} }
+    const t = todayIST();
+    dayRaces = (all || []).filter((r) => r.date <= t && t <= addDaysIso(r.date, 3)).sort((a, b) => (a.date < b.date ? 1 : -1));
+    if (!dayRaces.length) return;
+    $("raceDayList").innerHTML = dayRaces.map((r) => '<div class="rdi"><div class="t"><b>' + esc(r.name) + "</b><small>" + esc(r.id) + " · " + esc(r.day) + ", " + niceDate(r.date) + "</small></div>" +
+      '<button type="button" data-photos="' + esc(r.id) + '">Upload race day photos</button><button type="button" class="alt" data-fb="' + esc(r.id) + '">Share feedback</button></div>').join("");
+    $("raceday").hidden = false;
+  }
+  loadRaceDay();
+  const warm = () => { try { fetch(API_URL + "?warm=1", { mode: "no-cors", cache: "no-store" }).catch(() => {}); } catch (e) {} };
+  const digits = (id, n) => $(id).addEventListener("input", (e) => { let d = e.target.value.replace(/\D/g, ""); if (n === 10 && d.length === 12 && d.startsWith("91")) d = d.slice(2); e.target.value = d.slice(0, n); });
+  digits("pId", 4); digits("pPhone", 10); digits("fbId", 4); digits("fbPhone", 10);
+  document.querySelectorAll("[data-x]").forEach((b) => b.addEventListener("click", () => ($(b.dataset.x).hidden = true)));
+  ["photoModal", "fbModal"].forEach((id) => $(id).addEventListener("click", (e) => { if (e.target.id === id) $(id).hidden = true; }));
+  document.addEventListener("click", (e) => {
+    const p = e.target.closest("[data-photos]"), f = e.target.closest("[data-fb]");
+    if (p) { activeRace = dayRaces.find((r) => r.id === p.dataset.photos); $("phRace").textContent = activeRace.name + ", " + niceDate(activeRace.date);
+      $("phErr").innerHTML = ""; $("phStatus").textContent = ""; $("phProg").hidden = true; $("photoModal").hidden = false; warm(); }
+    if (f) { activeRace = dayRaces.find((r) => r.id === f.dataset.fb); $("fbRace").textContent = activeRace.name + ", " + niceDate(activeRace.date);
+      $("fbErr").innerHTML = ""; $("fbForm").hidden = false; $("fbDone").hidden = true; $("fbModal").hidden = false; warm(); }
+  });
+  const showErr = (id, list) => ($(id).innerHTML = "<ul>" + list.map((m) => "<li>" + esc(m) + "</li>").join("") + "</ul>");
+
+  // Photos: resized on the phone, sent one by one
+  function shrink(file) {
+    return new Promise((res, rej) => {
+      const url = URL.createObjectURL(file), img = new Image();
+      img.onload = () => {
+        const k = Math.min(1, 1600 / Math.max(img.width, img.height)), c = document.createElement("canvas");
+        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url); res(c.toDataURL("image/jpeg", 0.82).split(",")[1]);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); rej(); };
+      img.src = url;
+    });
+  }
+  $("phForm").addEventListener("submit", async (e) => {
+    e.preventDefault(); $("phErr").innerHTML = "";
+    const id = $("pId").value, ph = $("pPhone").value;
+    const files = [...$("pFiles").files].filter((f) => /^image\//.test(f.type));
+    const errs = [];
+    if (!/^\d{1,4}$/.test(id)) errs.push("Enter your Club ID.");
+    if (!/^[6-9]\d{9}$/.test(ph)) errs.push("Enter your 10-digit registered mobile number.");
+    if (!files.length) errs.push("Choose at least one photo.");
+    if (files.length > 10) errs.push("Please choose up to 10 photos at a time.");
+    if ($("pFiles").files.length !== files.length) errs.push("Only photos can be uploaded, not videos.");
+    if (errs.length) return showErr("phErr", errs);
+    const btn = $("phBtn"); btn.disabled = true;
+    $("phProg").hidden = false; const bar = $("phProg").querySelector("i");
+    let done = 0, failed = 0, lastErr = "";
+    for (let i = 0; i < files.length; i++) {
+      $("phStatus").textContent = "Uploading " + (i + 1) + " of " + files.length + "…";
+      let data; try { data = await shrink(files[i]); } catch (x) { failed++; continue; }
+      const out = await post({ action: "racePhoto", raceId: activeRace.id, clubId: "UB" + id.padStart(4, "0"), phone: ph, mimeType: "image/jpeg", data: data }, 60000);
+      if (out.ok) done++; else { failed++; lastErr = (out.errors || [""])[0]; if (/membership|closed/i.test(lastErr)) break; }
+      bar.style.width = Math.round(((i + 1) / files.length) * 100) + "%";
+    }
+    btn.disabled = false;
+    $("phStatus").textContent = done ? done + " photo" + (done > 1 ? "s" : "") + " uploaded. Thank you!" + (failed ? " " + failed + " couldn't be uploaded." : "") : "";
+    if (!done) showErr("phErr", [lastErr || "Upload failed. Please try again."]);
+    if (done) $("pFiles").value = "";
+  });
+
+  // Feedback form
+  document.querySelectorAll(".rates").forEach((box) => {
+    const lo = Number(box.dataset.min || 1), hi = Number(box.dataset.max || 5), q = box.dataset.q;
+    for (let i = lo; i <= hi; i++) box.insertAdjacentHTML("beforeend", '<label><input type="radio" name="q_' + q + '" value="' + i + '"><span>' + i + "</span></label>");
+  });
+  $("fbAnon").addEventListener("change", () => ($("fbWho").hidden = $("fbAnon").checked));
+  $("fbForm").addEventListener("submit", async (e) => {
+    e.preventDefault(); $("fbErr").innerHTML = "";
+    const val = (q) => (document.querySelector('input[name="q_' + q + '"]:checked') || {}).value;
+    const anon = $("fbAnon").checked, id = $("fbId").value, ph = $("fbPhone").value;
+    const errs = [];
+    if (!anon && !/^\d{1,4}$/.test(id)) errs.push("Enter your Club ID, or send anonymously.");
+    if (!anon && !/^[6-9]\d{9}$/.test(ph)) errs.push("Enter your registered mobile number, or send anonymously.");
+    if (["overall", "organisation", "route", "nps"].some((q) => val(q) === undefined)) errs.push("Please answer all four rating questions.");
+    if (errs.length) return showErr("fbErr", errs);
+    const btn = $("fbBtn"); btn.disabled = true; btn.textContent = "Sending…";
+    const out = await post({ action: "feedback", raceId: activeRace.id, anonymous: anon, clubId: anon ? "" : "UB" + id.padStart(4, "0"), phone: anon ? "" : ph,
+      overall: val("overall"), organisation: val("organisation"), route: val("route"), nps: val("nps"), liked: $("fbLiked").value, improve: $("fbImprove").value }, 40000);
+    btn.disabled = false; btn.textContent = "Send feedback";
+    if (!out.ok) return showErr("fbErr", out.errors || ["Something went wrong. Please try again."]);
+    $("fbForm").hidden = true; $("fbDone").hidden = false; $("fbForm").reset(); $("fbWho").hidden = false;
+  });
 </script>
 </body>
 </html>
