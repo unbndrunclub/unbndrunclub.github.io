@@ -706,7 +706,7 @@
       if (!showing()) return;
       const now = new Date(), h = Number(hourFmt.format(now));
       const p = {}; dateFmt.formatToParts(now).forEach((x) => (p[x.type] = x.value));
-      set($("mhGreet"), h >= 5 && h < 12 ? "Good morning" : h >= 12 && h < 17 ? "Good afternoon" : h >= 17 && h < 21 ? "Good evening" : "Hello");
+      set($("mhGreet"), h >= 5 && h < 12 ? "Good morning" : h >= 12 && h < 17 ? "Good afternoon" : h >= 17 && h < 21 ? "Good evening" : "Hello Admin!");
       set($("bdDate"), p.weekday + " " + p.day + " " + p.month);
     }
     const set = (el, v) => { if (el.textContent !== v) el.textContent = v; };
