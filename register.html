@@ -16,7 +16,7 @@
 <script src="site.js" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --black: #000000;
@@ -26,6 +26,7 @@
     --line: #e2e2e6;
     --muted: #686873;
     --error: #d0021b;
+    --green: #0d7a45;
     color-scheme: light;
     box-sizing: border-box;
     padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -37,12 +38,12 @@
     font: 400 16px/1.55 "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
     -webkit-font-smoothing: antialiased;
   }
-  .display { font-family: "Barlow Condensed", "Arial Narrow", sans-serif; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
   /* ---------- Hero ---------- */
   .hero {
     position: relative; overflow: hidden; background: var(--black); color: var(--white);
-    padding: calc(env(safe-area-inset-top, 0px) + 18px) 20px 120px;
+    padding: calc(env(safe-area-inset-top, 0px) + 18px) 20px 118px;
   }
   /* Running-track lanes sweeping across the hero */
   .hero::after {
@@ -51,137 +52,310 @@
     mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.35) 45%, transparent 75%);
     -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.35) 45%, transparent 75%);
   }
-  .bar { max-width: 620px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
-  .bar img { width: 56px; height: 56px; display: block; }
-  .bar .fee { margin: 0; text-align: right; line-height: 1.1; color: rgba(255,255,255,.7); font-size: .85rem; }
-  .bar .fee b { display: block; color: var(--pink); font: italic 800 1.6rem/1 "Barlow Condensed", sans-serif; }
-  .hero-inner { position: relative; z-index: 1; max-width: 620px; margin: 0 auto; padding-top: 44px; }
+  .hero-inner { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; padding-top: 34px; }
   h1 {
-    font: italic 800 clamp(3.8rem, 23vw, 7.5rem)/.86 "Barlow Condensed", "Arial Narrow", sans-serif;
+    font: italic 800 clamp(3.4rem, 18vw, 6.5rem)/.86 "Barlow Condensed", "Arial Narrow", sans-serif;
     text-transform: uppercase; letter-spacing: -.02em; margin: 0; color: var(--pink);
   }
-  .tagline { font: 600 1.3rem/1.3 "Barlow", sans-serif; margin: 18px 0 0; max-width: 26ch; }
-  .perks { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 0; padding: 0; list-style: none; }
+  .tagline { font: 600 1.3rem/1.3 "Barlow", sans-serif; margin: 16px 0 0; max-width: 26ch; }
+  .perks { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
   .perks li { font-size: .92rem; font-weight: 500; background: rgba(255,255,255,.1); border-radius: 999px; padding: 6px 12px; }
 
-  /* ---------- Form ---------- */
-  main { position: relative; z-index: 2; max-width: 620px; margin: -80px auto 0; padding: 0 14px 56px; }
-  .card { background: var(--white); border-radius: 22px; padding: 10px 22px 26px; box-shadow: 0 24px 60px -30px rgba(0,0,0,.45); }
-  .card-title { font: italic 800 2rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 18px 0 2px; }
-  .card-sub { color: var(--muted); margin: 0; }
-  fieldset { border: 0; padding: 0; margin: 26px 0 0; }
-  legend {
-    font: 700 1.3rem/1.2 "Barlow Condensed", "Arial Narrow", sans-serif; padding: 0 0 0 12px;
-    border-left: 4px solid var(--pink); float: left; width: 100%;
+  /* ---------- Layout: live bib + question card ---------- */
+  main { position: relative; z-index: 2; max-width: 1080px; margin: -84px auto 0; padding: 0 14px 56px; }
+  .journey { display: grid; gap: 14px; }
+  @media (min-width: 920px) {
+    .journey { grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; align-items: start; }
+    .bibwrap { order: 2; position: sticky; top: 16px; }
   }
-  legend + * { clear: both; }
-  .hint { color: var(--muted); font-size: .92rem; margin: 6px 0 0; }
 
-  .field { margin-top: 16px; }
-  label.lbl { display: block; font-weight: 600; margin-bottom: 6px; }
-  input[type="text"], input[type="tel"], input[type="email"], input[type="number"], select {
-    width: 100%; font: inherit; color: var(--black); background: var(--paper);
-    border: 1.5px solid transparent; border-radius: 12px; padding: 13px 14px;
-    appearance: none; -webkit-appearance: none; transition: border-color .15s, background .15s;
+  /* ---------- Live race bib ---------- */
+  .bibcap { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 8px; background: #000; color: #fff; border: 1px solid rgba(254,144,174,.55);
+    border-radius: 999px; padding: 6px 12px; font: 700 .72rem/1 "Barlow", sans-serif; text-transform: uppercase; letter-spacing: .08em; }
+  .bibcap i { width: 8px; height: 8px; border-radius: 50%; background: var(--pink); animation: blink 1.6s ease-in-out infinite; }
+  @keyframes blink { 50% { opacity: .25; } }
+  .lbib { position: relative; overflow: hidden; background: #fff; color: #000; border: 2.5px solid #000; border-radius: 16px; box-shadow: 0 22px 50px -26px rgba(0,0,0,.65); }
+  .lbib .pin { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--paper); border: 2px solid #000; }
+  .lbib .p1 { top: 8px; left: 8px; } .lbib .p2 { top: 8px; right: 8px; } .lbib .p3 { bottom: 8px; left: 8px; } .lbib .p4 { bottom: 8px; right: 8px; }
+  .lbib-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .lbib .club { background: #000; color: var(--pink); font: 700 .85rem/1 "Barlow Condensed", sans-serif; padding: 5px 9px; border-radius: 6px; letter-spacing: .04em; }
+  .lbib .bibmeta { font: 700 .7rem/1 "Barlow", sans-serif; letter-spacing: .1em; color: var(--muted); text-transform: uppercase; }
+  .lbib .bibmeta .mob { display: none; }
+  .lbib .bibmeta .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--pink); margin-right: 6px; vertical-align: 1px; animation: blink 1.6s ease-in-out infinite; }
+  .lbib-num { display: block; font: italic 800 4.4rem/1 "Barlow Condensed", "Arial Narrow", sans-serif; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+  .lbib-num .q { color: #c9c9cf; }
+  .lbib-name { display: block; font: 800 1.45rem/1.1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .02em; overflow-wrap: anywhere; }
+  .lbib .ph { color: #b3b3bb; }
+  .lbib-tags small { display: block; font: 700 .64rem/1.2 "Barlow", sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .lbib-tags b { display: inline-block; font: 800 1.05rem/1.15 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .lbib .shine { position: absolute; inset: 0; pointer-events: none; transform: translateX(-120%);
+    background: linear-gradient(105deg, transparent 35%, rgba(254,144,174,.45) 50%, transparent 65%); }
+  .lbib.complete .shine { animation: shine 1.3s ease-out 1; }
+  @keyframes shine { to { transform: translateX(120%); } }
+  .stamp { position: absolute; right: 16px; bottom: 18px; transform: rotate(-9deg); border: 2.5px solid #c2185b; color: #c2185b; background: rgba(255,255,255,.9);
+    font: 800 .95rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .06em; padding: 5px 8px; border-radius: 6px; }
+  /* Phones: a compact, wide bib */
+  @media (max-width: 919px) {
+    .lbib { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "top top" "name num" "tags num"; column-gap: 12px; row-gap: 6px; padding: 14px 24px; }
+    .lbib-top { grid-area: top; }
+    .lbib-name { grid-area: name; font-size: 1.35rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .lbib-num { grid-area: num; align-self: center; font-size: 2.5rem; }
+    .lbib-tags { grid-area: tags; display: flex; flex-wrap: wrap; gap: 4px 12px; }
+    .lbib-tags span { display: inline-flex; align-items: baseline; gap: 5px; }
+    .lbib-tags small { display: inline; }
+    .lbib-tags b { font-size: .95rem; }
+    .stamp { bottom: auto; top: 12px; right: 30px; font-size: .78rem; }
+    .lbib.stamped .bibmeta { visibility: hidden; }
+    /* Shorter hero so the first question sits higher on the screen */
+    .hero { padding-bottom: 100px; }
+    .hero-inner { padding-top: 16px; }
+    h1 { font-size: clamp(2.5rem, 12vw, 3.4rem); }
+    .bibcap { display: none; }          /* on phones the bib says "Live preview" itself */
+    .lbib .bibmeta .full { display: none; }
+    .lbib .bibmeta .mob { display: inline; }
+    .run-head { padding-top: 14px; }
+    .steps { padding-top: 14px; }
+    .step.out { top: 14px; }
+    .q-sub { margin-bottom: 14px; }
+    .tagline { display: none; }
+    .perks { flex-wrap: nowrap; overflow-x: auto; margin: 14px -20px 0; padding: 0 20px; scrollbar-width: none; }
+    .perks::-webkit-scrollbar { display: none; }
+    .perks li { flex: none; white-space: nowrap; font-size: .86rem; }
   }
-  input:focus, select:focus { background: var(--white); border-color: var(--black); outline: none; }
-  select {
-    background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
-    background-position: calc(100% - 20px) 55%, calc(100% - 14px) 55%;
-    background-size: 6px 6px; background-repeat: no-repeat; padding-right: 40px;
+  @media (min-width: 920px) {
+    .lbib { padding: 22px 24px 22px; text-align: center; }
+    .lbib-num { margin: 14px 0 4px; }
+    .lbib-name { min-height: 1.1em; }
+    .lbib-tags { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 2px dashed #000; }
   }
-  button:focus-visible, a:focus-visible, .check input:focus-visible { outline: 3px solid var(--pink); outline-offset: 2px; }
-  .invalid input, .invalid select { border-color: var(--error); background: var(--white); }
-  .err { color: var(--error); font-size: .9rem; margin: 6px 0 0; }
+
+  /* ---------- Question card ---------- */
+  .run { position: relative; background: #fff; border-radius: 22px; box-shadow: 0 24px 60px -30px rgba(0,0,0,.45); overflow: hidden; }
+  .run-head { padding: 16px 20px 2px; }
+  .meta { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font: 700 .76rem/1.2 "Barlow", sans-serif; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+  .meta b { color: #000; }
+  .wb { margin: 10px 0 0; background: #fff1f5; border-radius: 10px; padding: 8px 12px; font-size: .92rem; }
+  /* Progress: a running track with a runner, checkpoints and a finish flag */
+  .track { position: relative; height: 24px; margin: 12px 34px 0 9px; }
+  .rail, .fill { position: absolute; left: 0; right: 0; top: 10px; height: 4px; border-radius: 2px; background: var(--paper); }
+  .fill { background: var(--pink); transform-origin: left; transform: scaleX(0); transition: transform .6s cubic-bezier(.3,.9,.3,1); }
+  .cp { position: absolute; top: 12px; width: 10px; height: 10px; margin: -5px 0 0 -5px; padding: 0; border-radius: 50%; background: #fff; border: 2px solid #cfcfd5; cursor: pointer; }
+  .cp::before { content: ""; position: absolute; inset: -9px; }
+  .cp.done { background: var(--pink); border-color: var(--pink); }
+  .cp:disabled { cursor: default; }
+  .cp:focus-visible { outline: 3px solid #000; outline-offset: 2px; }
+  .runner { position: absolute; top: 12px; left: 0; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: var(--pink); pointer-events: none;
+    box-shadow: 0 0 0 4px rgba(254,144,174,.25), 0 0 14px rgba(254,144,174,.9); transition: left .6s cubic-bezier(.3,.9,.3,1); z-index: 1; }
+  .runner::before { content: ""; position: absolute; top: 7px; right: 9px; width: 0; height: 4px; border-radius: 2px; background: linear-gradient(90deg, transparent, var(--pink)); transition: width .25s; }
+  .runner.moving::before { width: 46px; }
+  .runner.moving.rev::before { right: auto; left: 9px; background: linear-gradient(270deg, transparent, var(--pink)); }
+  .flag { position: absolute; right: -30px; top: 0; width: 22px; height: 16px; border: 1.5px solid #000; border-radius: 2px;
+    background: conic-gradient(#000 25%, #fff 0 50%, #000 0 75%, #fff 0) 0 0 / 7px 7px; }
+  .flag::after { content: ""; position: absolute; left: -1.5px; top: 14px; width: 2px; height: 10px; background: #000; }
+
+  .steps { position: relative; padding: 18px 20px 4px; }
+  .q-kick { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 0 10px; min-height: 24px; }
+  .chip { font: 700 .72rem/1 "Barlow", sans-serif; text-transform: uppercase; letter-spacing: .08em; padding: 6px 9px; border-radius: 999px; }
+  .chip.req { background: #000; color: var(--pink); }
+  .chip.opt { background: #fff; color: var(--muted); border: 1.5px dashed #b3b3bb; }
+  .cheer { font: italic 800 1.02rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; background: linear-gradient(transparent 58%, rgba(254,144,174,.6) 0); padding: 0 2px; }
+  .cheer:empty { display: none; }
+  .q-title { font: italic 800 clamp(1.9rem, 7.4vw, 2.5rem)/1.02 "Barlow Condensed", "Arial Narrow", sans-serif; margin: 0; }
+  .q-title:focus { outline: none; }
+  .q-sub { color: var(--muted); margin: 8px 0 18px; }
+  .help { color: var(--muted); font-size: .92rem; margin: 10px 0 0; }
+  .help:empty { display: none; }
+  .err { color: var(--error); font-weight: 600; font-size: .95rem; margin: 10px 0 0; }
   .err:empty { display: none; }
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-  .sizes { display: flex; flex-wrap: wrap; gap: 8px; }
-  .sizes label { position: relative; }
-  .sizes input { position: absolute; opacity: 0; inset: 0; }
-  .sizes span {
-    display: inline-block; min-width: 56px; text-align: center; padding: 11px 12px; background: var(--paper);
-    border: 1.5px solid transparent; border-radius: 12px; font: 700 1.05rem/1 "Barlow Condensed", sans-serif; cursor: pointer;
-  }
-  .sizes input:checked + span { background: var(--black); color: var(--pink); }
-  .sizes input:focus-visible + span { outline: 3px solid var(--pink); outline-offset: 2px; }
-  .invalid .sizes span { border-color: var(--error); }
+  /* Big one-line answers */
+  .big { position: relative; display: flex; align-items: flex-end; gap: 10px; border-bottom: 3px solid var(--line); transition: border-color .2s; }
+  .big:focus-within { border-bottom-color: #000; }
+  .big::after { content: ""; position: absolute; left: 0; right: 0; bottom: -3px; height: 3px; background: var(--pink); transform: scaleX(0); transform-origin: left; transition: transform .35s cubic-bezier(.2,.8,.2,1); }
+  .big.ok::after { transform: scaleX(1); }
+  .big.invalid { border-bottom-color: var(--error); }
+  .big input { flex: 1; min-width: 0; border: 0; outline: none; background: transparent; border-radius: 0; color: #000; padding: 10px 0;
+    font: 600 clamp(1.35rem, 5.4vw, 1.75rem)/1.25 "Barlow", sans-serif; -webkit-appearance: none; appearance: none; }
+  .big input::placeholder { color: #b3b3bb; font-weight: 500; }
+  .big .prefix, .big .unit { flex: none; font: 700 1.35rem/1 "Barlow Condensed", sans-serif; color: var(--muted); padding-bottom: 14px; }
+  .big.short { max-width: 230px; }
+  .okmark { flex: none; position: relative; width: 26px; height: 26px; margin-bottom: 11px; border-radius: 50%; background: var(--green); transform: scale(0); transition: transform .3s cubic-bezier(.2,.8,.2,1.4); }
+  .okmark::after { content: ""; position: absolute; left: 9px; top: 5px; width: 6px; height: 11px; border: solid #fff; border-width: 0 3px 3px 0; transform: rotate(45deg); }
+  .big.ok .okmark { transform: scale(1); }
+  .fix { border: 0; background: #fff1f5; border-radius: 999px; padding: 7px 12px; font: 600 .95rem "Barlow", sans-serif; cursor: pointer; }
+  .fix b { text-decoration: underline; }
+  .quick { margin-top: 14px; border: 1.5px solid #000; background: #fff; border-radius: 999px; padding: 9px 14px; font: 700 1rem/1 "Barlow Condensed", sans-serif; cursor: pointer; }
 
-  .check { display: flex; gap: 12px; align-items: flex-start; margin-top: 14px; }
-  .check input { width: 20px; height: 20px; margin: 2px 0 0; flex: none; accent-color: var(--black); }
-  .check.invalid span { color: var(--error); }
-  .optional { color: var(--muted); font-weight: 400; }
+  /* Tap-and-go choice cards */
+  .choices { display: grid; gap: 10px; }
+  .choice { position: relative; display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 16px; background: var(--paper); border: 2px solid transparent;
+    cursor: pointer; transition: background .2s, border-color .2s, color .2s; -webkit-tap-highlight-color: transparent; }
+  .choice:hover { border-color: #d5d5db; }
+  .choice input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+  .choice .key { flex: none; display: none; width: 26px; height: 26px; border-radius: 7px; border: 1.5px solid #c9c9cf; place-items: center; font: 700 .82rem/1 "Barlow", sans-serif; color: var(--muted); }
+  @media (hover: hover) and (pointer: fine) { .choice .key { display: grid; } }
+  .choice .t { flex: 1; min-width: 0; }
+  .choice .t b { display: block; font: italic 800 1.35rem/1.1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .choice .t small { display: block; color: var(--muted); font-size: .92rem; line-height: 1.35; margin-top: 2px; }
+  .choice .tick { flex: none; position: relative; width: 26px; height: 26px; border-radius: 50%; border: 2px solid #c9c9cf; transition: background .2s, border-color .2s; }
+  .choice .tick::after { content: ""; position: absolute; left: 7px; top: 3px; width: 6px; height: 11px; border: solid #000; border-width: 0 3px 3px 0; transform: rotate(45deg) scale(0); transition: transform .25s cubic-bezier(.2,.8,.2,1.5); }
+  .choice.on { background: #000; color: #fff; border-color: #000; animation: pick .35s cubic-bezier(.2,.8,.2,1.3); }
+  .choice.on .t small { color: rgba(255,255,255,.75); }
+  .choice.on .key { border-color: var(--pink); color: var(--pink); }
+  .choice.on .tick { background: var(--pink); border-color: var(--pink); }
+  .choice.on .tick::after { transform: rotate(45deg) scale(1); }
+  .choice:has(input:focus-visible) { outline: 3px solid var(--pink); outline-offset: 2px; }
+  .invalid .choice { border-color: var(--error); }
+  @keyframes pick { 40% { transform: scale(1.03); } }
+  /* Pace: speed bars that rev up when picked */
+  .meter { flex: none; display: flex; gap: 3px; }
+  .meter i { width: 6px; height: 18px; border-radius: 2px; background: #d7d7dc; transform: skewX(-18deg); }
+  .meter i.f { background: #000; }
+  .choice.on .meter i { background: rgba(255,255,255,.2); }
+  .choice.on .meter i.f { background: var(--pink); animation: rev .45s ease-out both; }
+  .choice.on .meter i.f:nth-child(2) { animation-delay: .06s; } .choice.on .meter i.f:nth-child(3) { animation-delay: .12s; } .choice.on .meter i.f:nth-child(4) { animation-delay: .18s; }
+  @keyframes rev { from { transform: skewX(-18deg) scaleY(.2); opacity: .2; } }
+  /* T-shirt sizes: the shirt grows with the size */
+  .sizes { grid-template-columns: repeat(4, 1fr); }
+  @media (min-width: 560px) { .sizes { grid-template-columns: repeat(7, 1fr); } }
+  .choice.sz { flex-direction: column; justify-content: center; gap: 4px; padding: 16px 4px 10px; text-align: center; }
+  .sz svg { width: 38px; height: 34px; fill: #cfcfd5; transform: scale(var(--s)); transition: fill .2s; }
+  .choice.sz.on svg { fill: var(--pink); }
+  .sz b { font: italic 800 1.2rem/1 "Barlow Condensed", sans-serif; }
+  .sz .key { position: absolute; top: 6px; left: 6px; width: 20px; height: 20px; font-size: .7rem; border-radius: 5px; }
 
-  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  /* Pre-run checklist */
+  .checks { display: grid; gap: 10px; }
+  .ck { position: relative; display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; border-radius: 16px; background: var(--paper); border: 2px solid transparent; cursor: pointer;
+    transition: background .2s, border-color .2s; -webkit-tap-highlight-color: transparent; }
+  .ck input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+  .ck .box { flex: none; position: relative; width: 28px; height: 28px; margin-top: 1px; border-radius: 8px; border: 2px solid #b3b3bb; background: #fff; transition: background .2s, border-color .2s; }
+  .ck .box::after { content: ""; position: absolute; left: 8px; top: 3px; width: 7px; height: 13px; border: solid #000; border-width: 0 3px 3px 0; transform: rotate(45deg) scale(0); transition: transform .25s cubic-bezier(.2,.8,.2,1.5); }
+  .ck.on { background: #fff1f5; border-color: var(--pink); }
+  .ck.on .box { background: var(--pink); border-color: var(--pink); }
+  .ck.on .box::after { transform: rotate(45deg) scale(1); }
+  .ck:has(input:focus-visible) { outline: 3px solid #000; outline-offset: 2px; }
+  .ck.invalid { border-color: var(--error); }
+  .ck .body b { display: block; font: italic 800 1.15rem/1.1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin-bottom: 2px; }
+  .ck .body span { font-size: .95rem; line-height: 1.45; }
+  .ck a { color: inherit; font-weight: 700; }
+  .ck .rules { display: block; margin-top: 6px; font-size: .9rem; color: #444; }
+  .ckcount { margin: 12px 0 0; font-weight: 700; color: var(--muted); }
 
-  .btn {
-    display: block; width: 100%; margin-top: 28px; border: 0; border-radius: 14px; padding: 17px 18px;
-    font: italic 800 1.35rem/1 "Barlow Condensed", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: .02em;
-    background: var(--black); color: var(--pink); cursor: pointer; text-align: center; text-decoration: none;
-    transition: transform .12s;
-  }
-  .btn:active { transform: scale(.98); }
-  .btn.pink { background: var(--pink); color: var(--black); }
-  .btn[disabled] { opacity: .6; cursor: progress; }
-  .summary { margin-top: 18px; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--error); color: var(--error); }
+  /* Race check (review) */
+  .rv { border-radius: 16px; background: var(--paper); overflow: hidden; }
+  .rv-row { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-top: 1px solid #e3e3e8; }
+  .rv-row:first-child { border-top: 0; }
+  .rv-row div { flex: 1; min-width: 0; }
+  .rv-row small { display: block; color: var(--muted); font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; }
+  .rv-row b { display: block; font-weight: 600; overflow-wrap: anywhere; }
+  .rv-row .edit { flex: none; border: 1.5px solid #000; background: #fff; border-radius: 999px; padding: 6px 12px; font: 700 .92rem/1 "Barlow Condensed", sans-serif; cursor: pointer; }
+  .summary { margin-top: 16px; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--error); color: var(--error); }
   .summary:empty { display: none; }
   .summary ul { margin: 6px 0 0; padding-left: 20px; }
 
-  /* ---------- Success: race bib ---------- */
-  .bib {
-    position: relative; background: var(--white); color: var(--black); border-radius: 16px;
-    border: 2.5px solid var(--black); padding: 24px 20px 20px; text-align: center; margin: 14px 0 18px;
+  /* Buttons under the question */
+  .run-foot { padding: 16px 20px 18px; }
+  .run-nav { display: flex; gap: 10px; }
+  .back { flex: none; border: 1.5px solid var(--line); background: #fff; color: #000; border-radius: 14px; padding: 0 16px; font: 700 1.05rem/1 "Barlow Condensed", sans-serif; cursor: pointer; }
+  .next { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; border: 0; border-radius: 14px; padding: 17px 18px; cursor: pointer;
+    font: italic 800 1.3rem/1 "Barlow Condensed", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: .02em;
+    background: #3a3a40; color: rgba(255,255,255,.78); transition: background .2s, color .2s, box-shadow .2s, transform .12s; }
+  .next svg { width: 15px; height: 15px; fill: currentColor; }
+  .next.ready { background: #000; color: var(--pink); box-shadow: 0 10px 24px -12px rgba(254,144,174,.95); }
+  .next.ready .lock, .next:not(.ready) .arr, .next:not(.final) .fl { display: none; }
+  .next.ready .arr { animation: nudge 1.2s ease-in-out infinite; }
+  @keyframes nudge { 50% { transform: translateX(4px); } }
+  .next.final { background: var(--pink); color: #000; }
+  .next.final .arr { display: none; }
+  .fl { width: 18px; height: 14px; border: 1.5px solid #000; border-radius: 2px; background: conic-gradient(#000 25%, #fff 0 50%, #000 0 75%, #fff 0) 0 0 / 6px 6px; }
+  .next:active { transform: scale(.98); }
+  .next[disabled] { opacity: .6; cursor: progress; }
+  .back:focus-visible, .next:focus-visible, .edit:focus-visible, .quick:focus-visible, .fix:focus-visible, a:focus-visible { outline: 3px solid var(--pink); outline-offset: 2px; }
+  .enter-hint { display: none; margin: 10px 2px 0; text-align: right; font-size: .82rem; color: var(--muted); }
+  @media (hover: hover) and (pointer: fine) { .enter-hint:not([hidden]) { display: block; } }
+  kbd { font: 600 .78rem "Barlow", sans-serif; border: 1px solid #c9c9cf; border-bottom-width: 2px; border-radius: 5px; padding: 1px 6px; background: #fff; }
+
+  /* ---------- Motion ---------- */
+  @keyframes inF { from { opacity: 0; transform: translateX(56px) skewX(-7deg); filter: blur(3px); } }
+  @keyframes outF { to { opacity: 0; transform: translateX(-70px) skewX(7deg); filter: blur(3px); } }
+  @keyframes inB { from { opacity: 0; transform: translateX(-56px) skewX(7deg); filter: blur(3px); } }
+  @keyframes outB { to { opacity: 0; transform: translateX(70px) skewX(-7deg); filter: blur(3px); } }
+  .step.in.fwd { animation: inF .42s cubic-bezier(.2,.9,.25,1) both; }
+  .step.in.back { animation: inB .42s cubic-bezier(.2,.9,.25,1) both; }
+  .step.out { position: absolute; left: 20px; right: 20px; top: 18px; pointer-events: none; }
+  .step.out.fwd { animation: outF .26s ease-in both; }
+  .step.out.back { animation: outB .26s ease-in both; }
+  .streaks { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 3; }
+  .streaks i { position: absolute; left: 0; width: 45%; height: 2px; border-radius: 2px; opacity: 0; background: linear-gradient(90deg, transparent, var(--pink)); }
+  .streaks i:nth-child(1) { top: 26%; } .streaks i:nth-child(2) { top: 50%; width: 30%; } .streaks i:nth-child(3) { top: 72%; width: 38%; }
+  .streaks.go i { animation: streak .5s ease-out both; }
+  .streaks.go i:nth-child(2) { animation-delay: .05s; } .streaks.go i:nth-child(3) { animation-delay: .1s; }
+  .streaks.go.rev i { animation-name: streakR; background: linear-gradient(270deg, transparent, var(--pink)); }
+  @keyframes streak { 0% { transform: translateX(240%); opacity: 0; } 20% { opacity: .9; } 100% { transform: translateX(-120%); opacity: 0; } }
+  @keyframes streakR { 0% { transform: translateX(-120%); opacity: 0; } 20% { opacity: .9; } 100% { transform: translateX(240%); opacity: 0; } }
+  .run.shake { animation: shake .42s; }
+  @keyframes shake { 10%, 90% { transform: translateX(-2px); } 20%, 80% { transform: translateX(4px); } 30%, 50%, 70% { transform: translateX(-8px); } 40%, 60% { transform: translateX(8px); } }
+  .cheer:not(:empty) { animation: pop .45s cubic-bezier(.2,.8,.2,1.4); }
+  @keyframes pop { from { transform: scale(.6); opacity: 0; } }
+  .confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 90; }
+  @media (prefers-reduced-motion: reduce) {
+    .step.in, .step.out, .streaks i, .run.shake, .choice.on, .choice.on .meter i.f, .cheer, .next.ready .arr, .bibcap i, .lbib .bibmeta .dot, .lbib.complete .shine, .mini i { animation: none !important; }
+    .runner, .fill, .runner::before, .okmark, .big::after { transition: none; }
+    .run.shake { outline: 3px solid var(--error); outline-offset: -3px; }
   }
-  .bib::before, .bib::after, .bib .pins::before, .bib .pins::after {
-    content: ""; position: absolute; width: 11px; height: 11px; border-radius: 50%; background: var(--paper); border: 2px solid var(--black);
+
+  /* ---------- Success ---------- */
+  .card { background: var(--white); border-radius: 22px; padding: 10px 22px 26px; box-shadow: 0 24px 60px -30px rgba(0,0,0,.45); }
+  .card-kick { display: inline-block; margin: 16px 0 0; }
+  .card-title { font: italic 800 2rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 10px 0 2px; }
+  .hint { color: var(--muted); font-size: .92rem; margin: 6px 0 0; }
+  .btn {
+    display: block; width: 100%; margin-top: 28px; border: 0; border-radius: 14px; padding: 17px 18px;
+    font: italic 800 1.35rem/1 "Barlow Condensed", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: .02em;
+    background: var(--black); color: var(--pink); cursor: pointer; text-align: center; text-decoration: none; transition: transform .12s;
   }
-  .bib::before { top: 10px; left: 10px; } .bib::after { top: 10px; right: 10px; }
-  .bib .pins::before { bottom: 10px; left: 10px; } .bib .pins::after { bottom: 10px; right: 10px; }
-  .bib .club { display: inline-block; background: var(--black); color: var(--pink); font: 700 .95rem/1 "Barlow Condensed", sans-serif; padding: 5px 10px; border-radius: 6px; }
-  .bib .num { font: italic 800 clamp(3.6rem, 19vw, 5.4rem)/1 "Barlow Condensed", "Arial Narrow", sans-serif; margin: 8px 0 2px; }
-  .bib .who { font-weight: 600; }
-  .copy { border: 0; background: var(--paper); color: var(--black); border-radius: 12px; padding: 11px 16px; font: 600 .95rem "Barlow", sans-serif; cursor: pointer; }
+  .btn:active { transform: scale(.98); }
+  .btn.pink { background: var(--pink); color: var(--black); }
   .status { font-weight: 700; margin: 18px 0 0; }
   .status::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--pink); margin-right: 8px; vertical-align: 1px; }
   #done p { margin: 10px 0 0; }
 
-  @media (max-width: 380px) { .row { grid-template-columns: 1fr; } }
-  @media (prefers-reduced-motion: no-preference) {
-    h1 { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; }
-    @keyframes rise { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
-    #done:not([hidden]) .bib { animation: pin .45s cubic-bezier(.2,.8,.2,1.2); }
-    @keyframes pin { from { transform: rotate(-4deg) scale(.94); opacity: 0; } to { transform: none; opacity: 1; } }
-  }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
-  /* Full-screen waiting state */
+  /* Full-screen waiting state: a runner lapping to the finish */
   .busy { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.72); display: grid; place-items: center; padding: 24px; }
-  .busy-box { background: var(--white); border-radius: 18px; padding: 26px 24px; max-width: 320px; text-align: center; }
+  .busy-box { background: var(--white); border-radius: 18px; padding: 26px 24px; width: min(320px, 100%); text-align: center; }
   .busy-box b { display: block; font: italic 800 1.5rem/1.1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin-top: 14px; }
   .busy-box p { margin: 6px 0 0; color: var(--muted); font-size: .95rem; }
-  .spinner { width: 44px; height: 44px; margin: 0 auto; border-radius: 50%; border: 5px solid var(--paper); border-top-color: var(--pink); animation: spin .8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2.4s; } }
+  .mini { position: relative; height: 22px; margin: 4px 30px 0 8px; }
+  .mini::before { content: ""; position: absolute; left: 0; right: 0; top: 9px; height: 4px; border-radius: 2px; background: var(--paper); }
+  .mini::after { content: ""; position: absolute; right: -26px; top: 2px; width: 18px; height: 14px; border: 1.5px solid #000; border-radius: 2px;
+    background: conic-gradient(#000 25%, #fff 0 50%, #000 0 75%, #fff 0) 0 0 / 6px 6px; }
+  .mini i { position: absolute; top: 11px; left: 0; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: var(--pink);
+    box-shadow: 0 0 12px rgba(254,144,174,.9); animation: lap 1.3s cubic-bezier(.5,0,.5,1) infinite; }
+  @keyframes lap { to { left: 100%; } }
 
+  /* ---------- Site header + footer (shared look) ---------- */
+  .bar { max-width: 1080px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 14px; position: relative; z-index: 1; }
+  .bar img { width: 76px; height: 76px; display: block; }
   .bar .links { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
-  .bar .links a { color: var(--white); text-decoration: none; font: 700 1rem/1 "Barlow Condensed", sans-serif; padding: 9px 12px; border-radius: 999px; }
+  .bar .links a { color: var(--white); text-decoration: none; font: 700 1rem/1 "Barlow Condensed", sans-serif; padding: 9px 12px; border-radius: 999px; white-space: nowrap; }
   .bar .links a:hover, .bar .links a[aria-current="page"] { background: rgba(255,255,255,.14); }
   .bar .links a.cta { background: var(--pink); color: var(--black); }
-
-  /* Site header + footer (shared look) */
-  .bar { max-width: 1080px !important; flex-wrap: wrap; gap: 10px 14px; }
-  .bar img { width: 76px !important; height: 76px !important; }
-  .bar .links a { white-space: nowrap; }
   @media (max-width: 560px) {
-    .bar img { width: 64px !important; height: 64px !important; }
-    .bar .links { width: 100%; justify-content: flex-start !important; flex-wrap: nowrap !important; overflow-x: auto; margin: 0 -4px; scrollbar-width: none; }
+    .bar img { width: 64px; height: 64px; }
+    .bar .links { width: 100%; justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; margin: 0 -4px; scrollbar-width: none; }
     .bar .links::-webkit-scrollbar { display: none; }
   }
-  @media (min-width: 1110px) { .bar { padding-left: 14px; padding-right: 14px; } }
+  @media (min-width: 1110px) { .bar, .hero-inner { padding-left: 14px; padding-right: 14px; } }
   .site-foot { background: var(--black); color: rgba(255,255,255,.75); padding: 28px 18px calc(env(safe-area-inset-bottom,0px) + 28px); margin-top: 40px; }
   .site-foot .wide { max-width: 1080px; margin: 0 auto; padding: 0 14px; display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
   .site-foot a { color: var(--pink); font-weight: 700; text-decoration: none; }
-  .rulesum { background: var(--paper); border-left: 4px solid var(--pink); border-radius: 10px; padding: 10px 12px; margin-top: 14px; font-size: .95rem; }
-  .check a { color: inherit; font-weight: 700; text-decoration: underline; }
+  @media (prefers-reduced-motion: no-preference) {
+    h1 { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes rise { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+  }
 </style>
 </head>
 <body>
@@ -203,181 +377,239 @@
 </section>
 
 <main>
-  <!-- ===== Registration form ===== -->
-  <form id="form" class="card" novalidate>
-    <h2 class="card-title">Join the club</h2>
-    <p class="card-sub">Takes about two minutes. All fields are required unless marked optional.</p>
-    <fieldset>
-      <legend>About you</legend>
-      <div class="field" data-f="name">
-        <label class="lbl" for="name">Full name</label>
-        <input id="name" type="text" autocomplete="name" maxlength="50" required>
-        <p class="err"></p>
-      </div>
-      <div class="field" data-f="phone">
-        <label class="lbl" for="phone">Mobile number</label>
-        <input id="phone" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="10" placeholder="10-digit number" required>
-        <p class="err"></p>
-      </div>
-      <div class="field" data-f="email">
-        <label class="lbl" for="email">Email</label>
-        <input id="email" type="email" autocomplete="email" autocapitalize="none" maxlength="100" required>
-        <p class="hint">We'll send your Club ID here.</p>
-        <p class="err"></p>
-      </div>
-      <div class="field" data-f="age">
-        <label class="lbl" for="age">Age</label>
-        <input id="age" type="text" inputmode="numeric" maxlength="3" required>
-        <p class="hint">In years, from 1 to 100.</p>
-        <p class="err"></p>
-      </div>
-    </fieldset>
+  <div class="journey" id="journey">
 
-    <fieldset>
-      <legend>Your running</legend>
-      <div class="row">
-        <div class="field" data-f="experience">
-          <label class="lbl" for="experience">Experience</label>
-          <select id="experience" required>
-            <option value="">Choose</option>
-            <option>Beginner</option>
-            <option>Intermediate</option>
-            <option>Advanced</option>
-          </select>
-          <p class="err"></p>
+    <!-- ===== Live race bib: fills in as the runner answers ===== -->
+    <aside class="bibwrap" aria-label="Your race bib preview">
+      <p class="bibcap"><i aria-hidden="true"></i>Your race bib · fills in as you go</p>
+      <div class="lbib" id="lbib">
+        <span class="pin p1"></span><span class="pin p2"></span><span class="pin p3"></span><span class="pin p4"></span>
+        <div class="lbib-top"><span class="club">UNBND RUN CLUB</span><span class="bibmeta"><span class="full" id="bYear">Mumbai</span><span class="mob"><i class="dot" aria-hidden="true"></i>Live preview</span></span></div>
+        <span class="lbib-num" id="bibId">UB<span class="q">····</span></span>
+        <span class="lbib-name ph" id="bName">Your name</span>
+        <div class="lbib-tags">
+          <span><small>Level</small><b class="ph" id="bLevel">—</b></span>
+          <span><small>Pace /km</small><b class="ph" id="bPace">—</b></span>
+          <span><small>Size</small><b class="ph" id="bSize">—</b></span>
         </div>
-        <div class="field" data-f="pace">
-          <label class="lbl" for="pace">Usual pace</label>
-          <select id="pace" required>
-            <option value="">Choose</option>
-            <option value="Under 5:00">Under 5:00 min/km</option>
-            <option value="5:00-6:00">5:00–6:00 min/km</option>
-            <option value="6:00-7:00">6:00–7:00 min/km</option>
-            <option value="7:00+">7:00+ min/km</option>
-            <option value="Not sure">Not sure</option>
-          </select>
-          <p class="err"></p>
+        <span class="stamp" id="bStamp" hidden></span>
+        <i class="shine" aria-hidden="true"></i>
+      </div>
+    </aside>
+
+    <!-- ===== One question at a time ===== -->
+    <section class="run" id="run" aria-label="Registration">
+      <div class="streaks" id="streaks" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="run-head">
+        <div class="meta"><span><b id="cpText">Checkpoint 1 of 12</b> · <span id="stageText">Warm-up</span></span><span id="etaText"></span></div>
+        <div class="track" aria-label="Your progress">
+          <div class="rail"></div><div class="fill" id="fill"></div>
+          <div id="cps"></div>
+          <span class="runner" id="runner" aria-hidden="true"></span>
+          <span class="flag" aria-hidden="true"></span>
         </div>
+        <p class="wb" id="welcomeBack" hidden>Welcome back! We kept your answers, so you can pick up where you left off.</p>
       </div>
-    </fieldset>
+      <p class="sr" id="live" aria-live="polite"></p>
 
-    <fieldset>
-      <legend>Club t-shirt</legend>
-      <p class="hint">Every member gets a club t-shirt, handed over at your first run with us.</p>
-      <div class="field" data-f="tshirt">
-        <div class="sizes" role="radiogroup" aria-label="T-shirt size">
-          <label><input type="radio" name="tshirt" value="XS"><span>XS</span></label>
-          <label><input type="radio" name="tshirt" value="S"><span>S</span></label>
-          <label><input type="radio" name="tshirt" value="M"><span>M</span></label>
-          <label><input type="radio" name="tshirt" value="L"><span>L</span></label>
-          <label><input type="radio" name="tshirt" value="XL"><span>XL</span></label>
-          <label><input type="radio" name="tshirt" value="XXL"><span>XXL</span></label>
-          <label><input type="radio" name="tshirt" value="XXXL"><span>XXXL</span></label>
+      <form id="form" novalidate>
+        <div class="steps">
+
+          <section class="step" data-step="name" aria-labelledby="q-name">
+            <div class="q-kick"><span class="chip req">Required</span><span class="cheer"></span></div>
+            <h2 class="q-title" id="q-name" tabindex="-1">First up: what's your full name?</h2>
+            <p class="q-sub">Takes about 2 minutes. Every question is required unless it says optional.</p>
+            <div class="big" data-f="name"><input id="name" type="text" autocomplete="name" maxlength="50" enterkeyhint="next" placeholder="Type your full name" aria-labelledby="q-name" aria-describedby="e-name"><span class="okmark" aria-hidden="true"></span></div>
+            <p class="err" id="e-name" data-err="name" role="alert"></p>
+          </section>
+
+          <section class="step" data-step="phone" aria-labelledby="q-phone" hidden>
+            <div class="q-kick"><span class="chip req">Required</span><span class="cheer"></span></div>
+            <h2 class="q-title" id="q-phone" data-t="phone" tabindex="-1">What's your mobile number?</h2>
+            <p class="q-sub">Your 10-digit Indian mobile number.</p>
+            <div class="big" data-f="phone"><span class="prefix" aria-hidden="true">+91</span><input id="phone" type="tel" inputmode="numeric" autocomplete="tel-national" enterkeyhint="next" placeholder="98765 43210" aria-labelledby="q-phone" aria-describedby="c-phone e-phone"><span class="okmark" aria-hidden="true"></span></div>
+            <p class="help" id="c-phone"></p>
+            <p class="err" id="e-phone" data-err="phone" role="alert"></p>
+          </section>
+
+          <section class="step" data-step="email" aria-labelledby="q-email" hidden>
+            <div class="q-kick"><span class="chip req">Required</span><span class="cheer"></span></div>
+            <h2 class="q-title" id="q-email" tabindex="-1">Where should we email your Club ID?</h2>
+            <p class="q-sub">Your Club ID and the payment steps land here.</p>
+            <div class="big" data-f="email"><input id="email" type="email" autocomplete="email" autocapitalize="none" spellcheck="false" maxlength="100" enterkeyhint="next" placeholder="you@example.com" aria-labelledby="q-email" aria-describedby="e-email"><span class="okmark" aria-hidden="true"></span></div>
+            <p class="help"><button type="button" class="fix" id="emailFix" hidden>Did you mean <b></b>?</button></p>
+            <p class="err" id="e-email" data-err="email" role="alert"></p>
+          </section>
+
+          <section class="step" data-step="age" aria-labelledby="q-age" hidden>
+            <div class="q-kick"><span class="chip req">Required</span><span class="cheer"></span></div>
+            <h2 class="q-title" id="q-age" tabindex="-1">How old are you?</h2>
+            <p class="q-sub">In years, from 1 to 100.</p>
+            <div class="big short" data-f="age"><input id="age" type="text" inputmode="numeric" maxlength="3" enterkeyhint="next" placeholder="Age" aria-labelledby="q-age" aria-describedby="n-age e-age"><span class="unit" aria-hidden="true">years</span><span class="okmark" aria-hidden="true"></span></div>
+            <p class="help" id="n-age"></p>
+            <p class="err" id="e-age" data-err="age" role="alert"></p>
+          </section>
+
+          <section class="step" data-step="guardianName" aria-labelledby="q-guardianName" hidden>
+            <div class="q-kick"><span class="chip req">Required</span><span class="cheer"></span></div>
+            <h2 class="q-title" id="q-guardianName" tabindex="-1">You're under 18, so we need a parent or guardian. What's their full name?</h2>
+            <p class="q-sub">A parent or guardian who knows you're joining.</p>
+            <div class="big" data-f="guardianName"><input id="guardianName" type="text" maxlength="50" enterkeyhint="next" placeholder="Parent or guardian's full name" aria-labelledby="q-guardianName" aria-describedby="e-guardianName"><span class="okmark" aria-hidden="true"></span></div>
+            <p class="err" id="e-guardianName" data-err="guardianName" role="alert"></p>
+          </section>
+
+          <section class="step" data-step="guardianPhone" aria-labelledby="q-guardianPhone" hidden>
+            <div class="q-kick"><span class="chip req">Required</span><span class="cheer"></span></div>
+            <h2 class="q-title" id="q-guardianPhone" data-t="guardianPhone" tabindex="-1">What's their mobile number?</h2>
+            <p class="q-sub">So we can reach them if we ever need to.</p>
+            <div class="big" data-f="guardianPhone"><span class="prefix" aria-hidden="true">+91</span><input id="guardianPhone" type="tel" inputmode="numeric" enterkeyhint="next" placeholder="98765 43210" aria-labelledby="q-guardianPhone" aria-describedby="c-guardianPhone e-guardianPhone"><span class="okmark" aria-hidden="true"></span></div>
+            <p class="help" id="c-guardianPhone"></p>
+            <p class="err" id="e-guardianPhone" data-err="guardianPhone" role="alert"></p>
+          </section>
+
+          <section class="step" data-step="parentalConsent" aria-labelledby="q-parentalConsent" hidden>
+            <div class="q-kick"><span class="chip req">Required</span><span class="cheer"></span></div>
+            <h2 class="q-title" id="q-parentalConsent" data-t="parentalConsent" tabindex="-1">Have they given consent?</h2>
+            <p class="q-sub">Tick to confirm.</p>
+            <div class="checks">
+              <label class="ck" data-f="parentalConsent"><input id="parentalConsent" type="checkbox"><span class="box" aria-hidden="true"></span>
+                <span class="body"><b>Parental consent</b><span>I confirm my parent/guardian has given consent for me to join UNBND and take part in club runs.</span></span></label>
+            </div>
+            <p class="err" data-err="parentalConsent" role="alert"></p>
+          </section>
+
+          <section class="step" data-step="experience" aria-labelledby="q-experience" hidden>
+            <div class="q-kick"><span class="chip req">Required</span><span class="cheer"></span></div>
+            <h2 class="q-title" id="q-experience" tabindex="-1">How would you describe your running?</h2>
+            <p class="q-sub">Tap one. Every level runs with us.</p>
+            <div class="choices" role="radiogroup" aria-labelledby="q-experience" data-f="experience">
+              <label class="choice"><input type="radio" name="experience" value="Beginner"><span class="key" aria-hidden="true">A</span><span class="t"><b>Beginner</b><small>New to running, or getting back into it.</small></span><span class="tick" aria-hidden="true"></span></label>
+              <label class="choice"><input type="radio" name="experience" value="Intermediate"><span class="key" aria-hidden="true">B</span><span class="t"><b>Intermediate</b><small>You run regularly and 5K feels comfortable.</small></span><span class="tick" aria-hidden="true"></span></label>
+              <label class="choice"><input type="radio" name="experience" value="Advanced"><span class="key" aria-hidden="true">C</span><span class="t"><b>Advanced</b><small>You train seriously and race often.</small></span><span class="tick" aria-hidden="true"></span></label>
+            </div>
+            <p class="err" data-err="experience" role="alert"></p>
+          </section>
+
+          <section class="step" data-step="pace" aria-labelledby="q-pace" hidden>
+            <div class="q-kick"><span class="chip req">Required</span><span class="cheer"></span></div>
+            <h2 class="q-title" id="q-pace" tabindex="-1">What's your usual pace?</h2>
+            <p class="q-sub">Minutes per kilometre. "Not sure" is totally fine.</p>
+            <div class="choices" role="radiogroup" aria-labelledby="q-pace" data-f="pace">
+              <label class="choice"><input type="radio" name="pace" value="Under 5:00"><span class="key" aria-hidden="true">A</span><span class="t"><b>Under 5:00</b><small>min/km</small></span><span class="meter" aria-hidden="true"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span></label>
+              <label class="choice"><input type="radio" name="pace" value="5:00-6:00"><span class="key" aria-hidden="true">B</span><span class="t"><b>5:00–6:00</b><small>min/km</small></span><span class="meter" aria-hidden="true"><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span></label>
+              <label class="choice"><input type="radio" name="pace" value="6:00-7:00"><span class="key" aria-hidden="true">C</span><span class="t"><b>6:00–7:00</b><small>min/km</small></span><span class="meter" aria-hidden="true"><i class="f"></i><i class="f"></i><i></i><i></i></span></label>
+              <label class="choice"><input type="radio" name="pace" value="7:00+"><span class="key" aria-hidden="true">D</span><span class="t"><b>7:00+</b><small>min/km</small></span><span class="meter" aria-hidden="true"><i class="f"></i><i></i><i></i><i></i></span></label>
+              <label class="choice"><input type="radio" name="pace" value="Not sure"><span class="key" aria-hidden="true">E</span><span class="t"><b>Not sure</b><small>No stress, we'll find your group.</small></span><span class="tick" aria-hidden="true"></span></label>
+            </div>
+            <p class="err" data-err="pace" role="alert"></p>
+          </section>
+
+          <section class="step" data-step="tshirt" aria-labelledby="q-tshirt" hidden>
+            <div class="q-kick"><span class="chip req">Required</span><span class="cheer"></span></div>
+            <h2 class="q-title" id="q-tshirt" tabindex="-1">Pick your club t-shirt size</h2>
+            <p class="q-sub">Every member gets a club t-shirt, handed over at your first run with us.</p>
+            <div class="choices sizes" role="radiogroup" aria-labelledby="q-tshirt" data-f="tshirt" id="sizes"></div>
+            <p class="err" data-err="tshirt" role="alert"></p>
+          </section>
+
+          <section class="step" data-step="emergencyName" aria-labelledby="q-emergencyName" hidden>
+            <div class="q-kick"><span class="chip req">Required</span><span class="cheer"></span></div>
+            <h2 class="q-title" id="q-emergencyName" tabindex="-1">Who should we call if anything happens on a run?</h2>
+            <p class="q-sub">Your emergency contact's full name.</p>
+            <div class="big" data-f="emergencyName"><input id="emergencyName" type="text" maxlength="50" enterkeyhint="next" placeholder="Emergency contact's full name" aria-labelledby="q-emergencyName" aria-describedby="e-emergencyName"><span class="okmark" aria-hidden="true"></span></div>
+            <button type="button" class="quick" id="useGuardian" hidden></button>
+            <p class="err" id="e-emergencyName" data-err="emergencyName" role="alert"></p>
+          </section>
+
+          <section class="step" data-step="emergencyPhone" aria-labelledby="q-emergencyPhone" hidden>
+            <div class="q-kick"><span class="chip req">Required</span><span class="cheer"></span></div>
+            <h2 class="q-title" id="q-emergencyPhone" data-t="emergencyPhone" tabindex="-1">And their mobile number?</h2>
+            <p class="q-sub">It needs to be different from your own number.</p>
+            <div class="big" data-f="emergencyPhone"><span class="prefix" aria-hidden="true">+91</span><input id="emergencyPhone" type="tel" inputmode="numeric" enterkeyhint="next" placeholder="98765 43210" aria-labelledby="q-emergencyPhone" aria-describedby="c-emergencyPhone e-emergencyPhone"><span class="okmark" aria-hidden="true"></span></div>
+            <p class="help" id="c-emergencyPhone"></p>
+            <p class="err" id="e-emergencyPhone" data-err="emergencyPhone" role="alert"></p>
+          </section>
+
+          <section class="step" data-step="declarations" aria-labelledby="q-declarations" hidden>
+            <div class="q-kick"><span class="chip req">Required</span><span class="cheer"></span></div>
+            <h2 class="q-title" id="q-declarations" tabindex="-1">Pre-run briefing</h2>
+            <p class="q-sub">Tick all four to continue.</p>
+            <div class="checks">
+              <label class="ck" data-f="decHealth"><input id="decHealth" type="checkbox"><span class="box" aria-hidden="true"></span>
+                <span class="body"><b>Fit to run</b><span>I confirm I'm physically fit to take part in running activities, and I participate at my own risk. I'll consult a doctor if I have any medical condition that may affect my running.</span></span></label>
+              <label class="ck" data-f="decRefund"><input id="decRefund" type="checkbox"><span class="box" aria-hidden="true"></span>
+                <span class="body"><b>Membership fee</b><span>I understand the ₹999 membership fee is non-refundable.</span></span></label>
+              <label class="ck" data-f="decData"><input id="decData" type="checkbox"><span class="box" aria-hidden="true"></span>
+                <span class="body"><b>Your details</b><span>I agree to UNBND storing my details to manage my membership and contact me about club activities.</span></span></label>
+              <label class="ck" data-f="decRules"><input id="decRules" type="checkbox"><span class="box" aria-hidden="true"></span>
+                <span class="body"><b>Club rules</b><span>I have read the <a href="rules.html" target="_blank" rel="noopener">club rules</a> and agree to follow them.</span>
+                  <span class="rules">The short version: be on time, follow road rules, look out for each other, be kind to everyone, and no alcohol, drugs or smoking at club runs.</span></span></label>
+            </div>
+            <p class="ckcount" id="ckCount" aria-live="polite"></p>
+            <p class="err" data-err="declarations" role="alert"></p>
+          </section>
+
+          <section class="step" data-step="photo" aria-labelledby="q-photo" hidden>
+            <div class="q-kick"><span class="chip opt">Optional · you can skip</span><span class="cheer"></span></div>
+            <h2 class="q-title" id="q-photo" tabindex="-1">Happy to feature in club photos?</h2>
+            <p class="q-sub">We share photos and videos from club runs on UNBND's social media.</p>
+            <div class="choices" role="radiogroup" aria-labelledby="q-photo">
+              <label class="choice"><input type="radio" name="photo" value="yes"><span class="key" aria-hidden="true">A</span><span class="t"><b>Yes, count me in</b><small>I'm okay with photos or videos of me from club runs being shared on UNBND's social media.</small></span><span class="tick" aria-hidden="true"></span></label>
+              <label class="choice"><input type="radio" name="photo" value="no"><span class="key" aria-hidden="true">B</span><span class="t"><b>No thanks</b><small>Please don't share photos or videos of me.</small></span><span class="tick" aria-hidden="true"></span></label>
+            </div>
+          </section>
+
+          <section class="step" data-step="review" aria-labelledby="q-review" hidden>
+            <div class="q-kick"><span class="cheer"></span></div>
+            <h2 class="q-title" id="q-review" data-t="review" tabindex="-1">Race check: all good?</h2>
+            <p class="q-sub">Tap <b>Change</b> to fix anything. Then cross the finish line!</p>
+            <div class="rv" id="reviewList"></div>
+            <div class="summary" id="summary" role="alert"></div>
+          </section>
+
+          <!-- Hidden from people; bots tend to fill it -->
+          <div class="hp" aria-hidden="true">
+            <label>Website <input id="website" type="text" tabindex="-1" autocomplete="off"></label>
+          </div>
         </div>
-        <p class="err"></p>
-      </div>
-    </fieldset>
 
-    <fieldset id="guardian" hidden>
-      <legend>Parent or guardian</legend>
-      <p class="hint">Needed because you're under 18.</p>
-      <div class="field" data-f="guardianName">
-        <label class="lbl" for="guardianName">Parent/guardian name</label>
-        <input id="guardianName" type="text" maxlength="50">
-        <p class="err"></p>
-      </div>
-      <div class="field" data-f="guardianPhone">
-        <label class="lbl" for="guardianPhone">Parent/guardian mobile number</label>
-        <input id="guardianPhone" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit number">
-        <p class="err"></p>
-      </div>
-      <label class="check" data-f="parentalConsent">
-        <input id="parentalConsent" type="checkbox">
-        <span>I confirm my parent/guardian has given consent for me to join UNBND and take part in club runs.</span>
-      </label>
-    </fieldset>
-
-    <fieldset>
-      <legend>Emergency contact</legend>
-      <p class="hint">Someone we can call if anything happens during a run.</p>
-      <label class="check" id="sameWrap" hidden>
-        <input id="sameAsGuardian" type="checkbox">
-        <span>Same as parent/guardian</span>
-      </label>
-      <div class="field" data-f="emergencyName">
-        <label class="lbl" for="emergencyName">Contact name</label>
-        <input id="emergencyName" type="text" maxlength="50">
-        <p class="err"></p>
-      </div>
-      <div class="field" data-f="emergencyPhone">
-        <label class="lbl" for="emergencyPhone">Contact mobile number</label>
-        <input id="emergencyPhone" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit number">
-        <p class="err"></p>
-      </div>
-    </fieldset>
-
-    <fieldset>
-      <legend>Declarations</legend>
-      <label class="check" data-f="decHealth">
-        <input id="decHealth" type="checkbox">
-        <span>I confirm I'm physically fit to take part in running activities, and I participate at my own risk. I'll consult a doctor if I have any medical condition that may affect my running.</span>
-      </label>
-      <label class="check" data-f="decRefund">
-        <input id="decRefund" type="checkbox">
-        <span>I understand the ₹999 membership fee is non-refundable.</span>
-      </label>
-      <label class="check" data-f="decData">
-        <input id="decData" type="checkbox">
-        <span>I agree to UNBND storing my details to manage my membership and contact me about club activities.</span>
-      </label>
-      <div class="rulesum">
-        <b>Club rules, the short version:</b> be on time, follow road rules, look out for each other, be kind to everyone, and no alcohol, drugs or smoking at club runs.
-      </div>
-      <label class="check" data-f="decRules">
-        <input id="decRules" type="checkbox">
-        <span>I have read the <a href="rules.html" target="_blank" rel="noopener">club rules</a> and agree to follow them.</span>
-      </label>
-      <label class="check">
-        <input id="photoConsent" type="checkbox">
-        <span>I'm okay with photos or videos of me from club runs being shared on UNBND's social media. <span class="optional">(Optional)</span></span>
-      </label>
-    </fieldset>
-
-    <!-- Hidden from people; bots tend to fill it -->
-    <div class="hp" aria-hidden="true">
-      <label>Website <input id="website" type="text" tabindex="-1" autocomplete="off"></label>
-    </div>
-
-    <div class="summary" id="summary" role="alert"></div>
-    <button class="btn" id="submit" type="submit">Register</button>
-  </form>
-
-  <!-- ===== Success screen ===== -->
-  <section id="done" hidden aria-live="polite">
-    <div class="card">
-      <h2 class="card-title" id="doneTitle">Thank you for registering</h2>
-      <div id="pendingBox">
-        <p class="status">Your membership is not active yet.</p>
-        <p>To complete your membership, pay the ₹999 membership fee and upload your payment screenshot. Tap <b>Pay and upload screenshot</b> below.</p>
-        <p>Once we've checked your payment, we'll activate your membership and email you your <b>UNBND Club ID</b>.</p>
-        <a class="btn pink" id="payBtn" href="pay.html">Pay and upload screenshot</a>
-        <div id="emailNote">
-          <p>Want to pay later? Follow the steps in the email we've sent to <b id="doneEmail"></b>.</p>
-          <p class="hint">Can't find the email? Check your spam or promotions folder.</p>
+        <div class="run-foot">
+          <div class="run-nav">
+            <button type="button" class="back" id="back"><span aria-hidden="true">←</span> Back</button>
+            <button type="submit" class="next" id="next">
+              <svg class="lock" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2h.5A1.5 1.5 0 0 1 13.5 8.5v5A1.5 1.5 0 0 1 12 15H4a1.5 1.5 0 0 1-1.5-1.5v-5A1.5 1.5 0 0 1 4 7h.5zm1.8 0h3.4V5a1.7 1.7 0 0 0-3.4 0v2z"/></svg>
+              <span class="fl" aria-hidden="true"></span>
+              <span id="nextLabel">Continue</span>
+              <span class="arr" aria-hidden="true">→</span>
+            </button>
+          </div>
+          <p class="enter-hint" id="enterHint">or press <kbd>Enter ↵</kbd></p>
         </div>
-      </div>
-      <div id="activeBox" hidden>
-        <div class="bib">
-          <span class="pins"></span>
-          <div class="club">UNBND RUN CLUB</div>
-          <div class="num" id="bibId">UB0000</div>
-          <div class="who" id="bibName"></div>
+      </form>
+    </section>
+
+    <!-- ===== Success ===== -->
+    <section id="done" hidden aria-live="polite">
+      <div class="card">
+        <span class="chip req card-kick">Finish line</span>
+        <h2 class="card-title" id="doneTitle">Thank you for registering</h2>
+        <div id="pendingBox">
+          <p class="status">Your membership is not active yet.</p>
+          <p>To complete your membership, pay the ₹999 membership fee and upload your payment screenshot. Tap <b>Pay and upload screenshot</b> below.</p>
+          <p>Once we've checked your payment, we'll activate your membership and email you your <b>UNBND Club ID</b>.</p>
+          <a class="btn pink" id="payBtn" href="pay.html">Pay and upload screenshot</a>
+          <div id="emailNote">
+            <p>Want to pay later? Follow the steps in the email we've sent to <b id="doneEmail"></b>.</p>
+            <p class="hint">Can't find the email? Check your spam or promotions folder.</p>
+          </div>
         </div>
-        <p>You're already an active member. This is your Club ID.</p>
+        <div id="activeBox" hidden>
+          <p>You're already an active member. Your Club ID is <b id="activeId"></b>.</p>
+        </div>
+        <p id="deactBox" hidden>This registration is not active. Please contact the club by replying to any of our emails.</p>
       </div>
-      <p id="deactBox" hidden>This registration is not active. Please contact the club by replying to any of our emails.</p>
-    </div>
-  </section>
+    </section>
+  </div>
 </main>
 
 <footer class="site-foot"><div class="wide"><span>&copy; <span class="yr">2026</span> UNBND Run Club. All rights reserved.</span><span>Follow us on Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></span></div></footer>
@@ -386,7 +618,7 @@
 
 <div class="busy" id="busy" hidden role="status" aria-live="polite">
   <div class="busy-box">
-    <div class="spinner" aria-hidden="true"></div>
+    <div class="mini" aria-hidden="true"><i></i></div>
     <b id="busyText">Please wait</b>
     <p>This can take up to 10 seconds. Please don't close this page.</p>
   </div>
@@ -398,6 +630,8 @@
   try { fetch(API_URL + "?warm=1", { mode: "no-cors", cache: "no-store" }).catch(() => {}); } catch (e) {}
 
   const $ = (id) => document.getElementById(id);
+  const calm = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const esc = (t) => String(t == null ? "" : t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
   // ---- Talking to the backend: timeout, clear errors, optional safe retry ----
   async function callApi(payload, retries) {
@@ -445,7 +679,7 @@
       if (next !== el.value) el.value = next;
     });
   }
-  // Phones: digits only, max 10. A pasted +91 or leading 0 is removed first.
+  // Phones: digits only, max 10. A pasted +91 or leading 0 is removed first (no length limit on the box, so a pasted "+91 98765 43210" isn't cut short).
   ["phone", "guardianPhone", "emergencyPhone"].forEach((id) => filter($(id), (v) => {
     let d = v.replace(/\D/g, "");
     if (d.length === 12 && d.startsWith("91")) d = d.slice(2);
@@ -456,7 +690,7 @@
   filter($("age"), (v) => v.replace(/\D/g, "").replace(/^0+/, "").slice(0, 3));
   // Names: English letters plus space ' - . (phone keyboards' curly apostrophe becomes '), max 50
   ["name", "guardianName", "emergencyName"].forEach((id) => filter($(id), (v) =>
-    v.replace(/[\u2018\u2019\u02BC]/g, "'")
+    v.replace(/[‘’ʼ]/g, "'")
      .replace(/[^A-Za-z '.\-]/g, "")
      .replace(/^[^A-Za-z]+/, "")
      .replace(/ {2,}/g, " ").replace(/'{2,}/g, "'").replace(/-{2,}/g, "-").replace(/\.{2,}/g, ".")
@@ -470,54 +704,33 @@
     if (s.length === 11 && s.startsWith("0")) s = s.slice(1);
     return s;
   }
+  const val = (id) => $(id).value.trim();
+  const radio = (n) => { const el = form.querySelector('input[name="' + n + '"]:checked'); return el ? el.value : ""; };
   const age = () => Number($("age").value);
   const isMinor = () => $("age").value !== "" && age() < 18;
+  const first = (s) => String(s || "").trim().split(/\s+/)[0] || "";
+  const fmtPhone = (p) => { const d = cleanPhone(p); return d.length === 10 ? "+91 " + d.slice(0, 5) + " " + d.slice(5) : d; };
+  const PACE = { "Under 5:00": "Under 5:00", "5:00-6:00": "5:00–6:00", "6:00-7:00": "6:00–7:00", "7:00+": "7:00+", "Not sure": "Not sure" };
 
-  // Show the guardian section only for under-18s; clear it when hidden
+  // Under-18s answer the parent/guardian questions; clear them if the age changes to 18+
   function syncGuardian() {
-    const minor = isMinor();
-    $("guardian").hidden = !minor;
-    $("sameWrap").hidden = !minor;
-    if (!minor) {
-      ["guardianName", "guardianPhone"].forEach((id) => ($(id).value = ""));
-      $("parentalConsent").checked = false;
-      if ($("sameAsGuardian").checked) {
-        $("sameAsGuardian").checked = false;
-        $("emergencyName").value = ""; $("emergencyPhone").value = "";
-        setEmergencyLocked(false);
-      }
-    }
-  }
-  function setEmergencyLocked(locked) {
-    $("emergencyName").readOnly = locked;
-    $("emergencyPhone").readOnly = locked;
-  }
-  function copyGuardian() {
-    if (!$("sameAsGuardian").checked) return;
-    $("emergencyName").value = $("guardianName").value;
-    $("emergencyPhone").value = $("guardianPhone").value;
+    if (isMinor()) return;
+    ["guardianName", "guardianPhone"].forEach((id) => ($(id).value = ""));
+    $("parentalConsent").checked = false;
   }
   $("age").addEventListener("input", syncGuardian);
-  $("sameAsGuardian").addEventListener("change", () => {
-    setEmergencyLocked($("sameAsGuardian").checked);
-    if ($("sameAsGuardian").checked) copyGuardian();
-    else { $("emergencyName").value = ""; $("emergencyPhone").value = ""; }
-  });
-  $("guardianName").addEventListener("input", copyGuardian);
-  $("guardianPhone").addEventListener("input", copyGuardian);
 
   // Validation (the backend re-checks everything)
   function validate() {
     const e = {};
-    const val = (id) => $(id).value.trim();
     if (!NAME_RE.test(val("name"))) e.name = val("name") ? "Use letters only, with a single space, ' - or . between parts." : "Enter your full name.";
     if (!mobile.test(cleanPhone(val("phone")))) e.phone = "Enter a valid 10-digit mobile number.";
     if (!EMAIL_RE.test(val("email"))) e.email = "Enter a valid email address.";
     const a = age();
     if (!/^\d{1,3}$/.test(val("age")) || a < 1 || a > 100) e.age = "Enter an age from 1 to 100.";
-    if (!val("experience")) e.experience = "Choose your running experience.";
-    if (!val("pace")) e.pace = "Choose your usual pace.";
-    if (!form.querySelector('input[name="tshirt"]:checked')) e.tshirt = "Choose a t-shirt size.";
+    if (!radio("experience")) e.experience = "Choose your running experience.";
+    if (!radio("pace")) e.pace = "Choose your usual pace.";
+    if (!radio("tshirt")) e.tshirt = "Choose a t-shirt size.";
 
     const minor = isMinor();
     if (minor) {
@@ -538,60 +751,367 @@
     return e;
   }
 
-  function showErrors(errors) {
-    form.querySelectorAll("[data-f]").forEach((el) => {
-      const msg = errors[el.dataset.f] || "";
-      el.classList.toggle("invalid", !!msg);
-      const p = el.querySelector(".err");
-      if (p) p.textContent = msg;
-    });
-    const keys = Object.keys(errors);
-    if (keys.length) {
-      const first = form.querySelector(`[data-f="${keys[0]}"]`);
-      const target = first && first.querySelector("input, select");
-      if (target) target.focus({ preventScroll: true });
-      if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
+  // ---- T-shirt cards: the shirt grows with the size ----
+  $("sizes").innerHTML = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"].map((s, i) =>
+    '<label class="choice sz"><input type="radio" name="tshirt" value="' + s + '"><span class="key" aria-hidden="true">' + String.fromCharCode(65 + i) + "</span>" +
+    '<svg viewBox="0 0 48 44" style="--s:' + (0.72 + i * 0.075).toFixed(3) + '" aria-hidden="true"><path d="M16 2 8 6 2 14l7 5 3-3v26h24V16l3 3 7-5-6-8-8-4c-2 4-5 6-8 6s-6-2-8-6Z"/></svg>' +
+    "<b>" + s + "</b></label>").join("");
+
+  // ================= The journey: one question at a time =================
+  const STEPS = [
+    { id: "name", label: "Name", stage: "Warm-up", fields: ["name"], input: "name" },
+    { id: "phone", label: "Mobile", stage: "Warm-up", fields: ["phone"], input: "phone" },
+    { id: "email", label: "Email", stage: "Warm-up", fields: ["email"], input: "email" },
+    { id: "age", label: "Age", stage: "Warm-up", fields: ["age"], input: "age" },
+    { id: "guardianName", label: "Parent/guardian", stage: "Warm-up", minor: true, fields: ["guardianName"], input: "guardianName" },
+    { id: "guardianPhone", label: "Parent/guardian's mobile", stage: "Warm-up", minor: true, fields: ["guardianPhone"], input: "guardianPhone" },
+    { id: "parentalConsent", label: "Parental consent", stage: "Warm-up", minor: true, fields: ["parentalConsent"] },
+    { id: "experience", label: "Experience", stage: "Your stride", fields: ["experience"], choice: "experience" },
+    { id: "pace", label: "Pace", stage: "Your stride", fields: ["pace"], choice: "pace" },
+    { id: "tshirt", label: "T-shirt", stage: "Kit", fields: ["tshirt"], choice: "tshirt" },
+    { id: "emergencyName", label: "Emergency contact", stage: "Safety", fields: ["emergencyName"], input: "emergencyName" },
+    { id: "emergencyPhone", label: "Emergency contact's mobile", stage: "Safety", fields: ["emergencyPhone"], input: "emergencyPhone" },
+    { id: "declarations", label: "Declarations", stage: "Briefing", fields: ["decHealth", "decRefund", "decData", "decRules"] },
+    { id: "photo", label: "Photos", stage: "Briefing", optional: true, fields: [], choice: "photo" },
+    { id: "review", label: "Race check", stage: "Finish line", fields: [] },
+  ];
+  const CHEERS = { "Your stride": "Warm-up done!", "Kit": "Looking fast!", "Safety": "Kit sorted!", "Briefing": "Nearly there!", "Finish line": "Last checkpoint!" };
+  const steps = () => STEPS.filter((s) => !s.minor || isMinor());
+  const stepOf = (id) => STEPS.find((s) => s.id === id);
+  const indexOf = (id) => steps().findIndex((s) => s.id === id);
+  const elOf = (id) => form.querySelector('.step[data-step="' + id + '"]');
+  const stepValid = (s, e) => s.fields.every((f) => !(e || validate())[f]);
+  // Furthest a runner may go: the first question that still needs an answer (or the race check)
+  function firstOpen() {
+    const e = validate(), list = steps();
+    const k = list.findIndex((s) => !stepValid(s, e));
+    return k < 0 ? list.length - 1 : k;
+  }
+  let cur = "name", returnToReview = false;
+
+  // Questions that use the names already given
+  const TITLES = {
+    phone: () => first(val("name")) ? "Nice to meet you, " + first(val("name")) + "! What's your mobile number?" : "What's your mobile number?",
+    guardianPhone: () => "What's " + (first(val("guardianName")) ? first(val("guardianName")) + "'s" : "their") + " mobile number?",
+    parentalConsent: () => "Has " + (first(val("guardianName")) || "your parent or guardian") + " given consent?",
+    emergencyPhone: () => "And " + (first(val("emergencyName")) ? first(val("emergencyName")) + "'s" : "their") + " mobile number?",
+    review: () => "Race check" + (first(val("name")) ? ", " + first(val("name")) : "") + ": all good?",
+  };
+
+  function go(id, dir, opts) {
+    opts = opts || {};
+    const list = steps();
+    let i = list.findIndex((s) => s.id === id);
+    if (i < 0) i = Math.min(firstOpen(), list.length - 1);
+    const s = list[i], prevStage = (stepOf(cur) || {}).stage;
+    const from = form.querySelector(".step:not([hidden]):not(.out)"), to = elOf(s.id);
+    cur = s.id;
+    if (s.id === "review") returnToReview = false;
+    prepare(s, i, list, dir === "fwd" && s.stage !== prevStage);
+
+    if (from && from !== to) {
+      if (calm || !dir) from.hidden = true;
+      else {
+        from.classList.remove("in", "fwd", "back"); from.classList.add("out", dir);
+        const done = () => { from.classList.remove("out", "fwd", "back"); if (from !== elOf(cur)) from.hidden = true; };
+        from.addEventListener("animationend", done, { once: true }); setTimeout(done, 450);
+      }
     }
+    to.hidden = false; to.classList.remove("out", "in", "fwd", "back");
+    if (!calm && dir) { void to.offsetWidth; to.classList.add("in", dir); streaks(dir); }
+
+    drawTrack(dir); drawNav();
+    $("live").textContent = s.id === "review" ? "Final step: check your answers." : "Question " + (i + 1) + " of " + list.length + (s.optional ? ", optional." : ", required.");
+    if (opts.focus !== false) focusStep(s);
+    if (dir) keepInView();
+    saveDraft();
   }
 
+  function prepare(s, i, list, newStage) {
+    Object.keys(TITLES).forEach((k) => { const h = form.querySelector('[data-t="' + k + '"]'); if (h) h.textContent = TITLES[k](); });
+    form.querySelectorAll(".cheer").forEach((c) => (c.textContent = ""));
+    let cheer = newStage ? CHEERS[s.stage] || "" : "";
+    if (!cheer && i === Math.floor((list.length - 1) / 2) && !newStage) cheer = "Halfway there!";
+    elOf(s.id).querySelector(".cheer").textContent = cheer;
+    if (s.id === "review") drawReview();
+    const g = val("guardianName");
+    $("useGuardian").hidden = !(isMinor() && NAME_RE.test(g) && mobile.test(cleanPhone(val("guardianPhone"))));
+    $("useGuardian").textContent = "Use " + g + " (" + fmtPhone(val("guardianPhone")) + ")";
+    showErrors(s, {});
+  }
+
+  function focusStep(s) {
+    const el = elOf(s.id);
+    let target = s.input ? $(s.input) : null;
+    if (!target && s.choice) target = el.querySelector('input[name="' + s.choice + '"]:checked') || el.querySelector('input[name="' + s.choice + '"]');
+    if (!target) target = el.querySelector(".q-title");
+    try { target.focus({ preventScroll: true }); } catch (e) {}
+  }
+  function keepInView() {
+    const top = $("journey").getBoundingClientRect().top;
+    if (top < -4 || top > innerHeight * 0.5) window.scrollTo({ top: scrollY + top - 8, behavior: calm ? "auto" : "smooth" });
+  }
+  function streaks(dir) {
+    const el = $("streaks"); el.className = "streaks"; void el.offsetWidth;
+    el.className = "streaks go" + (dir === "back" ? " rev" : "");
+  }
+
+  // ---- Progress track ----
+  function drawTrack(dir) {
+    const list = steps(), n = list.length, i = list.findIndex((s) => s.id === cur), reach = firstOpen(), at = (k) => (k / (n - 1)) * 100;
+    $("cps").innerHTML = list.map((s, k) =>
+      '<button type="button" class="cp' + (k < i ? " done" : "") + '" style="left:' + at(k) + '%" data-go="' + s.id + '"' + (k > reach ? " disabled" : "") +
+      ' aria-label="' + esc((k + 1) + ". " + s.label + (k === i ? " (current)" : k > reach ? " (answer the earlier questions first)" : "")) + '"></button>').join("");
+    const r = $("runner");
+    r.style.left = at(i) + "%";
+    $("fill").style.transform = "scaleX(" + (i / (n - 1)) + ")";
+    if (dir && !calm) { r.classList.toggle("rev", dir === "back"); r.classList.add("moving"); clearTimeout(drawTrack.t); drawTrack.t = setTimeout(() => r.classList.remove("moving"), 650); }
+    const s = list[i], left = n - 1 - i, secs = left * 8;
+    $("cpText").textContent = s.id === "review" ? "Race check" : "Checkpoint " + (i + 1) + "/" + (n - 1);
+    $("stageText").textContent = s.stage;
+    $("etaText").textContent = left === 0 ? "Last step" : secs >= 75 ? "~" + Math.round(secs / 60) + " min left" : "Under a min left";
+  }
+  $("cps").addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-go]"); if (!b || b.disabled) return;
+    const j = indexOf(b.dataset.go), i = indexOf(cur); if (j === i || j > firstOpen()) return;
+    arm(); go(b.dataset.go, j < i ? "back" : "fwd");
+  });
+
+  // ---- Buttons ----
+  function drawNav() {
+    const list = steps(), i = list.findIndex((s) => s.id === cur), s = list[i];
+    const ready = s.id === "review" || !!s.optional || stepValid(s);
+    const nb = $("next");
+    $("back").hidden = i === 0;
+    nb.classList.toggle("ready", ready);
+    nb.classList.toggle("final", s.id === "review");
+    let label = "Continue";
+    if (s.id === "review") label = "Register";
+    else if (s.optional && !radio(s.choice)) label = "Skip";
+    else if (returnToReview) label = "Back to race check";
+    else if (list[i + 1] && list[i + 1].id === "review") label = "Race check";
+    $("nextLabel").textContent = label;
+    $("enterHint").hidden = !s.input;
+  }
+  function next() {
+    const list = steps(), i = list.findIndex((s) => s.id === cur), s = list[i];
+    if (s.id === "review") return register();
+    const e = validate();
+    if (!stepValid(s, e)) return complain(s, e);
+    let to = list[i + 1];
+    if (returnToReview) to = list[firstOpen()];
+    haptic(10); arm(); go(to.id, "fwd");
+  }
+  $("back").addEventListener("click", () => { const list = steps(), i = indexOf(cur); if (i > 0) go(list[i - 1].id, "back"); });
+  form.addEventListener("submit", (ev) => { ev.preventDefault(); next(); });
+
+  // ---- Errors: say why, shake, and stay put ----
+  function showErrors(s, e) {
+    s.fields.forEach((f) => {
+      const w = form.querySelector('[data-f="' + f + '"]'); if (w) w.classList.toggle("invalid", !!e[f]);
+      const p = form.querySelector('[data-err="' + f + '"]'); if (p) p.textContent = e[f] || "";
+    });
+    if (s.id === "declarations") {
+      const left = s.fields.filter((f) => e[f]).length;
+      form.querySelector('[data-err="declarations"]').textContent = left ? "Tick all four to continue (" + left + " to go)." : "";
+    }
+  }
+  function complain(s, e) {
+    showErrors(s, e);
+    const run = $("run"); run.classList.remove("shake"); void run.offsetWidth; run.classList.add("shake");
+    haptic([30, 40, 30]);
+    const bad = s.fields.find((f) => e[f]);
+    const el = bad && (s.input ? $(s.input) : form.querySelector('[data-f="' + bad + '"] input'));
+    if (el) { try { el.focus({ preventScroll: true }); } catch (x) {} }
+  }
+  $("run").addEventListener("animationend", (ev) => { if (ev.animationName === "shake") $("run").classList.remove("shake"); });
+  function haptic(p) { if (!calm && navigator.vibrate) { try { navigator.vibrate(p); } catch (e) {} } }
+
+  // ---- Live feedback while answering ----
+  const lastBib = {};
+  function live(changed) {
+    const e = validate();
+    ["name", "phone", "email", "age", "guardianName", "guardianPhone", "emergencyName", "emergencyPhone"].forEach((f) => {
+      const w = form.querySelector('[data-f="' + f + '"]'); w.classList.toggle("ok", !!val(f) && !e[f]);
+      if (changed === f && !e[f]) showErrors(stepOf(f), {});
+    });
+    ["phone", "guardianPhone", "emergencyPhone"].forEach((f) => {
+      const d = cleanPhone(val(f)).length;
+      $("c-" + f).textContent = d && d < 10 ? d + " of 10 digits" : "";
+    });
+    $("n-age").textContent = isMinor() ? "Under 18? No problem, we'll ask for a parent or guardian next." : "";
+    form.querySelectorAll(".choice, .ck").forEach((c) => c.classList.toggle("on", c.querySelector("input").checked));
+    const ticked = ["decHealth", "decRefund", "decData", "decRules"].filter((id) => $(id).checked).length;
+    $("ckCount").textContent = ticked + " of 4 ticked" + (ticked === 4 ? ". You're good to go!" : "");
+    if (changed) {
+      const s = stepOf(cur);
+      if (s && s.fields.every((f) => !e[f])) showErrors(s, {});
+      else if (s && s.id === "declarations") showErrors(s, e);
+    }
+    emailFix();
+    drawBib();
+    drawTrack();
+    drawNav();
+    saveDraft();
+  }
+  form.addEventListener("input", (ev) => live(ev.target.id));
+  form.addEventListener("change", (ev) => live(ev.target.id || ev.target.name));
+
+  // Tap a card and move on (keyboard users choose with arrows, then Enter)
+  form.addEventListener("click", (ev) => {
+    const card = ev.target.closest(".choice"); if (!card || ev.detail === 0) return;
+    const s = stepOf(cur); if (!s || !s.choice) return;
+    const at = cur;
+    setTimeout(() => { if (cur === at && stepValid(s)) next(); }, calm ? 150 : 420);
+  });
+  document.addEventListener("keydown", (ev) => {
+    if (!$("done").hidden || !$("busy").hidden) return;
+    const s = stepOf(cur), t = ev.target;
+    if (ev.key === "Enter" && !ev.isComposing) {
+      if (t.closest && t.closest("button, a, #reviewList")) return;
+      if (!form.contains(t) && t !== document.body) return;
+      ev.preventDefault(); next(); return;
+    }
+    const typing = t.matches && t.matches('input[type="text"], input[type="tel"], input[type="email"]');
+    if (s && s.choice && !typing && !ev.ctrlKey && !ev.metaKey && !ev.altKey && /^[a-z]$/i.test(ev.key)) {
+      const opts = [...elOf(s.id).querySelectorAll('input[name="' + s.choice + '"]')], o = opts[ev.key.toLowerCase().charCodeAt(0) - 97];
+      if (!o) return;
+      o.checked = true; o.dispatchEvent(new Event("change", { bubbles: true })); try { o.focus({ preventScroll: true }); } catch (e) {}
+      const at = cur; setTimeout(() => { if (cur === at) next(); }, calm ? 150 : 380);
+    }
+  });
+
+  // "Same as parent/guardian" for under-18s
+  $("useGuardian").addEventListener("click", () => {
+    $("emergencyName").value = val("guardianName"); $("emergencyPhone").value = cleanPhone(val("guardianPhone"));
+    live("emergencyName"); next();
+  });
+
+  // Common email typos: offer a one-tap fix (never changed without asking)
+  const DOMAIN_FIX = { "gmial.com": "gmail.com", "gmai.com": "gmail.com", "gamil.com": "gmail.com", "gmail.co": "gmail.com", "gmail.cm": "gmail.com", "gmail.con": "gmail.com",
+    "gmaill.com": "gmail.com", "gnail.com": "gmail.com", "gmal.com": "gmail.com", "gmail.om": "gmail.com", "yaho.com": "yahoo.com", "yahooo.com": "yahoo.com", "yahoo.con": "yahoo.com",
+    "hotmial.com": "hotmail.com", "hotmai.com": "hotmail.com", "hotmail.con": "hotmail.com", "outlok.com": "outlook.com", "outlook.con": "outlook.com", "iclod.com": "icloud.com",
+    "icloud.con": "icloud.com", "redifmail.com": "rediffmail.com", "rediffmail.con": "rediffmail.com" };
+  function emailFix() {
+    const v = val("email"), at = v.lastIndexOf("@"), dom = at > 0 ? v.slice(at + 1).toLowerCase() : "", fix = DOMAIN_FIX[dom];
+    $("emailFix").hidden = !fix;
+    if (fix) $("emailFix").querySelector("b").textContent = v.slice(0, at + 1) + fix;
+  }
+  $("emailFix").addEventListener("click", () => {
+    const v = val("email"); $("email").value = v.slice(0, v.lastIndexOf("@") + 1) + DOMAIN_FIX[v.slice(v.lastIndexOf("@") + 1).toLowerCase()];
+    live("email"); $("email").focus();
+  });
+
+  // ---- Live race bib ----
+  $("bYear").textContent = "Mumbai · " + new Date().getFullYear();
+  function setBib(id, value, placeholder, pop) {
+    const el = $(id), text = value || placeholder;
+    if (el.textContent === text) return;
+    el.textContent = text; el.classList.toggle("ph", !value);
+    if (pop && value && !calm && el.animate) el.animate([{ transform: "scale(1.35)", color: "#fe90ae" }, { transform: "none" }], { duration: 380, easing: "cubic-bezier(.2,.8,.2,1.2)" });
+  }
+  function drawBib() {
+    setBib("bName", val("name").toUpperCase(), "Your name", false);
+    setBib("bLevel", radio("experience"), "—", true);
+    setBib("bPace", PACE[radio("pace")] || "", "—", true);
+    setBib("bSize", radio("tshirt"), "—", true);
+    $("lbib").classList.toggle("complete", !!(NAME_RE.test(val("name")) && radio("experience") && radio("pace") && radio("tshirt")));
+  }
+
+  // ---- Race check ----
+  function drawReview() {
+    const minor = isMinor();
+    const rows = [
+      ["name", "Name", val("name")],
+      ["phone", "Mobile", fmtPhone(val("phone"))],
+      ["email", "Email", val("email")],
+      ["age", "Age", val("age") + " years"],
+    ];
+    if (minor) rows.push(["guardianName", "Parent/guardian", val("guardianName") + " · " + fmtPhone(val("guardianPhone"))], ["parentalConsent", "Parental consent", $("parentalConsent").checked ? "Given" : "Not given"]);
+    rows.push(
+      ["experience", "Experience", radio("experience")],
+      ["pace", "Usual pace", (PACE[radio("pace")] || "") + (radio("pace") === "Not sure" ? "" : " min/km")],
+      ["tshirt", "T-shirt size", radio("tshirt")],
+      ["emergencyName", "Emergency contact", val("emergencyName") + " · " + fmtPhone(val("emergencyPhone"))],
+      ["declarations", "Declarations", "All 4 accepted"],
+      ["photo", "Photos on social media", radio("photo") === "yes" ? "Yes" : "No"]);
+    $("reviewList").innerHTML = rows.map((r) => '<div class="rv-row"><div><small>' + esc(r[1]) + "</small><b>" + esc(r[2]) + "</b></div>" +
+      '<button type="button" class="edit" data-edit="' + r[0] + '" aria-label="Change ' + esc(r[1]) + '">Change</button></div>').join("");
+  }
+  $("reviewList").addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-edit]"); if (!b) return;
+    returnToReview = true; arm(); go(b.dataset.edit, "back");
+  });
+
+  // ---- The phone's back button goes to the previous question, not off the page ----
+  let armed = false;
+  function arm() { if (!armed) { try { history.pushState({ unbndReg: true }, ""); armed = true; } catch (e) {} } }
+  window.addEventListener("popstate", () => {
+    if (!armed) return;
+    armed = false;
+    if (!$("done").hidden) return;
+    const list = steps(), i = indexOf(cur);
+    if (i > 0) { go(list[i - 1].id, "back"); arm(); }
+    else history.back();
+  });
+
+  // ---- Answers survive an accidental refresh (this tab only) ----
+  const DRAFT = "unbnd_reg_draft";
+  const TEXT = ["name", "phone", "email", "age", "guardianName", "guardianPhone", "emergencyName", "emergencyPhone"];
+  const RADIOS = ["experience", "pace", "tshirt", "photo"];
+  const CHECKS = ["parentalConsent", "decHealth", "decRefund", "decData", "decRules"];
+  function saveDraft() {
+    clearTimeout(saveDraft.t);
+    saveDraft.t = setTimeout(() => {
+      const d = { t: {}, r: {}, c: {} };
+      TEXT.forEach((id) => (d.t[id] = $(id).value)); RADIOS.forEach((n) => (d.r[n] = radio(n))); CHECKS.forEach((id) => (d.c[id] = $(id).checked));
+      try { sessionStorage.setItem(DRAFT, JSON.stringify(d)); } catch (e) {}
+    }, 250);
+  }
+  function loadDraft() {
+    let d = null, any = false;
+    try { d = JSON.parse(sessionStorage.getItem(DRAFT) || "null"); } catch (e) {}
+    if (!d) return false;
+    TEXT.forEach((id) => { if (d.t && d.t[id]) { $(id).value = d.t[id]; any = true; } });
+    RADIOS.forEach((n) => { const o = [...form.querySelectorAll('input[name="' + n + '"]')].find((x) => d.r && x.value === d.r[n]); if (o) { o.checked = true; any = true; } });
+    CHECKS.forEach((id) => { if (d.c && d.c[id]) { $(id).checked = true; any = true; } });
+    return any;
+  }
+
+  // ---- Crossing the finish line ----
   function showSummary(messages) {
     const box = $("summary");
     if (!messages.length) { box.innerHTML = ""; return; }
-    box.innerHTML = "<b>Please fix the following:</b><ul>" +
-      messages.map((m) => "<li>" + m.replace(/</g, "&lt;") + "</li>").join("") + "</ul>";
+    box.innerHTML = "<b>Please fix the following:</b><ul>" + messages.map((m) => "<li>" + esc(m) + "</li>").join("") + "</ul>";
   }
-
-  form.addEventListener("submit", async (ev) => {
-    ev.preventDefault();
+  async function register() {
     showSummary([]);
     if ($("website").value) return; // bot
-
-    const errors = validate();
-    showErrors(errors);
-    if (Object.keys(errors).length) return;
+    const e = validate(), list = steps(), j = firstOpen();
+    if (list[j].id !== "review") { returnToReview = true; go(list[j].id, "back"); complain(list[j], e); return; }
 
     const minor = isMinor();
     const payload = {
       action: "register",
-      name: $("name").value.trim(),
+      name: val("name"),
       phone: cleanPhone($("phone").value),
-      email: $("email").value.trim(),
+      email: val("email"),
       age: age(),
-      experience: $("experience").value,
-      pace: $("pace").value,
-      tshirt: form.querySelector('input[name="tshirt"]:checked').value,
-      emergencyName: $("emergencyName").value.trim(),
+      experience: radio("experience"),
+      pace: radio("pace"),
+      tshirt: radio("tshirt"),
+      emergencyName: val("emergencyName"),
       emergencyPhone: cleanPhone($("emergencyPhone").value),
-      guardianName: minor ? $("guardianName").value.trim() : "",
+      guardianName: minor ? val("guardianName") : "",
       guardianPhone: minor ? cleanPhone($("guardianPhone").value) : "",
       parentalConsent: minor ? $("parentalConsent").checked : false,
       declarations: $("decHealth").checked && $("decRefund").checked && $("decData").checked && $("decRules").checked,
-      photoConsent: $("photoConsent").checked,
+      photoConsent: radio("photo") === "yes",
     };
 
-    const btn = $("submit");
+    const btn = $("next");
     btn.disabled = true;
-    busy(true, "Saving your details");
+    busy(true, "Crossing the finish line");
     const t1 = setTimeout(() => $("busyText").textContent = "Almost there", 4000);
     const t2 = setTimeout(() => $("busyText").textContent = "Still working, please wait", 10000);
     try {
@@ -608,29 +1128,57 @@
       busy(false);
       btn.disabled = false;
     }
-  });
+  }
 
   function showSuccess(out, p, duplicate) {
     const status = out.status || "Pending";
+    try { sessionStorage.removeItem(DRAFT); } catch (e) {}
+    clearTimeout(saveDraft.t);
     try { if (out.ref) sessionStorage.setItem("unbnd_member", JSON.stringify({ ref: out.ref })); } catch (e) {}
     $("doneEmail").textContent = p.email;
     $("pendingBox").hidden = status !== "Pending";
     $("activeBox").hidden = status !== "Active";
     $("deactBox").hidden = status !== "Deactivated";
     $("emailNote").hidden = !!duplicate;
-    if (status === "Active") { $("bibId").textContent = out.clubId; $("bibName").textContent = p.name; }
-    $("doneTitle").textContent = duplicate ? "You're already registered" : "Thank you for registering";
+    if (status === "Active") { $("bibId").textContent = out.clubId; $("activeId").textContent = out.clubId; }
+    $("bStamp").hidden = status === "Active";
+    $("lbib").classList.toggle("stamped", status !== "Active");
+    $("bStamp").textContent = status === "Deactivated" ? "Not active" : "Payment pending";
+    $("doneTitle").textContent = duplicate ? "You're already registered" : "Thank you for registering" + (first(p.name) ? ", " + first(p.name) : "") + "!";
     if (out.ref) $("payBtn").href = "pay.html?r=" + encodeURIComponent(out.ref);
-    form.hidden = true;
+    document.querySelector(".bibcap").lastChild.textContent = "Your race bib";
+    $("run").hidden = true;
     $("done").hidden = false;
     window.scrollTo({ top: 0 });
+    if (!duplicate && !calm) confetti();
+  }
+  function confetti() {
+    const c = document.createElement("canvas"); c.className = "confetti"; c.setAttribute("aria-hidden", "true");
+    const dpr = Math.min(window.devicePixelRatio || 1, 2), W = innerWidth, H = innerHeight;
+    c.width = W * dpr; c.height = H * dpr; document.body.appendChild(c);
+    const x = c.getContext("2d"); x.scale(dpr, dpr);
+    const cols = ["#fe90ae", "#fe90ae", "#ff5f8f", "#ffd0dc", "#000000", "#ffffff"];
+    const bits = Array.from({ length: 150 }, () => ({ x: W / 2 + (Math.random() - .5) * W * .3, y: H * .35, vx: (Math.random() - .5) * 14, vy: -Math.random() * 14 - 4,
+      r: Math.random() * 6 + 5, a: Math.random() * 6, va: (Math.random() - .5) * .4, c: cols[(Math.random() * cols.length) | 0] }));
+    const t0 = performance.now();
+    (function frame(t) {
+      const dt = t - t0; x.clearRect(0, 0, W, H);
+      bits.forEach((b) => {
+        b.vy += .35; b.vx *= .99; b.x += b.vx; b.y += b.vy; b.a += b.va;
+        x.save(); x.globalAlpha = Math.max(0, 1 - dt / 3400); x.translate(b.x, b.y); x.rotate(b.a); x.fillStyle = b.c; x.fillRect(-b.r / 2, -b.r / 4, b.r, b.r / 2); x.restore();
+      });
+      if (dt < 3400) requestAnimationFrame(frame); else c.remove();
+    })(t0);
   }
 
-
-
-  // Copies text in one tap. Uses the modern clipboard API, and falls back to the
-  // older method that works in in-app browsers (Gmail, WhatsApp, Instagram) and older iPhones.
-
+  // ---- Start ----
+  const restored = loadDraft();
+  syncGuardian();
+  live();
+  const startAt = restored ? steps()[firstOpen()].id : "name";
+  $("welcomeBack").hidden = !restored;
+  if (restored) setTimeout(() => ($("welcomeBack").hidden = true), 8000);
+  go(startAt, null, { focus: false });
 </script>
 </body>
 </html>
