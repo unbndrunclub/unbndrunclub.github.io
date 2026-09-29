@@ -145,6 +145,29 @@
   .home-hero .inner { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; padding-top: 56px; }
   .home-hero h1 { font-size: clamp(4.2rem, 21vw, 9rem); }
   .home-hero .tagline { max-width: 30ch; }
+  /* Hero motion: rotating line, scoreboard ticker, runners lapping a track */
+  .rotor { margin: 14px 0 0; font: 700 1.35rem/1.2 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; }
+  .rotor > span:first-child { opacity: .8; }
+  .rotor b { display: inline-block; color: var(--pink); font-style: italic; font-weight: 800; }
+  .rotor .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .home-hero .lap { position: absolute; z-index: 1; top: 120px; right: max(20px, calc((100% - 1080px) / 2 + 14px)); width: min(300px, 30vw); overflow: visible; }
+  .lap circle { filter: drop-shadow(0 0 4px rgba(254,144,174,.9)); }
+  .ticker { position: relative; display: flex; align-items: stretch; margin-top: 30px; border-block: 1px solid rgba(254,144,174,.5); background: rgba(0,0,0,.5); }
+  .ticker .tk-view { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; -webkit-mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent); }
+  .tk-track { display: inline-flex; padding: 10px 0; animation: tk 40s linear infinite; will-change: transform; }
+  .tk-set { display: inline-flex; }
+  .tk-track span { font: italic 800 1.1rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; padding: 0 18px 0 0; }
+  .tk-track span::before { content: "\25C6"; color: var(--pink); font-style: normal; font-size: .8em; margin-right: 18px; }
+  .tk-track span.hot { color: var(--pink); }
+  .ticker.paused .tk-track { animation-play-state: paused; }
+  .tk-btn { flex: none; border: 0; border-left: 1px solid rgba(254,144,174,.5); background: transparent; color: var(--pink); width: 42px; cursor: pointer; font-size: .95rem; }
+  .tk-btn:focus-visible { outline: 3px solid var(--pink); outline-offset: -3px; }
+  @keyframes tk { to { transform: translateX(-50%); } }
+  @media (max-width: 760px) { .home-hero .lap { display: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .tk-track { animation: none; display: flex; flex-wrap: wrap; justify-content: center; white-space: normal; }
+    .tk-set { flex-wrap: wrap; justify-content: center; row-gap: 6px; } .tk-set.dup, .tk-btn { display: none; }
+  }
   .city { display: inline-block; margin: 0 0 14px; background: var(--pink); color: #000; font: 700 1rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .04em; padding: 7px 10px; border-radius: 6px; }
   .ctas { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 26px; }
   .ctas .btn { width: auto; margin: 0; padding: 16px 22px; }
@@ -212,11 +235,24 @@
     <p class="city">Mumbai's run club</p>
     <h1>Run<br>unbound.</h1>
     <p class="tagline">Group runs and races across Mumbai. Every pace, every distance, one club.</p>
+    <p class="rotor"><span>Made for</span> <b id="rotor" aria-hidden="true">sunrise legs</b><span class="sr">every kind of runner</span></p>
     <div class="ctas">
       <a class="btn pink" href="register.html">Join the club</a>
       <a class="btn light" href="races.html">Race schedule</a>
     </div>
+    <div class="ticker" aria-label="Upcoming runs">
+      <div class="tk-view"><div class="tk-track" id="tkTrack"></div></div>
+      <button class="tk-btn" id="tkPause" type="button" aria-pressed="false" aria-label="Pause scrolling">&#10074;&#10074;</button>
+    </div>
   </div>
+  <svg class="lap" viewBox="0 0 220 130" aria-hidden="true" focusable="false">
+      <path id="lapA" d="M55,35 H165 A30,30 0 0 1 165,95 H55 A30,30 0 0 1 55,35 Z" fill="none" stroke="rgba(254,144,174,.45)" stroke-width="1.5"/>
+      <path id="lapB" d="M55,25 H165 A40,40 0 0 1 165,105 H55 A40,40 0 0 1 55,25 Z" fill="none" stroke="rgba(254,144,174,.32)" stroke-width="1.5"/>
+      <path id="lapC" d="M55,15 H165 A50,50 0 0 1 165,115 H55 A50,50 0 0 1 55,15 Z" fill="none" stroke="rgba(254,144,174,.22)" stroke-width="1.5"/>
+      <circle r="4.5" fill="#fe90ae" data-lane="#lapA" data-dur="6" data-off="1"/>
+      <circle r="4" fill="#ffffff" data-lane="#lapB" data-dur="7.4" data-off="4"/>
+      <circle r="3.6" fill="#ff5f8f" data-lane="#lapC" data-dur="9.1" data-off="2"/>
+    </svg>
 </section>
 
 <main class="home">
@@ -359,7 +395,47 @@
       m.innerHTML = [[d, "days"], [h, "hrs"], [mi, "mins"], [s, "secs"]].map((x) => "<div><b>" + String(x[0]).padStart(2, "0") + "</b><span>" + x[1] + "</span></div>").join("");
     });
   }
-  loadRaces(renderNext);
+  // ---- Hero motion ----
+  // Runners on the track: positioned along each lane every frame (still, but spread out, for people who prefer reduced motion)
+  function runTrack(svg, calm) {
+    const dots = [...svg.querySelectorAll("circle")].map((c) => { const p = svg.querySelector(c.dataset.lane); return { c: c, p: p, len: p.getTotalLength(), dur: Number(c.dataset.dur) * 1000, off: Number(c.dataset.off) * 1000 }; });
+    const place = (t) => dots.forEach((d) => { const pt = d.p.getPointAtLength((((t + d.off) % d.dur) / d.dur) * d.len); d.c.setAttribute("cx", pt.x); d.c.setAttribute("cy", pt.y); });
+    place(0);
+    if (calm) return;
+    (function frame(t) { if (!document.hidden && svg.getClientRects().length) place(t); requestAnimationFrame(frame); })(0);
+  }
+  const calmMotion = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  (function () {
+    const words = ["sunrise legs", "night owls", "first-timers", "PB chasers", "sea-face miles", "every pace"], el = $("rotor");
+    let i = 0;
+    if (!calmMotion && el.animate) setInterval(() => {
+      if (document.hidden) return;
+      el.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-10px)" }], { duration: 260, fill: "forwards" }).finished.then(() => {
+        i = (i + 1) % words.length; el.textContent = words[i];
+        el.animate([{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 260, fill: "forwards" });
+      });
+    }, 2600);
+    document.querySelectorAll(".lap").forEach((s) => runTrack(s, calmMotion));
+    $("tkPause").addEventListener("click", () => {
+      const on = $("tkPause").getAttribute("aria-pressed") !== "true";
+      $("tkPause").setAttribute("aria-pressed", String(on)); $("tkPause").setAttribute("aria-label", on ? "Play scrolling" : "Pause scrolling");
+      $("tkPause").innerHTML = on ? "&#9654;" : "&#10074;&#10074;"; document.querySelector(".ticker").classList.toggle("paused", on);
+    });
+  })();
+  // Scoreboard ticker: the next three runs, then the club motto
+  function renderTicker(list) {
+    const items = (list || []).slice(0, 3).map((r) => {
+      const [, m, d] = r.date.split("-").map(Number);
+      return { hot: true, text: (r.day || "").slice(0, 3) + " " + d + " " + MONTHS[m - 1] + " · " + r.name + " · " + time12(r.time) + (r.start ? " · " + r.start : "") + (r.distance ? " · " + r.distance + " km" : "") };
+    });
+    ["Run hard", "Be kind", "Have fun"].forEach((t) => items.push({ text: t }));
+    const set = items.map((x) => "<span" + (x.hot ? ' class="hot"' : "") + ">" + esc(x.text) + "</span>").join("");
+    $("tkTrack").innerHTML = '<div class="tk-set">' + set + '</div><div class="tk-set dup" aria-hidden="true">' + set + "</div>";
+    const w = $("tkTrack").firstChild.offsetWidth;
+    if (w) $("tkTrack").style.animationDuration = Math.max(20, w / 55) + "s";   // same speed whatever the length
+  }
+  renderTicker(null);
+  loadRaces((list) => { renderNext(list); renderTicker(list); });
 
   // ---- Find your Club ID ----
   const fmtD = (dmy) => { const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(dmy || ""); return m ? Number(m[1]) + " " + MONTHS[Number(m[2]) - 1] + " " + m[3] : ""; };
