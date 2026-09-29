@@ -172,6 +172,15 @@
   .feat .cover { position: relative; min-height: 280px; background: #000 center / cover no-repeat; display: flex; align-items: flex-end; }
   .feat .cover::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.85) 5%, rgba(0,0,0,.1) 75%); }
   .feat .cover .t { position: relative; z-index: 1; padding: 20px; }
+  /* Races without a photo: black with the pink track lanes from the page header, plus the logo */
+  .feat .cover.nophoto, .rc .cover.nophoto {
+    background-color: #000;
+    background-image: radial-gradient(110% 150% at 100% 0%, rgba(254,144,174,.24), transparent 60%),
+      repeating-linear-gradient(118deg, transparent 0 46px, rgba(254,144,174,.28) 46px 48px);
+  }
+  .feat .cover.nophoto::before, .rc .cover.nophoto::before { content: ""; position: absolute; right: 16px; top: 14px; width: 64px; height: 64px; background: url(logo.png) center / contain no-repeat; }
+  .feat .cover.nophoto { min-height: 210px; }
+  .rc .cover.nophoto { height: 110px; }
   .kicker { display: inline-block; background: var(--pink); color: var(--black); font: 700 .9rem/1 "Barlow Condensed", sans-serif; padding: 6px 10px; border-radius: 6px; }
   .feat h2 { font: italic 800 clamp(2.4rem, 10vw, 4.4rem)/.92 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--white); margin: 10px 0 0; }
   .feat .body { padding: 18px 20px 24px; }
@@ -451,14 +460,14 @@
     lastList = list;
     const r = list[0];
     $("featured").innerHTML =
-      '<article class="feat" id="' + esc(r.id) + '"><div class="cover" style="' + (r.photo ? "background-image:url('" + esc(r.photo) + "')" : "") + '"><div class="t">' +
+      '<article class="feat" id="' + esc(r.id) + '"><div class="cover' + (r.photo ? "" : " nophoto") + '" style="' + (r.photo ? "background-image:url('" + esc(r.photo) + "')" : "") + '"><div class="t">' +
       '<span class="kicker">Next race · ' + esc(r.id) + "</span><h2>" + esc(r.name) + "</h2></div></div>" +
       '<div class="body"><div class="countdown" data-count="' + raceStart(r).toISOString() + '" aria-label="Time until reporting"></div>' +
       factsHtml(r) + actions(r) + startBlock(r) + '<p class="free">Free for all members with an active Club ID.</p>' + extras(r) + "</div></article>";
     if (list.length > 1) {
       $("moreWrap").hidden = false;
       $("more").innerHTML = list.slice(1).map((x) =>
-        '<article class="rc" id="' + esc(x.id) + '"><div class="cover" style="' + (x.photo ? "background-image:url('" + esc(x.thumb || x.photo) + "')" : "") + '"><b>' + esc(x.id) + "</b></div>" +
+        '<article class="rc" id="' + esc(x.id) + '"><div class="cover' + (x.photo ? "" : " nophoto") + '" style="' + (x.photo ? "background-image:url('" + esc(x.thumb || x.photo) + "')" : "") + '"><b>' + esc(x.id) + "</b></div>" +
         '<div class="body"><h4>' + esc(x.name) + "</h4>" + factsHtml(x) + actions(x) +
         "<details><summary>More details</summary>" + startBlock(x) + extras(x) + "</details>" +
         '<p class="free">Free for all members with an active Club ID.</p></div></article>').join("");
