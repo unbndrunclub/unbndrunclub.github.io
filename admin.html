@@ -134,7 +134,7 @@
   .backbtn { border: 1.5px solid var(--black); background: var(--white); border-radius: 999px; padding: 7px 12px; font: 700 .95rem "Barlow Condensed", sans-serif; cursor: pointer; }
   .panel h2.sec { font: italic 800 1.8rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 0 0 12px; }
   .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
-  .tools input, .tools select { width: auto; flex: 1 1 180px; background: var(--white); padding: 10px 12px; }
+  .tools input { width: auto; flex: 1 1 180px; background: var(--white); padding: 10px 12px; }
   .tools .btn { width: auto; margin: 0; padding: 11px 14px; font-size: 1rem; }
   .tablewrap { overflow: auto; max-height: 74vh; background: var(--white); border-radius: 12px; border: 1px solid var(--line); }
   table { border-collapse: separate; border-spacing: 0; font-size: .82rem; line-height: 1.3; }
@@ -171,8 +171,18 @@
   .kpi { background: var(--white); border-radius: 16px; padding: 14px 16px; }
   .kpi b { display: block; font: italic 800 2.4rem/1 "Barlow Condensed", sans-serif; }
   .kpi span { color: var(--muted); font-size: .9rem; }
-  .regkpis [data-filter] { cursor: pointer; }
-  .regkpis .sel { outline: 3px solid var(--pink); outline-offset: 1px; }
+  /* Manage Registrations: one collapsible section per status */
+  .rsec { border-radius: 16px; margin-bottom: 10px; overflow: hidden; border: 1px solid rgba(0,0,0,.07); }
+  .rsec.green { background: #eaf8ef; } .rsec.blue { background: #e6f1fd; } .rsec.yellow { background: #fff8dc; } .rsec.red { background: #fdecee; }
+  .rsec summary { display: flex; align-items: center; gap: 10px; padding: 14px 16px; cursor: pointer; list-style: none; }
+  .rsec summary::-webkit-details-marker { display: none; }
+  .rsec summary:focus-visible { outline: 3px solid var(--pink); outline-offset: -3px; }
+  .rsec summary::after { content: ""; flex: none; width: 9px; height: 9px; border-right: 2.5px solid var(--black); border-bottom: 2.5px solid var(--black); transform: rotate(-45deg); transition: transform .15s; margin: 0 4px 0 2px; }
+  .rsec[open] summary::after { transform: rotate(45deg); }
+  .rsec .rname { font: italic 800 1.5rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .rsec .rrupee { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--black); color: var(--pink); font: 800 .95rem/1 "Barlow", sans-serif; flex: none; }
+  .rsec .rcount { margin-left: auto; font: italic 800 2.2rem/1 "Barlow Condensed", sans-serif; }
+  .rsec .tablewrap { margin: 0 10px 10px; }
   .ttable { width: 100%; border-collapse: collapse; font-size: .95rem; }
   .ttable th { background: none; color: var(--muted); position: static; font: 700 .8rem "Barlow", sans-serif; text-transform: uppercase; letter-spacing: .05em; text-align: right; padding: 6px 8px; border-bottom: 1.5px solid var(--line); }
   .ttable td { text-align: right; padding: 9px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
@@ -434,22 +444,11 @@
     <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Manage Registrations</h2></div>
     <div class="tools">
       <input id="search" type="text" placeholder="Search name, Club ID, phone, email">
-      <select id="filter">
-        <option value="">All statuses</option>
-        <option value="active">All Active</option>
-        <option value="activePaid">Active (Paid)</option>
-        <option value="activeUnpaid">Active (Unpaid)</option>
-        <option value="pending">All Pending</option>
-        <option value="pendingPaid">Pending (Paid)</option>
-        <option value="pendingUnpaid">Pending (Unpaid)</option>
-        <option value="deactivated">Deactivated</option>
-      </select>
       <button class="btn pink" id="refresh" type="button">Refresh</button>
       <button class="btn" id="download" type="button">Download Excel</button>
     </div>
-    <div class="kpis regkpis" id="regKpis"></div>
-    <p class="hint" style="margin:6px 0 10px">Tap a box to show only those members. Row colours match the boxes.</p>
-    <div class="tablewrap"><table id="table"></table></div>
+    <p class="panel-loading" id="regMsg">Loading registrations…</p>
+    <div id="regSections" hidden></div>
   </section>
 
   <section class="panel" id="racePanel" hidden>
@@ -635,7 +634,7 @@
     passcode = ""; headers = []; rows = []; refs = []; regLoaded = false;
     try { sessionStorage.removeItem("unbnd_admin"); sessionStorage.removeItem("unbnd_admin_data"); } catch (x) {}
     $("adminView").hidden = true; $("loginView").hidden = false; $("logout").hidden = true;
-    $("table").innerHTML = "";
+    clearRegistrations();
     if (msg) $("loginErr").textContent = msg;
   }
   $("logout").addEventListener("click", () => logout());
@@ -658,10 +657,10 @@
   async function loadRegistrations() {
     let cached = null; try { cached = JSON.parse(sessionStorage.getItem("unbnd_admin_data") || "null"); } catch (x) {}
     if (cached && cached.refs) { setData(cached); regLoaded = true; }
-    else $("table").innerHTML = '<tbody><tr><td class="muted" style="padding:16px">Loading registrations…</td></tr></tbody>';
+    else showRegMsg("Loading registrations…");
     const out = await api({ action: "adminList" }, cached ? "" : "Loading registrations", READ);
     if (out.ok) { setData(out); regLoaded = true; }
-    else if (!cached) { $("table").innerHTML = '<tbody><tr><td class="muted" style="padding:16px">' + esc((out.errors || ["Couldn't load"])[0]) + ' Tap Refresh to try again.</td></tr></tbody>'; }
+    else if (!cached) showRegMsg((out.errors || ["Couldn't load"])[0] + " Tap Refresh to try again.");
   }
   function setData(out) {
     headers = out.headers; rows = out.rows; refs = out.refs || [];
@@ -673,12 +672,6 @@
     if (out.ok) { setData(out); regLoaded = true; toast("Up to date"); } else toast((out.errors || ["Refresh failed"])[0]);
   });
   $("search").addEventListener("input", render);
-  $("regKpis").addEventListener("click", (e) => {
-    const el = e.target.closest("[data-filter]"); if (!el) return;
-    e.stopPropagation();
-    $("filter").value = el.dataset.filter; render();
-  });
-  $("filter").addEventListener("change", render);
   setInterval(async () => {
     if (!passcode || !regLoaded || $("regPanel").hidden || document.hidden || !$("modal").hidden || editingK !== -1) return;
     const out = await api({ action: "adminList" });
@@ -687,45 +680,66 @@
 
   const iOf = (name) => headers.indexOf(name);
   let editingK = -1;
-  function render() {
-    const iStatus = iOf("Membership status"), iNotes = iOf("Admin notes"), iPay = iOf("Payment screenshot");
-    const q = $("search").value.trim().toLowerCase();
-    const f = $("filter").value;
-    statCards("regKpis");
-    document.querySelectorAll("#regKpis [data-filter]").forEach((el) => el.classList.toggle("sel", el.dataset.filter === f));
 
-    let h = '<thead><tr><th class="act">Action</th><th title="Paid and active">₹</th>' + headers.map((x) => "<th>" + esc(x) + "</th>").join("") + "</tr></thead><tbody>";
-    let shown = 0;
-    // Group by colour (green, blue, yellow, red); active members by Club ID, others in registration order
-    const iId = iOf("Club ID");
-    const band = (r) => r[iStatus] === "Active" ? 0 : r[iStatus] === "Pending" ? (r[iPay] === "Yes" ? 1 : 2) : 3;
-    const FILTERS = {
-      active: (r) => r[iStatus] === "Active", activePaid: (r) => r[iStatus] === "Active" && r[iPay] === "Yes", activeUnpaid: (r) => r[iStatus] === "Active" && r[iPay] !== "Yes",
-      pending: (r) => r[iStatus] === "Pending", pendingPaid: (r) => r[iStatus] === "Pending" && r[iPay] === "Yes", pendingUnpaid: (r) => r[iStatus] === "Pending" && r[iPay] !== "Yes", deactivated: (r) => r[iStatus] === "Deactivated",
-    };
-    const order = rows.map((r, k) => k).sort((a, b) => {
-      const d = band(rows[a]) - band(rows[b]); if (d) return d;
-      if (band(rows[a]) === 0) return String(rows[a][iId]).localeCompare(String(rows[b][iId]));
-      return a - b;
-    });
-    order.forEach((k) => {
-      const r = rows[k];
-      const st = r[iStatus];
-      if ((f && FILTERS[f] && !FILTERS[f](r)) || (q && !r.join(" ").toLowerCase().includes(q))) return;
-      shown++;
-      const activate = st !== "Active";
-      const paid = st === "Active" && r[iPay] === "Yes";
-      const rowClass = st === "Pending" && r[iPay] === "Yes" ? "Proof" : st;
-      h += '<tr class="' + esc(rowClass) + '" data-k="' + k + '"><td class="act"><button type="button" class="tog ' + (activate ? "on" : "off") + '">' +
-        (activate ? "Activate" : "Deactivate") + '</button></td><td class="paid">' + (paid ? "₹" : "") + "</td>";
-      r.forEach((v, i) => {
-        if (i === iNotes) h += '<td class="notes">' + notesCell(k, v) + "</td>";
-        else h += "<td>" + (v === "" ? "" : esc(v)) + "</td>";
+  // One collapsible section per status. Colours match the row colours (green, blue, yellow, red).
+  const REG_SECTIONS = [
+    { key: "activePaid", label: "Active (Paid)", tone: "green", rupee: true },
+    { key: "activeUnpaid", label: "Active (Unpaid)", tone: "green" },
+    { key: "pendingPaid", label: "Pending (Paid)", tone: "blue", rupee: true },
+    { key: "pendingUnpaid", label: "Pending (Unpaid)", tone: "yellow" },
+    { key: "deactivated", label: "Deactivated", tone: "red" },
+  ];
+  const regOpen = {};   // the sections the admin has opened
+  $("regSections").innerHTML = REG_SECTIONS.map((sec) =>
+    '<details class="rsec ' + sec.tone + '" data-sec="' + sec.key + '"><summary><span class="rname">' + sec.label + "</span>" +
+    (sec.rupee ? '<span class="rrupee" title="Paid" aria-label="Paid">₹</span>' : "") +
+    '<b class="rcount"></b></summary><div class="tablewrap"><table></table></div></details>').join("");
+  $("regSections").querySelectorAll("details").forEach((d) => d.addEventListener("toggle", () => {
+    if (!$("search").value.trim()) regOpen[d.dataset.sec] = d.open;
+  }));
+  function showRegMsg(text) { $("regMsg").textContent = text; $("regMsg").hidden = false; $("regSections").hidden = true; }
+  function clearRegistrations() {
+    $("regSections").querySelectorAll("table").forEach((t) => (t.innerHTML = ""));
+    showRegMsg("Loading registrations…");
+  }
+
+  function render() {
+    const iStatus = iOf("Membership status"), iNotes = iOf("Admin notes"), iPay = iOf("Payment screenshot"), iId = iOf("Club ID");
+    const q = $("search").value.trim().toLowerCase();
+    $("regMsg").hidden = true; $("regSections").hidden = false;
+
+    const secOf = (r) => r[iStatus] === "Active" ? (r[iPay] === "Yes" ? "activePaid" : "activeUnpaid")
+      : r[iStatus] === "Pending" ? (r[iPay] === "Yes" ? "pendingPaid" : "pendingUnpaid") : "deactivated";
+    const groups = {}; REG_SECTIONS.forEach((sec) => (groups[sec.key] = []));
+    rows.forEach((r, k) => groups[secOf(r)].push(k));
+
+    REG_SECTIONS.forEach((sec) => {
+      // Active members by Club ID, the others in registration order
+      const list = groups[sec.key].slice();
+      if (sec.key.startsWith("active")) list.sort((a, b) => String(rows[a][iId]).localeCompare(String(rows[b][iId])));
+      let h = '<thead><tr><th class="act">Action</th>' + headers.map((x) => "<th>" + esc(x) + "</th>").join("") + "</tr></thead><tbody>";
+      let shown = 0;
+      list.forEach((k) => {
+        const r = rows[k];
+        if (q && !r.join(" ").toLowerCase().includes(q)) return;
+        shown++;
+        const st = r[iStatus];
+        const activate = st !== "Active";
+        const rowClass = st === "Pending" && r[iPay] === "Yes" ? "Proof" : st;
+        h += '<tr class="' + esc(rowClass) + '" data-k="' + k + '"><td class="act"><button type="button" class="tog ' + (activate ? "on" : "off") + '">' +
+          (activate ? "Activate" : "Deactivate") + "</button></td>";
+        r.forEach((v, i) => {
+          if (i === iNotes) h += '<td class="notes">' + notesCell(k, v) + "</td>";
+          else h += "<td>" + (v === "" ? "" : esc(v)) + "</td>";
+        });
+        h += "</tr>";
       });
-      h += "</tr>";
+      if (!shown) h += '<tr><td class="act muted" colspan="' + (headers.length + 1) + '">' + (q ? "No matching registrations" : "No registrations") + "</td></tr>";
+      const d = $("regSections").querySelector('[data-sec="' + sec.key + '"]');
+      d.querySelector("table").innerHTML = h + "</tbody>";
+      d.querySelector(".rcount").textContent = list.length;
+      d.open = q ? shown > 0 : !!regOpen[sec.key];   // while searching, sections with matches open by themselves
     });
-    if (!shown) h += '<tr><td class="act muted" colspan="' + (headers.length + 2) + '">No matching registrations</td></tr>';
-    $("table").innerHTML = h + "</tbody>";
   }
   function notesCell(k, v) {
     if (k === editingK) {
@@ -736,12 +750,12 @@
     return '<div class="ncell"><span' + (v ? "" : ' class="muted" style="font-style:italic;color:var(--muted)"') + ">" +
       (v ? esc(v) : "No admin remarks") + '</span><button type="button" class="pen" title="Edit notes" aria-label="Edit notes">✎</button></div>';
   }
-  $("table").addEventListener("click", async (e) => {
+  $("regSections").addEventListener("click", async (e) => {
     const tr = e.target.closest("tr[data-k]"); if (!tr) return;
     const k = Number(tr.dataset.k);
     if (e.target.closest(".pen")) {
       editingK = k; render();
-      const ta = $("table").querySelector('tr[data-k="' + k + '"] textarea');
+      const ta = $("regSections").querySelector('tr[data-k="' + k + '"] textarea');
       if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
       return;
     }
@@ -751,14 +765,14 @@
       const out = await api({ action: "adminNotes", ref: refs[k], notes: val }, "Saving notes");
       if (!out.ok) { toast((out.errors || ["Couldn't save notes"])[0]); return; }
       rows[k] = out.row; editingK = -1; render();
-      const fresh = $("table").querySelector('tr[data-k="' + k + '"]'); if (fresh) fresh.classList.add("flash");
+      const fresh = $("regSections").querySelector('tr[data-k="' + k + '"]'); if (fresh) fresh.classList.add("flash");
       toast("Notes saved");
     }
   });
 
   // Toggle: opens a small confirm box with an optional note
   let pending = null;
-  $("table").addEventListener("click", (e) => {
+  $("regSections").addEventListener("click", (e) => {
     const btn = e.target.closest(".tog"); if (!btn) return;
     const k = Number(btn.closest("tr").dataset.k);
     const r = rows[k];
@@ -783,7 +797,7 @@
     if (!out.ok) { toast((out.errors || ["Update failed"])[0]); return; }
     rows[p.k] = out.row;
     render();
-    const tr = $("table").querySelector('tr[data-k="' + p.k + '"]');
+    const tr = $("regSections").querySelector('tr[data-k="' + p.k + '"]');
     if (tr) tr.classList.add("flash");
     const id = out.row[iOf("Club ID")];
     toast(p.status === "Active" ? (id + " activated. Welcome email goes out within a minute.") : "Deactivated");
@@ -1193,21 +1207,19 @@
   }
 
 
-  // ---------- Member stat cards (Dashboard and Manage Registrations) ----------
-  // In Manage Registrations the cards also filter the table when tapped.
+  // ---------- Member stat cards (Dashboard) ----------
   function statCards(target) {
     const I = (h) => headers.indexOf(h), st = I("Membership status"), pay = I("Payment screenshot");
     const isPaid = (r) => r[pay] === "Yes";
     const grp = (k) => rows.filter((r) => r[st] === k);
     const act = grp("Active"), pen = grp("Pending"), dea = grp("Deactivated");
-    const f = (key) => ' data-filter="' + key + '"';
-    const split = (list, a, b, fa, fb) => '<div class="split"><div class="' + a + '"' + f(fa) + '><b>' + list.filter(isPaid).length + '</b><span>Paid</span></div><div class="' + b + '"' + f(fb) + "><b>" +
+    const split = (list, a, b) => '<div class="split"><div class="' + a + '"><b>' + list.filter(isPaid).length + '</b><span>Paid</span></div><div class="' + b + '"><b>' +
       list.filter((r) => !isPaid(r)).length + "</b><span>Unpaid</span></div></div>";
     $(target).innerHTML =
-      '<div class="kpi hi"' + f("") + "><b>" + rows.length + "</b><span>Total registrations</span></div>" +
-      '<div class="kpi green"' + f("active") + "><b>" + act.length + "</b><span>Active members</span>" + split(act, "sub-g", "sub-g2", "activePaid", "activeUnpaid") + "</div>" +
-      '<div class="kpi neutral"' + f("pending") + "><b>" + pen.length + "</b><span>Pending activation</span>" + split(pen, "sub-b", "sub-y", "pendingPaid", "pendingUnpaid") + "</div>" +
-      '<div class="kpi red"' + f("deactivated") + "><b>" + dea.length + "</b><span>Deactivated</span></div>";
+      '<div class="kpi hi"><b>' + rows.length + "</b><span>Total registrations</span></div>" +
+      '<div class="kpi green"><b>' + act.length + "</b><span>Active members</span>" + split(act, "sub-g", "sub-g2") + "</div>" +
+      '<div class="kpi neutral"><b>' + pen.length + "</b><span>Pending activation</span>" + split(pen, "sub-b", "sub-y") + "</div>" +
+      '<div class="kpi red"><b>' + dea.length + "</b><span>Deactivated</span></div>";
   }
 
   // ---------- Dashboard ----------
