@@ -159,7 +159,33 @@
   .countdown div { background: var(--black); color: var(--white); border-radius: 14px; padding: 12px 6px 10px; text-align: center; }
   .countdown b { display: block; font: italic 800 clamp(2rem, 9vw, 3rem)/1 "Barlow Condensed", sans-serif; color: var(--pink); font-variant-numeric: tabular-nums; }
   .countdown span { font-size: .75rem; color: rgba(255,255,255,.75); text-transform: uppercase; letter-spacing: .08em; }
-  .livebadge { display: inline-block; background: var(--pink); color: var(--black); font: 700 1.1rem/1 "Barlow Condensed", sans-serif; padding: 10px 14px; border-radius: 999px; margin: 4px 0 16px; }
+  /* Race Day Live mode */
+  .livebox, .donebox { background: #000; color: #fff; border: 2px solid var(--pink); border-radius: 18px; padding: 14px 16px 16px; margin: 4px 0 16px; max-width: 460px; }
+  .livebox .lb-head { display: flex; align-items: center; gap: 10px; }
+  .livedot { flex: none; width: 12px; height: 12px; border-radius: 50%; background: var(--pink); box-shadow: 0 0 0 0 rgba(254,144,174,.7); animation: livepulse 1.4s infinite; }
+  @keyframes livepulse { 70% { box-shadow: 0 0 0 12px rgba(254,144,174,0); } 100% { box-shadow: 0 0 0 0 rgba(254,144,174,0); } }
+  .livebox b, .donebox b { display: block; font: italic 800 1.9rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--pink); }
+  .livebox .lb-sub, .donebox small { display: block; color: rgba(255,255,255,.85); margin-top: 6px; }
+  .livebox .lb-lbl { margin-top: 10px; font-size: .75rem; color: rgba(255,255,255,.7); text-transform: uppercase; letter-spacing: .08em; }
+  .livebox .lb-time { font: italic 800 clamp(2.6rem, 12vw, 3.6rem)/1 "Barlow Condensed", sans-serif; font-variant-numeric: tabular-nums; }
+  .donebox a { display: inline-block; margin-top: 12px; background: var(--pink); color: #000; border-radius: 12px; padding: 11px 14px; font: 700 1rem/1 "Barlow Condensed", sans-serif; text-decoration: none; }
+  .feat.is-live { box-shadow: 0 0 0 3px var(--pink), 0 24px 60px -30px rgba(0,0,0,.45); }
+  .confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 90; }
+  .wallbox { border-top: 1px solid rgba(255,255,255,.15); padding: 12px 0 14px; }
+  .wallhead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 2px 8px; margin: 0 0 8px; }
+  .wallhead b { white-space: nowrap; font: italic 800 1.25rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--pink); }
+  .wallhead small { color: rgba(255,255,255,.7); }
+  .wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 6px; }
+  .wall button { border: 0; padding: 0; border-radius: 10px; overflow: hidden; aspect-ratio: 1; cursor: pointer; background: #222; }
+  .wall button:focus-visible { outline: 3px solid var(--pink); outline-offset: 2px; }
+  .wall img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .wall .fresh { animation: wallin .6s ease-out; }
+  @keyframes wallin { from { opacity: 0; transform: scale(.85); } }
+  .wallempty { color: rgba(255,255,255,.75); margin: 0; }
+  .wview { position: fixed; inset: 0; z-index: 80; background: rgba(0,0,0,.92); display: grid; place-items: center; padding: 16px; }
+  .wview img { max-width: 96vw; max-height: 84vh; border-radius: 12px; }
+  .wview button { position: absolute; top: 12px; right: 12px; width: 42px; height: 42px; border-radius: 50%; border: 0; background: var(--paper); font-size: 1.2rem; cursor: pointer; }
+  @media (prefers-reduced-motion: reduce) { .livedot, .wall .fresh { animation: none; } }
   .site-foot { background: var(--black); color: rgba(255,255,255,.75); padding: 28px 18px calc(env(safe-area-inset-bottom,0px) + 28px); margin-top: 40px; }
   .site-foot .wide { padding: 0 14px; display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
   .site-foot a { color: var(--pink); font-weight: 700; text-decoration: none; }
@@ -275,6 +301,11 @@
   <div class="more" id="moreWrap" hidden><h2>More upcoming races</h2><div class="rgrid" id="more"></div></div>
 </main>
 
+<div class="wview" id="wallView" hidden role="dialog" aria-modal="true" aria-label="Race day photo">
+  <button type="button" id="wallClose" aria-label="Close">✕</button>
+  <img id="wallImg" alt="">
+</div>
+
 <div class="modal" id="photoModal" hidden role="dialog" aria-modal="true" aria-labelledby="phTitle">
   <div class="mbox">
     <button class="xbtn" type="button" data-x="photoModal" aria-label="Close">✕</button>
@@ -370,13 +401,61 @@
     return '<div class="facts">' + f("Date", r.day + ", " + niceDate(r.date)) + f("Reporting time", time12(r.time)) +
       f("Duration", duration(r)) + f("Distance", r.distance ? r.distance + " km" : "") + f("Age", ageText(r)) + "</div>";
   }
+  // Race Day Live mode: countdown before the race, "live now" from reporting time until the run ends, "wrap-up" after
+  const calm = () => !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const two = (n) => String(n).padStart(2, "0");
+  function confetti() {
+    const c = document.createElement("canvas"); c.className = "confetti"; c.setAttribute("aria-hidden", "true");
+    const dpr = Math.min(window.devicePixelRatio || 1, 2), W = innerWidth, H = innerHeight;
+    c.width = W * dpr; c.height = H * dpr; document.body.appendChild(c);
+    const x = c.getContext("2d"); x.scale(dpr, dpr);
+    const cols = ["#fe90ae", "#fe90ae", "#ff5f8f", "#ffd0dc", "#000000", "#ffffff"];
+    const bits = Array.from({ length: 140 }, () => ({ x: W / 2 + (Math.random() - .5) * W * .3, y: H * .35, vx: (Math.random() - .5) * 14, vy: -Math.random() * 14 - 4,
+      r: Math.random() * 6 + 5, a: Math.random() * 6, va: (Math.random() - .5) * .4, c: cols[(Math.random() * cols.length) | 0] }));
+    const t0 = performance.now();
+    (function frame(t) {
+      const dt = t - t0; x.clearRect(0, 0, W, H);
+      bits.forEach((p) => {
+        p.vy += .35; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.a += p.va;
+        x.save(); x.globalAlpha = Math.max(0, 1 - dt / 3400); x.translate(p.x, p.y); x.rotate(p.a); x.fillStyle = p.c; x.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); x.restore();
+      });
+      if (dt < 3400) requestAnimationFrame(frame); else c.remove();
+    })(t0);
+  }
+  function celebrate(id) {   // once per race per visit, and never for people who prefer reduced motion
+    try { if (sessionStorage.getItem("unbnd_live_" + id)) return; sessionStorage.setItem("unbnd_live_" + id, "1"); } catch (e) {}
+    if (!calm()) confetti();
+  }
   function tickCountdowns() {
+    const now = Date.now();
     document.querySelectorAll("[data-count]").forEach((el) => {
-      const ms = new Date(el.dataset.count) - new Date();
-      if (ms <= 0) { el.outerHTML = '<p class="livebadge">Race day is here</p>'; return; }
-      const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60, s = Math.floor(ms / 1e3) % 60;
-      el.innerHTML = [[d, "Days"], [h, "Hours"], [m, "Mins"], [s, "Secs"]]
-        .map((x) => "<div><b>" + String(x[0]).padStart(2, "0") + "</b><span>" + x[1] + "</span></div>").join("");
+      const start = new Date(el.dataset.count).getTime(), end = new Date(el.dataset.end || el.dataset.count).getTime();
+      const phase = now < start ? "count" : now < end ? "live" : "done";
+      if (el.dataset.phase !== phase) {
+        el.dataset.phase = phase;
+        const card = el.closest(".feat");
+        el.className = phase === "count" ? "countdown" : phase === "live" ? "livebox" : "donebox";
+        el.setAttribute("aria-label", phase === "count" ? "Time until reporting" : phase === "live" ? "The race is live" : "The race is over");
+        if (phase === "live") el.innerHTML = '<div class="lb-head"><span class="livedot" aria-hidden="true"></span><b role="status">Live now</b></div>' +
+          '<span class="lb-sub">We\'re out on the road right now.</span><div class="lb-lbl">Live for</div><div class="lb-time" aria-hidden="true">00:00:00</div>';
+        if (phase === "done") el.innerHTML = "<b>That's a wrap!</b><small>Thanks for running with UNBND. Photos and feedback are in the Race day box above.</small>" +
+          '<a href="#raceday">Race day photos and feedback</a>';
+        if (card) {
+          card.classList.toggle("is-live", phase === "live");
+          const k = card.querySelector(".kicker");
+          if (k) k.textContent = (phase === "live" ? "Live now" : phase === "done" ? "Race complete" : "Next race") + " · " + card.id;
+        }
+        if (phase === "live" && card) celebrate(card.id);
+      }
+      if (phase === "count") {
+        const ms = start - now;
+        const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60, s = Math.floor(ms / 1e3) % 60;
+        el.innerHTML = [[d, "Days"], [h, "Hours"], [m, "Mins"], [s, "Secs"]]
+          .map((x) => "<div><b>" + two(x[0]) + "</b><span>" + x[1] + "</span></div>").join("");
+      } else if (phase === "live") {
+        const sec = Math.floor((now - start) / 1000);
+        el.querySelector(".lb-time").textContent = two(Math.floor(sec / 3600)) + ":" + two(Math.floor(sec / 60) % 60) + ":" + two(sec % 60);
+      }
     });
   }
   async function post(payload, timeoutMs) {
@@ -462,7 +541,7 @@
     $("featured").innerHTML =
       '<article class="feat" id="' + esc(r.id) + '"><div class="cover' + (r.photo ? "" : " nophoto") + '" style="' + (r.photo ? "background-image:url('" + esc(r.photo) + "')" : "") + '"><div class="t">' +
       '<span class="kicker">Next race · ' + esc(r.id) + "</span><h2>" + esc(r.name) + "</h2></div></div>" +
-      '<div class="body"><div class="countdown" data-count="' + raceStart(r).toISOString() + '" aria-label="Time until reporting"></div>' +
+      '<div class="body"><div class="countdown" data-count="' + raceStart(r).toISOString() + '" data-end="' + raceEnd(r).toISOString() + '" aria-label="Time until reporting"></div>' +
       factsHtml(r) + actions(r) + startBlock(r) + '<p class="free">Free for all members with an active Club ID.</p>' + extras(r) + "</div></article>";
     if (list.length > 1) {
       $("moreWrap").hidden = false;
@@ -659,10 +738,41 @@
     dayRaces = (all || []).filter((r) => r.date <= t && t <= addDaysIso(r.date, 3)).sort((a, b) => (a.date < b.date ? 1 : -1));
     if (!dayRaces.length) return;
     $("raceDayList").innerHTML = dayRaces.map((r) => '<div class="rdi"><div class="t"><b>' + esc(r.name) + "</b><small>" + esc(r.id) + " · " + esc(r.day) + ", " + niceDate(r.date) + "</small></div>" +
-      '<button type="button" data-photos="' + esc(r.id) + '">Upload race day photos</button><button type="button" class="alt" data-fb="' + esc(r.id) + '">Share feedback</button></div>').join("");
+      '<button type="button" data-photos="' + esc(r.id) + '">Upload race day photos</button><button type="button" class="alt" data-fb="' + esc(r.id) + '">Share feedback</button></div>' +
+      '<div class="wallbox" data-wallbox="' + esc(r.id) + '" data-name="' + esc(r.name) + '"><div class="wallhead"><b>Photo wall</b><small></small></div><div class="wall"></div><p class="wallempty" hidden>Photos from this race will show up here as soon as we feature them. Upload yours with the button above.</p></div>').join("");
     $("raceday").hidden = false;
+    refreshWalls(true);
+    setInterval(() => { if (!document.hidden) refreshWalls(false); }, 60000);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshWalls(false); });
   }
   loadRaceDay();
+
+  // ---- Photo wall: photos we've featured for the race, refreshed every minute without reloading ----
+  async function refreshWalls(first) {
+    let races = null;
+    try { const res = await fetch("data/home-gallery.json?t=" + Date.now(), { cache: "no-store" }); if (res.ok) races = (await res.json()).races || []; } catch (e) {}
+    if (!races) return;
+    document.querySelectorAll("[data-wallbox]").forEach((box) => {
+      const grid = box.querySelector(".wall"), entry = races.find((x) => x.id === box.dataset.wallbox), list = (entry && entry.photos) || [];
+      const have = new Set([...grid.querySelectorAll("[data-full]")].map((b) => b.dataset.full));
+      list.forEach((p) => {
+        if (have.has(p.path)) return;
+        const b = document.createElement("button"); b.type = "button"; b.dataset.full = p.path; b.setAttribute("aria-label", "Open photo from " + box.dataset.name);
+        if (!first) b.className = "fresh";
+        const img = document.createElement("img"); img.loading = "lazy"; img.alt = "Race day photo, " + box.dataset.name; img.src = p.path;
+        b.appendChild(img); grid.prepend(b);   // newest first
+      });
+      box.querySelector(".wallhead small").textContent = list.length ? list.length + (list.length === 1 ? " photo" : " photos") + " · updates by itself" : "";
+      box.querySelector(".wallempty").hidden = list.length > 0;
+    });
+  }
+  const closeWall = () => { $("wallView").hidden = true; $("wallImg").removeAttribute("src"); };
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-full]");
+    if (b) { $("wallImg").src = b.dataset.full; $("wallImg").alt = b.querySelector("img").alt; $("wallView").hidden = false; $("wallClose").focus(); return; }
+    if (e.target.id === "wallView" || e.target.closest("#wallClose")) closeWall();
+  });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("wallView").hidden) closeWall(); });
   const warm = () => { try { fetch(API_URL + "?warm=1", { mode: "no-cors", cache: "no-store" }).catch(() => {}); } catch (e) {} };
   const digits = (id, n) => $(id).addEventListener("input", (e) => { let d = e.target.value.replace(/\D/g, ""); if (n === 10 && d.length === 12 && d.startsWith("91")) d = d.slice(2); e.target.value = d.slice(0, n); });
   digits("pId", 4); digits("pPhone", 10); digits("fbId", 4); digits("fbPhone", 10);
