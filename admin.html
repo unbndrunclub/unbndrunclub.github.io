@@ -226,14 +226,13 @@
   .mhero .mk { display: inline-block; margin: 0 0 12px; background: var(--pink); color: #000; font: 700 .9rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; padding: 6px 9px; border-radius: 6px; }
   .mhero h2 { font: italic 800 clamp(2rem, 8vw, 3.2rem)/.95 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--pink); margin: 0; }
   .mhero .ml { margin: 12px 0 0; color: rgba(255,255,255,.85); font-weight: 600; max-width: 40ch; min-height: 3em; }
-  /* Sporty scoreboard: live clock, date, stopwatch; runners lapping a track */
+  /* Sporty scoreboard: today's date; runners lapping a track */
   .board { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
   .board div { background: rgba(255,255,255,.08); border: 1px solid rgba(254,144,174,.35); border-radius: 10px; padding: 7px 12px 8px; min-width: 104px; }
   .board small { display: block; font: 700 .68rem/1.2 "Barlow", sans-serif; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.65); }
   .board b { display: block; font: italic 800 1.55rem/1.1 "Barlow Condensed", sans-serif; font-variant-numeric: tabular-nums; color: var(--pink); }
   .mhero .lap { display: none; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); width: 210px; overflow: visible; }
   .lap circle { filter: drop-shadow(0 0 4px rgba(254,144,174,.9)); }
-  @media (max-width: 480px) { .board { gap: 6px; } .board div { flex: 1 1 0; min-width: 0; padding: 6px 8px 7px; } .board small { font-size: .6rem; letter-spacing: .05em; white-space: nowrap; } .board b { font-size: 1.15rem; white-space: nowrap; } }
   @media (min-width: 700px) { .mhero .lap { display: block; } .mhero h2, .mhero .board { max-width: calc(100% - 240px); } }
   .menu button i { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; background: #000; margin-bottom: 12px; }
   .menu button i svg { width: 26px; height: 26px; fill: none; stroke: var(--pink); stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
@@ -386,9 +385,7 @@
       <h2>Every runner who joins<br>makes the club stronger.</h2>
       <p class="ml" id="mhLine">Let's build Mumbai's most loved run club, one start line at a time.</p>
       <div class="board" aria-hidden="true">
-        <div><small>Mumbai time</small><b id="bdClock">--:--:--</b></div>
         <div><small>Today</small><b id="bdDate">&nbsp;</b></div>
-        <div><small>On the clock</small><b id="bdWatch">00:00:00</b></div>
       </div>
       <svg class="lap" viewBox="0 0 220 130" aria-hidden="true" focusable="false">
         <path id="lapA" d="M55,35 H165 A30,30 0 0 1 165,95 H55 A30,30 0 0 1 55,35 Z" fill="none" stroke="rgba(254,144,174,.45)" stroke-width="1.5"/>
@@ -674,7 +671,7 @@
   }
   document.querySelectorAll("[data-go]").forEach((b) => b.addEventListener("click", () => showSection(b.dataset.go)));
 
-  // ---------- Menu banner: greeting, live clock, stopwatch and a rotating line ----------
+  // ---------- Menu banner: greeting, date and a rotating line ----------
   // Runners on the track: positioned along each lane every frame (still, but spread out, for people who prefer reduced motion)
   function runTrack(svg, calm) {
     const dots = [...svg.querySelectorAll("circle")].map((c) => { const p = svg.querySelector(c.dataset.lane); return { c: c, p: p, len: p.getTotalLength(), dur: Number(c.dataset.dur) * 1000, off: Number(c.dataset.off) * 1000 }; });
@@ -685,22 +682,19 @@
   }
   (function () {
     const calm = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
-    const IST = { timeZone: "Asia/Kolkata" }, t0 = Date.now(), two = (n) => String(n).padStart(2, "0");
-    const clockFmt = new Intl.DateTimeFormat("en-GB", Object.assign({ hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" }, IST));
+    const IST = { timeZone: "Asia/Kolkata" };
     const hourFmt = new Intl.DateTimeFormat("en-GB", Object.assign({ hour: "2-digit", hourCycle: "h23" }, IST));
     const dateFmt = new Intl.DateTimeFormat("en-US", Object.assign({ weekday: "short", day: "numeric", month: "short" }, IST));
     const showing = () => !$("menuPanel").hidden && !$("adminView").hidden && !document.hidden;
     function tick() {
       if (!showing()) return;
       const now = new Date(), h = Number(hourFmt.format(now));
-      $("mhGreet").textContent = h >= 5 && h < 12 ? "Good morning" : h >= 12 && h < 17 ? "Good afternoon" : h >= 17 && h < 21 ? "Good evening" : "Night run crew";
-      $("bdClock").textContent = clockFmt.format(now);
       const p = {}; dateFmt.formatToParts(now).forEach((x) => (p[x.type] = x.value));
-      $("bdDate").textContent = p.weekday + " " + p.day + " " + p.month;
-      const s = Math.floor((Date.now() - t0) / 1000);
-      $("bdWatch").textContent = two(Math.floor(s / 3600)) + ":" + two(Math.floor(s / 60) % 60) + ":" + two(s % 60);
+      set($("mhGreet"), h >= 5 && h < 12 ? "Good morning" : h >= 12 && h < 17 ? "Good afternoon" : h >= 17 && h < 21 ? "Good evening" : "Night run crew");
+      set($("bdDate"), p.weekday + " " + p.day + " " + p.month);
     }
-    tick(); setInterval(tick, 1000);
+    const set = (el, v) => { if (el.textContent !== v) el.textContent = v; };
+    tick(); setInterval(tick, 1000);   // cheap: fills in right after login and only touches the page when the text changes
     const lines = ["Let's build Mumbai's most loved run club, one start line at a time.", "Every runner who shows up is a win.", "Consistency beats speed. Keep the club moving.",
       "Good things happen at the start line.", "One more member, one more stride."], el = $("mhLine");
     let i = 0;
