@@ -52,16 +52,12 @@
   }
   .bar { max-width: 620px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
   .bar img { width: 56px; height: 56px; display: block; }
-  .bar .fee { margin: 0; text-align: right; line-height: 1.1; color: rgba(255,255,255,.7); font-size: .85rem; }
-  .bar .fee b { display: block; color: var(--pink); font: italic 800 1.6rem/1 "Barlow Condensed", sans-serif; }
   .hero-inner { position: relative; z-index: 1; max-width: 620px; margin: 0 auto; padding-top: 44px; }
   h1 {
     font: italic 800 clamp(3.8rem, 23vw, 7.5rem)/.86 "Barlow Condensed", "Arial Narrow", sans-serif;
     text-transform: uppercase; letter-spacing: -.02em; margin: 0; color: var(--pink);
   }
   .tagline { font: 600 1.3rem/1.3 "Barlow", sans-serif; margin: 18px 0 0; max-width: 26ch; }
-  .perks { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 0; padding: 0; list-style: none; }
-  .perks li { font-size: .92rem; font-weight: 500; background: rgba(255,255,255,.1); border-radius: 999px; padding: 6px 12px; }
 
   /* ---------- Form ---------- */
   main { position: relative; z-index: 2; max-width: 620px; margin: -80px auto 0; padding: 0 14px 56px; }
@@ -95,23 +91,12 @@
   .err:empty { display: none; }
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-  .sizes { display: flex; flex-wrap: wrap; gap: 8px; }
-  .sizes label { position: relative; }
-  .sizes input { position: absolute; opacity: 0; inset: 0; }
-  .sizes span {
-    display: inline-block; min-width: 56px; text-align: center; padding: 11px 12px; background: var(--paper);
-    border: 1.5px solid transparent; border-radius: 12px; font: 700 1.05rem/1 "Barlow Condensed", sans-serif; cursor: pointer;
-  }
-  .sizes input:checked + span { background: var(--black); color: var(--pink); }
-  .sizes input:focus-visible + span { outline: 3px solid var(--pink); outline-offset: 2px; }
-  .invalid .sizes span { border-color: var(--error); }
 
   .check { display: flex; gap: 12px; align-items: flex-start; margin-top: 14px; }
   .check input { width: 20px; height: 20px; margin: 2px 0 0; flex: none; accent-color: var(--black); }
   .check.invalid span { color: var(--error); }
   .optional { color: var(--muted); font-weight: 400; }
 
-  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
   .btn {
     display: block; width: 100%; margin-top: 28px; border: 0; border-radius: 14px; padding: 17px 18px;
@@ -127,18 +112,6 @@
   .summary ul { margin: 6px 0 0; padding-left: 20px; }
 
   /* ---------- Success: race bib ---------- */
-  .bib {
-    position: relative; background: var(--white); color: var(--black); border-radius: 16px;
-    border: 2.5px solid var(--black); padding: 24px 20px 20px; text-align: center; margin: 14px 0 18px;
-  }
-  .bib::before, .bib::after, .bib .pins::before, .bib .pins::after {
-    content: ""; position: absolute; width: 11px; height: 11px; border-radius: 50%; background: var(--paper); border: 2px solid var(--black);
-  }
-  .bib::before { top: 10px; left: 10px; } .bib::after { top: 10px; right: 10px; }
-  .bib .pins::before { bottom: 10px; left: 10px; } .bib .pins::after { bottom: 10px; right: 10px; }
-  .bib .club { display: inline-block; background: var(--black); color: var(--pink); font: 700 .95rem/1 "Barlow Condensed", sans-serif; padding: 5px 10px; border-radius: 6px; }
-  .bib .num { font: italic 800 clamp(3.6rem, 19vw, 5.4rem)/1 "Barlow Condensed", "Arial Narrow", sans-serif; margin: 8px 0 2px; }
-  .bib .who { font-weight: 600; }
   .copy { border: 0; background: var(--paper); color: var(--black); border-radius: 12px; padding: 11px 16px; font: 600 .95rem "Barlow", sans-serif; cursor: pointer; }
   .status { font-weight: 700; margin: 18px 0 0; }
   .status::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--pink); margin-right: 8px; vertical-align: 1px; }
@@ -148,7 +121,6 @@
   @media (prefers-reduced-motion: no-preference) {
     h1 { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; }
     @keyframes rise { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
-    #done:not([hidden]) .bib { animation: pin .45s cubic-bezier(.2,.8,.2,1.2); }
     @keyframes pin { from { transform: rotate(-4deg) scale(.94); opacity: 0; } to { transform: none; opacity: 1; } }
   }
 
@@ -157,28 +129,6 @@
   .hero-inner { padding-top: 30px; }
   h1 { font-size: clamp(3rem, 15vw, 5.2rem); }
   .tagline { max-width: 30ch; }
-  .step { display: grid; grid-template-columns: 34px 1fr; gap: 12px; margin-top: 24px; }
-  .step-n {
-    width: 34px; height: 34px; border-radius: 50%; background: var(--black); color: var(--pink);
-    display: grid; place-items: center; font: italic 800 1.15rem/1 "Barlow Condensed", sans-serif;
-  }
-  .step h3 { font: 700 1.3rem/1.2 "Barlow Condensed", sans-serif; margin: 3px 0 4px; }
-  .step p { margin: 6px 0 0; }
-  .copyrow {
-    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
-    background: var(--paper); border-radius: 12px; padding: 10px 10px 10px 14px; margin-top: 10px;
-  }
-  .copyrow b { font: 700 1.02rem/1.2 "Barlow", sans-serif; white-space: nowrap; }
-  .copyrow .copy { background: var(--black); color: var(--pink); flex: none; }
-  .amount { font: italic 800 2.4rem/1 "Barlow Condensed", sans-serif; margin: 4px 0 0; }
-  .qrbox { display: flex; gap: 16px; align-items: center; margin-top: 14px; flex-wrap: wrap; }
-  .qr { background: #ffffff; padding: 10px; border-radius: 14px; border: 2px solid var(--black); line-height: 0; }
-  .qr canvas, .qr img { width: 150px; height: 150px; }
-  .qrbox .side { flex: 1; min-width: 150px; }
-  .ghost {
-    border: 1.5px solid var(--black); background: var(--white); color: var(--black); border-radius: 12px;
-    padding: 11px 14px; font: 600 .95rem "Barlow", sans-serif; cursor: pointer; margin-top: 10px;
-  }
   .or { color: var(--muted); font-size: .92rem; }
   .file {
     display: block; margin-top: 12px; border: 2px dashed var(--line); border-radius: 14px; padding: 18px;
