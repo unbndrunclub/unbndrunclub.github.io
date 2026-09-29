@@ -276,7 +276,66 @@
   .idin { display: flex; border-radius: 12px; overflow: hidden; background: var(--paper); }
   .idin b { background: var(--black); color: var(--pink); font: italic 800 1.2rem/1 "Barlow Condensed", sans-serif; padding: 0 12px; display: grid; place-items: center; }
   .idin input { border-radius: 0 !important; }
-  .cardprev { display: block; width: 100%; max-width: 260px; margin: 14px auto 0; border-radius: 14px; box-shadow: 0 16px 40px -20px rgba(0,0,0,.5); }
+  /* ---------- Holographic race card: tilts, shimmers, flips ---------- */
+  .holo-stage { perspective: 1000px; display: grid; place-items: center; padding: 16px 0 10px; }
+  .holo { --rx: 0deg; --ry: 0deg; --px: 50%; --py: 50%; --gx: 50%; --gy: 50%; --hue: 0deg; --shine: .5;
+    position: relative; width: min(290px, 74vw); aspect-ratio: 5 / 7; border-radius: 20px; transform-style: preserve-3d;
+    transform: rotateX(var(--rx)) rotateY(var(--ry)); cursor: grab; touch-action: none; outline: none; -webkit-tap-highlight-color: transparent; }
+  .holo:active { cursor: grabbing; }
+  .holo:focus-visible { outline: 3px solid var(--pink); outline-offset: 6px; }
+  .holo-in { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform .7s cubic-bezier(.3,.9,.3,1); }
+  .holo.flipped .holo-in { transform: rotateY(180deg); }
+  .holo.reveal .holo-in { animation: holoIn 1.15s cubic-bezier(.2,.8,.2,1) backwards; }
+  @keyframes holoIn { 0% { transform: rotateY(-540deg) scale(.35); opacity: 0; } 55% { opacity: 1; } 100% { transform: none; } }
+  .face { position: absolute; inset: 0; border-radius: 20px; overflow: hidden; background: #000; color: #fff; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    box-shadow: 0 30px 60px -24px rgba(0,0,0,.85), 0 0 0 1px rgba(255,255,255,.08); }
+  .face.back { transform: rotateY(180deg); }
+  /* Foil frame around both faces */
+  .face::after { content: ""; position: absolute; inset: 0; z-index: 7; border-radius: 20px; padding: 5px; pointer-events: none;
+    background: linear-gradient(135deg, #ff6fb5, #ffd36e, #7af0ff, #b98bff, #ff6fb5, #ffd36e) var(--px) var(--py) / 300% 300%;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+  .fc { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; padding: 20px 20px 18px; }
+  .lanes { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: repeating-linear-gradient(118deg, transparent 0 24px, rgba(254,144,174,.26) 24px 26px), radial-gradient(circle at 80% 15%, rgba(254,144,174,.18), transparent 55%);
+    -webkit-mask-image: linear-gradient(to top, #000, rgba(0,0,0,.35) 75%); mask-image: linear-gradient(to top, #000, rgba(0,0,0,.35) 75%); }
+  .fc-top { display: flex; justify-content: space-between; align-items: center; }
+  .fc-top img { width: 44px; height: 44px; display: block; }
+  .fc-tag { font: 700 .66rem/1 "Barlow", sans-serif; letter-spacing: .16em; text-transform: uppercase; border: 1px solid rgba(255,255,255,.35); border-radius: 999px; padding: 6px 9px; }
+  .fc-kick { margin: 14px 0 0; font: 700 .72rem/1 "Barlow", sans-serif; letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,.7); }
+  .fc-race { margin: 6px 0 0; font: italic 800 1.85rem/.95 "Barlow Condensed", "Arial Narrow", sans-serif; text-transform: uppercase; color: var(--pink);
+    overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .fc-when { margin: 8px 0 0; font-size: .86rem; font-weight: 600; line-height: 1.3; }
+  .fc-id { margin-top: auto; }
+  .fc-id small, .fc-foot small { display: block; font: 700 .62rem/1.2 "Barlow", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.65); }
+  .fc-id b { display: block; font: italic 800 3.7rem/.92 "Barlow Condensed", "Arial Narrow", sans-serif; letter-spacing: -.01em; color: #fff;
+    background: linear-gradient(100deg, #fff 15%, #ffd0dc 32%, #7af0ff 48%, #ffd36e 64%, #fff 82%) var(--px) 0 / 250% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .fc-name { font: 800 1.12rem/1.1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .05em; overflow-wrap: anywhere; }
+  .fc-foot { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; margin-top: 12px; }
+  .fc-foot span { font-size: .74rem; line-height: 1.3; color: rgba(255,255,255,.8); }
+  .seal { flex: none; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; color: #000; font: italic 800 .62rem/1 "Barlow Condensed", sans-serif; letter-spacing: .04em;
+    background: conic-gradient(from var(--hue), #ff6fb5, #ffd36e, #7af0ff, #b98bff, #ff6fb5); box-shadow: inset 0 0 0 2px rgba(255,255,255,.7), 0 0 14px rgba(254,144,174,.5); }
+  .bk { position: absolute; inset: 0; z-index: 4; display: grid; place-content: center; justify-items: center; gap: 10px; text-align: center; padding: 20px; }
+  .face.back .lanes { -webkit-mask-image: none; mask-image: none; background: repeating-linear-gradient(118deg, transparent 0 24px, rgba(254,144,174,.2) 24px 26px), radial-gradient(circle at 50% 40%, rgba(254,144,174,.22), transparent 65%); }
+  .bk img { width: 120px; height: 120px; }
+  .bk b { font: italic 800 2.1rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--pink); }
+  .bk small { font: 700 .7rem/1.3 "Barlow", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.7); }
+  /* The holographic layers, driven by the tilt */
+  .foil, .sheen, .sparkle, .glare { position: absolute; inset: 0; pointer-events: none; }
+  .foil { z-index: 2; mix-blend-mode: color-dodge; opacity: calc(.35 + var(--shine) * .5);
+    background: repeating-linear-gradient(115deg, #ff6fb5 0%, #ffd36e 8%, #7af0ff 16%, #b98bff 24%, #ff6fb5 32%) var(--px) var(--py) / 400% 400%; }
+  .sheen { z-index: 3; mix-blend-mode: screen; opacity: calc(.08 + var(--shine) * .14);
+    background: repeating-linear-gradient(65deg, #7af0ff 0%, #ff6fb5 10%, #ffd36e 20%, #b98bff 30%, #7af0ff 40%) var(--py) var(--px) / 350% 350%; }
+  .sparkle { z-index: 5; mix-blend-mode: overlay; opacity: calc(var(--shine) * .95);
+    background-image: radial-gradient(circle, #fff 0 1px, transparent 1.6px), radial-gradient(circle, #fff 0 .8px, transparent 1.4px);
+    background-size: 9px 9px, 14px 14px; background-position: calc(var(--px) * -.3) calc(var(--py) * -.3), calc(var(--px) * .2) calc(var(--py) * .25);
+    -webkit-mask-image: radial-gradient(circle at var(--gx) var(--gy), #000 0, transparent 55%); mask-image: radial-gradient(circle at var(--gx) var(--gy), #000 0, transparent 55%); }
+  .glare { z-index: 6; mix-blend-mode: soft-light;
+    background: radial-gradient(farthest-corner circle at var(--gx) var(--gy), rgba(255,255,255,.85) 0%, rgba(255,255,255,.14) 30%, rgba(0,0,0,.25) 95%); }
+  .holo-hint { text-align: center; margin: 12px 0 0; }
+  #cardDone .holo-hint, #cardDone .tiltbtn, #cardDone .actions { position: relative; z-index: 2; }   /* stay tappable above the tilted card */
+  .tiltbtn { display: block; margin: 10px auto 0; border: 1.5px solid #000; background: #fff; border-radius: 999px; padding: 9px 14px; font: 700 1rem/1 "Barlow Condensed", sans-serif; cursor: pointer; }
+  .actions button[disabled] { opacity: .55; cursor: progress; }
+  @media (prefers-reduced-motion: reduce) { .holo.reveal .holo-in { animation: none; } .holo-in { transition: none; } }
 </style>
 </head>
 <body>
@@ -360,12 +419,37 @@
       <button class="btn" id="kBtn" type="submit">Create my card</button>
     </form>
     <div id="cardDone" hidden>
-      <img class="cardprev" id="cardImg" alt="Your UNBND race card">
-      <p class="hint" style="text-align:center">Share it on your Instagram story and tag <b>@unbndrunclub</b>.</p>
-      <div class="actions" style="justify-content:center">
-        <button class="primary" type="button" id="cardShare">Share</button>
-        <button type="button" id="cardSave">Download</button>
+      <div class="holo-stage">
+        <div class="holo" id="holo" tabindex="0" role="img" aria-roledescription="holographic card">
+          <div class="holo-in">
+            <div class="face front">
+              <div class="lanes"></div><div class="foil"></div><div class="sheen"></div>
+              <div class="fc">
+                <div class="fc-top"><img src="logo.png" alt=""><span class="fc-tag">Race card</span></div>
+                <p class="fc-kick">I'm running</p>
+                <h4 class="fc-race" id="hRace"></h4>
+                <p class="fc-when" id="hWhen"></p>
+                <div class="fc-id"><small>Club ID</small><b id="hId"></b><div class="fc-name" id="hName"></div></div>
+                <div class="fc-foot"><span id="hStart"></span><span class="seal" aria-hidden="true">UNBND</span></div>
+              </div>
+              <div class="sparkle"></div><div class="glare"></div>
+            </div>
+            <div class="face back">
+              <div class="lanes"></div><div class="foil"></div><div class="sheen"></div>
+              <div class="bk"><img src="logo.png" alt=""><b>Run unbound.</b><small id="hBack"></small><small>@unbndrunclub</small></div>
+              <div class="sparkle"></div><div class="glare"></div>
+            </div>
+          </div>
+        </div>
       </div>
+      <p class="hint holo-hint" id="holoHint">Tilt your phone or drag the card to make it shine. Tap it to flip.</p>
+      <button type="button" class="tiltbtn" id="tiltBtn" hidden>Turn on tilt</button>
+      <div class="actions" style="justify-content:center">
+        <button class="primary" type="button" id="cardShare" disabled>Share to story</button>
+        <button type="button" id="cardSave" disabled>Download</button>
+        <button type="button" id="cardFlip" aria-pressed="false">Flip card</button>
+      </div>
+      <p class="hint" style="text-align:center">Share it on your Instagram story and tag <b>@unbndrunclub</b>.</p>
     </div>
   </div>
 </div>
@@ -660,10 +744,83 @@
     const out = await post({ action: "card", clubId: "UB" + id.padStart(4, "0"), phone: ph }, 25000);
     btn.disabled = false; btn.textContent = "Create my card";
     if (!out.ok) { $("kErr").innerHTML = "<ul>" + (out.errors || ["Something went wrong."]).map((m) => "<li>" + esc(m) + "</li>").join("") + "</ul>"; return; }
-    cardBlob = await drawCard(cardRace, out.clubId, out.name);
-    $("cardImg").src = URL.createObjectURL(cardBlob);
-    $("cardForm").hidden = true; $("cardDone").hidden = false;
+    showHolo(cardRace, out.clubId, out.name);
+    const forRace = cardRace;
+    const blob = await drawCard(forRace, out.clubId, out.name);
+    if (cardRace === forRace) { cardBlob = blob; $("cardShare").disabled = $("cardSave").disabled = false; }
   });
+
+  // ---- Holographic race card: follows the phone's tilt or the pointer, shimmers, flips ----
+  const holo = $("holo");
+  const tgt = { x: 0, y: 0 }, pos = { x: 0, y: 0 };
+  let lastInput = 0, holoRaf = 0, level = null, press = null, tiltOn = false;
+  const clamp1 = (v) => Math.max(-1, Math.min(1, v));
+  function paintHolo() {
+    const x = pos.x, y = pos.y, h = holo.style;
+    h.setProperty("--rx", (-y * 16).toFixed(2) + "deg"); h.setProperty("--ry", (x * 20).toFixed(2) + "deg");
+    h.setProperty("--px", (50 + x * 50).toFixed(1) + "%"); h.setProperty("--py", (50 + y * 50).toFixed(1) + "%");
+    h.setProperty("--gx", (50 + x * 45).toFixed(1) + "%"); h.setProperty("--gy", (50 + y * 45).toFixed(1) + "%");
+    h.setProperty("--hue", (x * 90 + y * 45).toFixed(1) + "deg"); h.setProperty("--shine", Math.min(1, Math.hypot(x, y) + .25).toFixed(2));
+  }
+  function holoLoop(t) {
+    holoRaf = 0;
+    if ($("cardModal").hidden || $("cardDone").hidden || document.hidden) return;   // stops when closed; restarts on the next touch
+    if (t - lastInput > 2500) { tgt.x = Math.sin(t / 1700) * .55; tgt.y = Math.cos(t / 2300) * .35; }   // gentle sway while nobody's touching it
+    pos.x += (tgt.x - pos.x) * .12; pos.y += (tgt.y - pos.y) * .12;
+    paintHolo();
+    holoRaf = requestAnimationFrame(holoLoop);
+  }
+  const runHolo = () => { if (!holoRaf && !calm()) holoRaf = requestAnimationFrame(holoLoop); };
+  function nudge(x, y) {
+    tgt.x = clamp1(x); tgt.y = clamp1(y); lastInput = performance.now();
+    if (calm()) { pos.x = tgt.x; pos.y = tgt.y; paintHolo(); } else runHolo();
+  }
+  function flipHolo() {
+    const on = !holo.classList.contains("flipped");
+    holo.classList.toggle("flipped", on); $("cardFlip").setAttribute("aria-pressed", String(on));
+  }
+  holo.addEventListener("pointerdown", (e) => { press = { x: e.clientX, y: e.clientY }; try { holo.setPointerCapture(e.pointerId); } catch (x) {} });
+  holo.addEventListener("pointermove", (e) => {
+    const r = holo.getBoundingClientRect();
+    nudge(((e.clientX - r.left) / r.width) * 2 - 1, ((e.clientY - r.top) / r.height) * 2 - 1);
+  });
+  holo.addEventListener("pointerup", (e) => { if (press && Math.hypot(e.clientX - press.x, e.clientY - press.y) < 8) flipHolo(); press = null; });
+  holo.addEventListener("pointercancel", () => (press = null));
+  holo.addEventListener("pointerleave", () => { if (!press) lastInput = performance.now() - 1800; });
+  holo.addEventListener("keydown", (e) => {
+    const step = { ArrowLeft: [-.35, 0], ArrowRight: [.35, 0], ArrowUp: [0, -.35], ArrowDown: [0, .35] }[e.key];
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flipHolo(); }
+    else if (step) { e.preventDefault(); nudge(tgt.x + step[0], tgt.y + step[1]); }
+  });
+  $("cardFlip").addEventListener("click", flipHolo);
+  holo.addEventListener("animationend", (e) => { if (e.animationName === "holoIn") holo.classList.remove("reveal"); });
+  // Phone tilt. iPhones ask permission first, which needs a tap
+  function onTilt(e) {
+    if (e.gamma == null || e.beta == null || $("cardDone").hidden) return;
+    if (level === null) level = e.beta;   // however they're holding the phone right now counts as "flat"
+    nudge(e.gamma / 25, (e.beta - level) / 25);
+  }
+  function listenTilt() { if (!tiltOn) { window.addEventListener("deviceorientation", onTilt); tiltOn = true; } $("tiltBtn").hidden = true; }
+  const tiltNeedsAsk = typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function";
+  $("tiltBtn").addEventListener("click", async () => {
+    try { if ((await DeviceOrientationEvent.requestPermission()) === "granted") return listenTilt(); } catch (e) {}
+    $("tiltBtn").hidden = true; $("holoHint").textContent = "Tilt is off, but you can drag the card to make it shine. Tap it to flip.";
+  });
+  function showHolo(r, clubId, name) {
+    cardBlob = null; $("cardShare").disabled = $("cardSave").disabled = true;
+    $("hRace").textContent = r.name;
+    $("hWhen").textContent = r.day + ", " + niceDate(r.date) + " · " + time12(r.time);
+    $("hId").textContent = clubId; $("hName").textContent = name;
+    $("hStart").textContent = [r.start, r.distance ? r.distance + " km" : ""].filter(Boolean).join(" · ");
+    $("hBack").textContent = "Race card · " + r.id + " · " + r.date.slice(0, 4);
+    holo.setAttribute("aria-label", "Holographic race card for " + name + ", Club ID " + clubId + ", running " + r.name + " on " + r.day + ", " + niceDate(r.date) + ". Press Enter to flip it.");
+    $("cardForm").hidden = true; $("cardDone").hidden = false;
+    holo.classList.remove("flipped", "reveal"); $("cardFlip").setAttribute("aria-pressed", "false");
+    level = null;
+    if (tiltNeedsAsk && !tiltOn) $("tiltBtn").hidden = false; else listenTilt();
+    if (calm()) { pos.x = .3; pos.y = -.2; paintHolo(); }   // still, but angled so the foil shows
+    else { void holo.offsetWidth; holo.classList.add("reveal"); pos.x = pos.y = 0; lastInput = 0; runHolo(); }
+  }
 
   function loadImg(src) { return new Promise((res) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; }); }
   function wrap(x, text, maxW) {
@@ -698,15 +855,36 @@
     x.fillText(r.day + ", " + niceDate(r.date) + " · " + time12(r.time), 90, y + 10);
     x.fillStyle = "rgba(255,255,255,.75)"; x.font = "500 38px " + B;
     wrap(x, r.start, W - 180).slice(0, 2).forEach((l, i) => x.fillText(l, 90, y + 70 + i * 48));
-    // bib
-    const bx = 90, by = Math.max(1000, y + 200), bw = W - 180, bh = 470, rad = 34;
-    x.fillStyle = "#fff"; x.beginPath(); x.roundRect(bx, by, bw, bh, rad); x.fill();
-    x.fillStyle = "#000"; [[bx + 38, by + 38], [bx + bw - 38, by + 38], [bx + 38, by + bh - 38], [bx + bw - 38, by + bh - 38]].forEach(([px, py]) => { x.beginPath(); x.arc(px, py, 14, 0, Math.PI * 2); x.fill(); });
+    // Holographic card: foil frame, iridescent sheen, glare stripe and glitter, with a foil Club ID
+    const bh = 500, bx = 90, bw = W - 180, by = Math.min(Math.max(1000, y + 170), 1690 - bh), rad = 40;
+    const FOIL = ["#ff6fb5", "#ffd36e", "#7af0ff", "#b98bff", "#ff6fb5"];
+    const foil = x.createLinearGradient(bx, by, bx + bw, by + bh); FOIL.forEach((c, i) => foil.addColorStop(i / (FOIL.length - 1), c));
+    x.save(); x.shadowColor = "rgba(254,144,174,.55)"; x.shadowBlur = 60;
+    x.fillStyle = foil; x.beginPath(); x.roundRect(bx, by, bw, bh, rad); x.fill(); x.restore();
+    x.fillStyle = "#050505"; x.beginPath(); x.roundRect(bx + 12, by + 12, bw - 24, bh - 24, rad - 10); x.fill();
+    x.save(); x.beginPath(); x.roundRect(bx + 12, by + 12, bw - 24, bh - 24, rad - 10); x.clip();
+    const sheen = x.createLinearGradient(bx, by + bh, bx + bw, by);
+    ["rgba(122,240,255,.22)", "rgba(255,111,181,.26)", "rgba(255,211,110,.2)", "rgba(185,139,255,.24)", "rgba(122,240,255,.2)"].forEach((c, i, a) => sheen.addColorStop(i / (a.length - 1), c));
+    x.fillStyle = sheen; x.fillRect(bx, by, bw, bh);
+    x.strokeStyle = "rgba(254,144,174,.16)"; x.lineWidth = 3;
+    for (let i = -bh; i < bw + bh; i += 46) { x.beginPath(); x.moveTo(bx + i, by + bh); x.lineTo(bx + i + bh * .53, by); x.stroke(); }
+    const glare = x.createLinearGradient(bx + bw * .15, by, bx + bw * .75, by + bh);
+    glare.addColorStop(0, "rgba(255,255,255,0)"); glare.addColorStop(.45, "rgba(255,255,255,.2)"); glare.addColorStop(.52, "rgba(255,255,255,.34)"); glare.addColorStop(.6, "rgba(255,255,255,0)");
+    x.fillStyle = glare; x.fillRect(bx, by, bw, bh);
+    let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);   // same glitter every time
+    for (let i = 0; i < 160; i++) { x.fillStyle = "rgba(255,255,255," + (.25 + rnd() * .6).toFixed(2) + ")"; x.beginPath(); x.arc(bx + rnd() * bw, by + rnd() * bh, rnd() * 2.4 + .6, 0, Math.PI * 2); x.fill(); }
+    x.restore();
     x.textAlign = "center";
-    x.fillStyle = "#000"; x.beginPath(); x.roundRect(W / 2 - 170, by + 50, 340, 64, 12); x.fill();
-    x.fillStyle = PINK; x.font = "700 40px " + C; x.fillText("UNBND RUN CLUB", W / 2, by + 96);
-    x.fillStyle = "#000"; x.font = "italic 800 230px " + C; x.fillText(clubId, W / 2, by + 330);
-    x.font = "700 52px " + B; x.fillText(name.length > 26 ? name.slice(0, 25) + "…" : name, W / 2, by + 410);
+    x.font = "700 40px " + C;
+    const tagW = Math.max(340, x.measureText("UNBND RUN CLUB").width + 64);
+    x.fillStyle = PINK; x.beginPath(); x.roundRect(W / 2 - tagW / 2, by + 54, tagW, 64, 12); x.fill();
+    x.fillStyle = "#000"; x.fillText("UNBND RUN CLUB", W / 2, by + 100);
+    x.font = "italic 800 230px " + C;
+    const idW = x.measureText(clubId).width, idFoil = x.createLinearGradient(W / 2 - idW / 2, 0, W / 2 + idW / 2, 0);
+    ["#ffffff", "#ffd0dc", "#7af0ff", "#ffd36e", "#ffffff"].forEach((c, i, a) => idFoil.addColorStop(i / (a.length - 1), c));
+    x.fillStyle = idFoil; x.fillText(clubId, W / 2, by + 330);
+    x.fillStyle = "#fff"; x.font = "700 52px " + B; x.fillText(name.length > 26 ? name.slice(0, 25) + "…" : name, W / 2, by + 408);
+    x.fillStyle = "rgba(255,255,255,.7)"; x.font = "700 30px " + B; x.fillText(("Race card · " + r.id).toUpperCase().split("").join(String.fromCharCode(8202)), W / 2, by + 460);
     x.fillStyle = PINK; x.font = "italic 800 64px " + C; x.fillText("@UNBNDRUNCLUB", W / 2, 1760);
     x.fillStyle = "rgba(255,255,255,.7)"; x.font = "500 34px " + B; x.fillText("Run unbound.", W / 2, 1815);
     return await new Promise((res) => c.toBlob(res, "image/png"));
