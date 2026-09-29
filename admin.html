@@ -289,14 +289,6 @@
   .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
   .free { background: #eaf8ef; color: #0b5e36; border-radius: 12px; padding: 12px 14px; font-weight: 600; margin-top: 16px; }
   .daytag { font-weight: 600; color: var(--muted); font-size: .9rem; margin-top: 6px; }
-  .pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; margin-top: 8px; }
-  .pgrid label { position: relative; cursor: pointer; border-radius: 10px; overflow: hidden; border: 3px solid transparent; }
-  .pgrid input { position: absolute; opacity: 0; }
-  .pgrid img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--paper); }
-  .pgrid span { position: absolute; left: 4px; bottom: 4px; background: rgba(0,0,0,.7); color: #fff; font: 700 .75rem "Barlow Condensed", sans-serif; padding: 2px 6px; border-radius: 6px; }
-  .pgrid input:checked + img { outline: 3px solid var(--pink); outline-offset: -3px; }
-  .pgrid label:has(input:checked) { border-color: var(--pink); }
-  .pgrid input:focus-visible + img { outline: 3px solid var(--black); outline-offset: -3px; }
   .idload { display: flex; gap: 8px; align-items: stretch; max-width: 420px; }
   .idload .idinput { flex: 1; display: flex; border: 2px solid var(--black); border-radius: 12px; overflow: hidden; }
   .idload .idinput b { background: var(--black); color: var(--pink); font: italic 800 1.6rem/1 "Barlow Condensed", sans-serif; padding: 8px 12px; display: grid; place-items: center; }
@@ -346,7 +338,6 @@
   .lightbox { position: relative; max-width: 96vw; max-height: 90vh; }
   .lightbox img { display: block; max-width: 96vw; max-height: 86vh; border-radius: 12px; }
   .lightbox p { color: #fff; text-align: center; margin: 8px 0 0; font-weight: 700; }
-  .ph .vbtn { background: var(--paper); color: var(--black); margin-right: 6px; }
   /* Race feedback */
   .fbg { background: #fff; border-radius: 18px; padding: 16px; margin-bottom: 14px; }
   .fbg h3 { font: italic 800 1.5rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 0; }
@@ -388,12 +379,6 @@
   .upbox span { color: var(--muted); font-size: .9rem; }
   .ghead { display: flex; align-items: baseline; justify-content: space-between; margin: 18px 0 10px; }
   .ghead b { font: 700 1.2rem "Barlow Condensed", sans-serif; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
-  .ph { background: var(--white); border-radius: 12px; overflow: hidden; }
-  .ph img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--paper); }
-  .ph div { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; }
-  .ph code { font: 700 .85rem "Barlow Condensed", sans-serif; }
-  .ph button { border: 0; background: #fdecee; color: #9c0019; border-radius: 8px; padding: 5px 10px; font: 700 .8rem "Barlow Condensed", sans-serif; cursor: pointer; }
   .empty { background: var(--white); border-radius: 12px; padding: 18px; color: var(--muted); }
   .busy { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.72); display: grid; place-items: center; padding: 24px; }
   .busy-box { background: var(--white); border-radius: 18px; padding: 26px 24px; max-width: 320px; text-align: center; }
@@ -435,7 +420,7 @@
     <div class="menu">
       <button type="button" data-go="dashPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></i><b>Dashboard</b><span>Member totals, sign-up trends and breakdowns.</span></button>
       <button type="button" data-go="regPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.3-6 6.5-6s5.9 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16.5 14.2c2.6.2 4.5 2.3 5 5.3"/></svg></i><b>Manage Registrations</b><span>Activate or deactivate members, add notes, download Excel.</span></button>
-      <button type="button" data-go="racePanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h11l-2 3.5L16 11H5"/><circle cx="17" cy="18" r="2.2"/><path d="M8 21c1.5-2 3.2-2.8 6.8-3"/></svg></i><b>Post or Manage Races</b><span>Post, view, edit or delete races, and manage race covers.</span></button>
+      <button type="button" data-go="racePanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h11l-2 3.5L16 11H5"/><circle cx="17" cy="18" r="2.2"/><path d="M8 21c1.5-2 3.2-2.8 6.8-3"/></svg></i><b>Post or Manage Races</b><span>Post, view, edit or delete races.</span></button>
       <button type="button" data-go="homePanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="2"/><path d="M3 17l5-4.5 4 3.5 3-2.5 6 5"/></svg></i><b>Manage Homepage Gallery</b><span>Choose race day photos to show on the homepage.</span></button>
       <button type="button" data-go="fbPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12.5h5"/></svg></i><b>Race Feedback</b><span>Ratings, recommend score and comments from each race.</span></button>
       <button type="button" data-go="annPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4h3l7 5V5L6 10H3z"/><path d="M17 8.5a5 5 0 0 1 0 7M19.5 6a8.5 8.5 0 0 1 0 12"/></svg></i><b>Announcement</b><span>Show or clear a notice ribbon at the top of the website.</span></button>
@@ -523,7 +508,6 @@
     <div class="subseg" role="group" aria-label="Race sections">
       <button type="button" data-rmode="post" aria-pressed="true">Post a Race</button>
       <button type="button" data-rmode="manage" aria-pressed="false">Manage a Race</button>
-      <button type="button" data-rmode="covers" aria-pressed="false">Manage Race Covers</button>
     </div>
 
     <!-- Manage a Race: list -->
@@ -531,17 +515,6 @@
       <p class="note-exp">Expired races are removed from the race schedule automatically after race day.</p>
       <div id="raceList" class="ulist"></div>
     </div>
-
-  <div id="coversBox" hidden>
-    <p class="note-exp">Race covers are the photos you choose from when posting a race.</p>
-    <label class="upbox">
-      <input id="gFiles" type="file" accept="image/*" multiple>
-      <b>Add race covers</b>
-      <span>Choose up to 10 at a time. Photos are resized automatically.</span>
-    </label>
-    <div class="ghead"><b id="gCount">Photos</b><button class="linkbtn" id="gRefresh" type="button" style="color:var(--black);border-color:var(--line)">Refresh</button></div>
-    <div class="grid" id="gGrid"></div>
-  </div>
 
     <!-- Post / edit form -->
     <form class="rcard" id="raceForm" novalidate>
@@ -584,11 +557,6 @@
       <div class="field">
         <label class="lbl" for="rGoodies">Goodies and awards <span class="optional">optional</span></label>
         <textarea id="rGoodies" maxlength="1000" placeholder="Start a line with - to make it a bullet point&#10;- Finisher medal&#10;- Breakfast after the run"></textarea>
-      </div>
-      <div class="field">
-        <label class="lbl">Cover photo <span class="optional">optional</span></label>
-        <p class="hint">Want more photos to choose from? Add them in the Manage Gallery section. Once added, they'll appear here for selection.</p>
-        <div class="pgrid" id="rPhotos"></div>
       </div>
       <div class="summary" id="rErr" role="alert"></div>
       <div class="modal-actions" style="margin-top:22px">
@@ -681,7 +649,7 @@
   const READ = { retries: 1, timeout: 20000 };
   const RAW = "https://raw.githubusercontent.com/unbndrunclub/unbndrunclub.github.io/main/";
   const rawOf = (p) => !p ? "" : /^https?:/.test(p) ? p : RAW + p;
-  // Races and gallery load from the website files; right after a change, from the backend
+  // Races and the announcement load from the website files; right after a change, from the backend
   // (the website takes about a minute to catch up).
   let lastChange = 0;
   const changedRecently = () => Date.now() - lastChange < 150000;
@@ -883,32 +851,8 @@
   });
 
 
-  // ---------- Manage Gallery ----------
-  const G_MAX_SIDE = 1920, G_QUALITY = 0.82, G_BATCH = 10;
-  let photos = [], galleryLoaded = false;
-
-  async function loadGallery(busyText) {
-    let list = null;
-    if (!changedRecently()) {
-      const f = await siteFile("data/gallery.json");
-      if (f) list = (f.photos || []).map((p) => ({ id: p.id, path: p.path, url: rawOf(p.path || p.url), thumb: rawOf(p.path || p.url) }));
-    }
-    if (!list) {
-      const out = await api({ action: "adminGalleryList" }, busyText, READ);
-      if (!out.ok) { toast((out.errors || ["Couldn't load photos"])[0]); return; }
-      list = out.photos;
-    }
-    photos = list; galleryLoaded = true; renderGallery(); if (typeof renderPhotoPicker === "function") renderPhotoPicker();
-  }
-  function renderGallery() {
-    $("gCount").textContent = photos.length + (photos.length === 1 ? " photo" : " photos");
-    $("gGrid").innerHTML = photos.length ? photos.map((p) =>
-      '<div class="ph"><img loading="lazy" src="' + esc(p.thumb) + '" alt="Gallery photo ' + esc(p.id) + '">' +
-      '<div><code>' + esc(p.id) + '</code><span><button type="button" class="vbtn" data-viewp="' + esc(p.id) + '">View</button><button type="button" data-del="' + esc(p.id) + '">Delete</button></span></div></div>'
-    ).join("") : '<div class="empty">No photos yet.</div>';
-  }
-  $("gRefresh").addEventListener("click", () => { lastChange = Date.now(); loadGallery("Refreshing"); });
-
+  // ---------- Photo resizing (used by homepage photo uploads) ----------
+  const G_MAX_SIDE = 1920, G_QUALITY = 0.82;
   function compressPhoto(file) {
     return new Promise((resolve, reject) => {
       const url = URL.createObjectURL(file);
@@ -928,40 +872,9 @@
     });
   }
 
-  $("gFiles").addEventListener("change", async () => {
-    const files = [...$("gFiles").files].filter((f) => /^image\//.test(f.type)).slice(0, G_BATCH);
-    $("gFiles").value = "";
-    if (!files.length) return;
-    let done = 0, failed = 0, lastErr = "";
-    for (let i = 0; i < files.length; i++) {
-      let data;
-      try { data = await compressPhoto(files[i]); } catch (e) { failed++; continue; }
-      const out = await api({ action: "adminGalleryUpload", mimeType: "image/jpeg", data: data }, "Uploading " + (i + 1) + " of " + files.length);
-      if (out.ok) { photos.unshift(out.photo); done++; lastChange = Date.now(); renderGallery(); } else { failed++; lastErr = (out.errors || [""])[0]; }
-    }
-    galleryLoaded = true;
-    toast(done + " uploaded" + (failed ? ", " + failed + " failed. " + lastErr : ""));
-  });
-
-  $("gGrid").addEventListener("click", async (e) => {
-    const vw = e.target.closest("[data-viewp]");
-    if (vw) {
-      const p = photos.find((x) => x.id === vw.dataset.viewp);
-      $("photoViewImg").src = p.url; $("photoViewImg").alt = "Photo " + p.id; $("photoViewId").textContent = p.id;
-      $("photoView").hidden = false; return;
-    }
-    const btn = e.target.closest("[data-del]"); if (!btn) return;
-    const id = btn.dataset.del;
-    if (!confirm("Delete photo " + id + " from the gallery?")) return;
-    const out = await api({ action: "adminGalleryDelete", photoId: id }, "Deleting " + id);
-    if (!out.ok) { toast((out.errors || ["Delete failed"])[0]); return; }
-    photos = photos.filter((p) => p.id !== id); lastChange = Date.now(); renderGallery();
-    toast(id + " deleted");
-  });
-
 
   // ---------- Post or Manage Races ----------
-  let rmode = "post", editingRace = "", racesLoaded = false, raceCache = [];
+  let rmode = "post", editingRace = "", editingPhotoId = "", racesLoaded = false, raceCache = [];
   const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const rf = (id) => $(id);
@@ -1005,15 +918,12 @@
     document.querySelectorAll("[data-rmode]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.rmode === m)));
     $("manageBox").hidden = m !== "manage";
     $("raceForm").hidden = m !== "post";
-    $("coversBox").hidden = m !== "covers";
-    if (m === "covers" && !galleryLoaded) loadGallery("Loading photos");
     $("rErr").innerHTML = "";
     if (m === "post") fillForm(null);
     if (m === "manage") loadRaceList();
   }
   document.querySelectorAll("[data-rmode]").forEach((b) => b.addEventListener("click", () => setMode(b.dataset.rmode)));
   async function openRaces() {
-    if (!racesLoaded) { racesLoaded = true; if (!galleryLoaded) await loadGallery("Loading photos"); renderPhotoPicker(); }
     if (rmode === "manage") loadRaceList();
   }
 
@@ -1091,14 +1001,6 @@
   ["raceView", "photoView", "promoView"].forEach((id) => $(id).addEventListener("click", (e) => { if (e.target.id === id) $(id).hidden = true; }));
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") { $("raceView").hidden = true; $("photoView").hidden = true; $("promoView").hidden = true; } });
 
-  function renderPhotoPicker(selected) {
-    const sel = selected !== undefined ? selected : ((document.querySelector('input[name="rPhoto"]:checked') || {}).value || "");
-    $("rPhotos").innerHTML = '<label><input type="radio" name="rPhoto" value=""' + (sel ? "" : " checked") +
-      '><img alt="No photo" src="data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%224%22 height=%223%22><rect width=%224%22 height=%223%22 fill=%22%23000%22/></svg>"><span>No photo</span></label>' +
-      photos.map((p) => '<label><input type="radio" name="rPhoto" value="' + esc(p.id) + '"' + (p.id === sel ? " checked" : "") +
-        '><img loading="lazy" src="' + esc(p.thumb) + '" alt="Photo ' + esc(p.id) + '"><span>' + esc(p.id) + "</span></label>").join("");
-  }
-
   function fillForm(r) {
     const v = r || {};
     rf("rName").value = v.name || ""; rf("rDate").value = isoToDmy(v.date);
@@ -1110,7 +1012,7 @@
     rf("rMinAge").value = v.minAge || ""; rf("rMaxAge").value = v.maxAge || "";
     rf("rActivities").value = v.activities || ""; rf("rGoodies").value = v.goodies || "";
     showDay();
-    renderPhotoPicker(v.photoId || "");
+    editingPhotoId = v.photoId || "";
     $("rfTitle").textContent = r ? "Edit " + r.id : "Post a Race";
     $("rSubmit").textContent = r ? "Update" : "Post race";
     $("rCancel").hidden = !r;
@@ -1133,7 +1035,7 @@
       start: rf("rStart").value.trim(), landmark: rf("rLandmark").value.trim(), map: rf("rMap").value.trim(),
       minAge: rf("rMinAge").value, maxAge: rf("rMaxAge").value,
       activities: rf("rActivities").value, goodies: rf("rGoodies").value,
-      photoId: (document.querySelector('input[name="rPhoto"]:checked') || {}).value || "",
+      photoId: editingPhotoId,
     };
     const out = await api({ action: "adminRaceSave", race: race }, race.id ? "Updating " + race.id : "Posting race");
     if (!out.ok) {
