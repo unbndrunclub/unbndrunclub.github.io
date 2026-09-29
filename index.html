@@ -146,10 +146,6 @@
   .home-hero h1 { font-size: clamp(4.2rem, 21vw, 9rem); }
   .home-hero .tagline { max-width: 30ch; }
   /* Hero motion: rotating line, scoreboard ticker, runners lapping a track */
-  .rotor { margin: 14px 0 0; font: 700 1.35rem/1.2 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; }
-  .rotor > span:first-child { opacity: .8; }
-  .rotor b { display: inline-block; color: var(--pink); font-style: italic; font-weight: 800; }
-  .rotor .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .home-hero .lap { position: absolute; z-index: 1; top: 120px; right: max(20px, calc((100% - 1080px) / 2 + 14px)); width: min(300px, 30vw); overflow: visible; }
   .lap circle { filter: drop-shadow(0 0 4px rgba(254,144,174,.9)); }
   .ticker { position: relative; display: flex; align-items: stretch; margin-top: 30px; border-block: 1px solid rgba(254,144,174,.5); background: rgba(0,0,0,.5); }
@@ -235,7 +231,6 @@
     <p class="city">Mumbai's run club</p>
     <h1>Run<br>unbound.</h1>
     <p class="tagline">Group runs and races across Mumbai. Every pace, every distance, one club.</p>
-    <p class="rotor"><span>Made for</span> <b id="rotor" aria-hidden="true">sunrise legs</b><span class="sr">every kind of runner</span></p>
     <div class="ctas">
       <a class="btn pink" href="register.html">Join the club</a>
       <a class="btn light" href="races.html">Race schedule</a>
@@ -406,15 +401,6 @@
   }
   const calmMotion = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
   (function () {
-    const words = ["sunrise legs", "night owls", "first-timers", "PB chasers", "sea-face miles", "every pace"], el = $("rotor");
-    let i = 0;
-    if (!calmMotion && el.animate) setInterval(() => {
-      if (document.hidden) return;
-      el.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-10px)" }], { duration: 260, fill: "forwards" }).finished.then(() => {
-        i = (i + 1) % words.length; el.textContent = words[i];
-        el.animate([{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 260, fill: "forwards" });
-      });
-    }, 2600);
     document.querySelectorAll(".lap").forEach((s) => runTrack(s, calmMotion));
     $("tkPause").addEventListener("click", () => {
       const on = $("tkPause").getAttribute("aria-pressed") !== "true";
