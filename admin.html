@@ -303,6 +303,72 @@
   .uitem.exp { opacity: .7; }
   .exptag { background: var(--paper); color: var(--muted); border-radius: 999px; padding: 4px 10px; font-weight: 700; font-size: .8rem; }
   /* Race banner (view) + photo lightbox */
+  /* ---------- Activation celebration ---------- */
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .party { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 20px; overflow: hidden; cursor: pointer; outline: none;
+    background: radial-gradient(circle at 50% 45%, rgba(254,144,174,.3), transparent 60%), rgba(0,0,0,.94); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); animation: partyIn .25s ease-out both; }
+  .party.leaving { animation: partyOut .4s ease-in both; }
+  @keyframes partyIn { from { opacity: 0; } }
+  @keyframes partyOut { to { opacity: 0; } }
+  .party::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(118deg, transparent 0 46px, rgba(254,144,174,.16) 46px 48px); background-size: 54.363px 100%; animation: pLanes .9s linear infinite;
+    -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 20%, #000 75%); mask-image: radial-gradient(circle at 50% 50%, transparent 20%, #000 75%); }
+  @keyframes pLanes { to { background-position-x: -54.363px; } }
+  .party canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
+  .p-tape { position: absolute; left: 0; right: 0; top: 46%; height: 16px; margin-top: -8px; display: flex; pointer-events: none; z-index: 1; }
+  .p-tape i { flex: 1; background: repeating-linear-gradient(90deg, var(--pink) 0 22px, #fff 22px 44px); box-shadow: 0 0 18px rgba(254,144,174,.7); }
+  .p-tape i:first-child { transform-origin: left center; animation: tapeL .9s .36s cubic-bezier(.2,.7,.3,1) forwards; }
+  .p-tape i:last-child { transform-origin: right center; animation: tapeR .9s .36s cubic-bezier(.2,.7,.3,1) forwards; }
+  @keyframes tapeL { to { transform: translate(-25%, 170px) rotate(-40deg); opacity: 0; } }
+  @keyframes tapeR { to { transform: translate(25%, 170px) rotate(40deg); opacity: 0; } }
+  .p-comet { position: absolute; top: 46%; left: -30%; width: 200px; height: 6px; margin-top: -3px; border-radius: 3px; z-index: 2; pointer-events: none;
+    background: linear-gradient(90deg, transparent, var(--pink) 70%, #fff); box-shadow: 0 0 22px var(--pink); animation: comet .38s cubic-bezier(.5,0,.9,.6) forwards; }
+  @keyframes comet { 90% { opacity: 1; } to { left: 45%; opacity: 0; } }
+  .p-flash { position: absolute; inset: 0; pointer-events: none; z-index: 2; opacity: 0; background: radial-gradient(circle at 50% 46%, rgba(255,255,255,.95), transparent 42%); animation: pFlash .7s .36s ease-out; }
+  @keyframes pFlash { 8% { opacity: 1; } }
+  .p-ring { position: absolute; left: 50%; top: 46%; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; border: 4px solid var(--pink); opacity: 0; pointer-events: none; z-index: 2; animation: pRing 1s .38s ease-out; }
+  @keyframes pRing { 0% { opacity: .9; transform: scale(.2); } 100% { opacity: 0; transform: scale(16); } }
+  .p-card { position: relative; z-index: 4; width: min(430px, 100%); text-align: center; color: #fff; }
+  .p-kick { display: inline-block; background: var(--pink); color: #000; font: 700 .8rem/1 "Barlow", sans-serif; letter-spacing: .14em; text-transform: uppercase; padding: 7px 11px; border-radius: 999px; animation: pRise .4s .3s both; }
+  .p-bib { position: relative; width: min(340px, 100%); margin: 14px auto 0; background: #fff; color: #000; border: 3px solid #000; border-radius: 18px; padding: 24px 22px 20px;
+    box-shadow: 0 30px 70px -20px rgba(254,144,174,.65), 0 0 0 6px rgba(254,144,174,.28); animation: slam .55s .42s cubic-bezier(.2,.9,.3,1.25) both; }
+  @keyframes slam { 0% { transform: scale(2.6) rotate(-10deg); opacity: 0; } 55% { opacity: 1; } 100% { transform: rotate(-2deg); } }
+  .p-bib .pin { position: absolute; width: 11px; height: 11px; border-radius: 50%; background: var(--paper); border: 2px solid #000; }
+  .p-bib .p1 { top: 9px; left: 9px; } .p-bib .p2 { top: 9px; right: 9px; } .p-bib .p3 { bottom: 9px; left: 9px; } .p-bib .p4 { bottom: 9px; right: 9px; }
+  .p-club { display: inline-block; background: #000; color: var(--pink); font: 700 .95rem/1 "Barlow Condensed", sans-serif; padding: 5px 10px; border-radius: 6px; }
+  .p-id { display: block; margin: 8px 0 0; font: italic 800 clamp(3.4rem, 17vw, 4.8rem)/1 "Barlow Condensed", "Arial Narrow", sans-serif; font-variant-numeric: tabular-nums; }
+  .p-name { display: block; font: 800 1.35rem/1.15 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; overflow-wrap: anywhere; }
+  .p-stamp { position: absolute; right: -12px; top: -16px; border: 3px solid #0d7a45; color: #0d7a45; background: #fff; border-radius: 8px; padding: 5px 10px;
+    font: italic 800 1.3rem/1 "Barlow Condensed", sans-serif; letter-spacing: .06em; text-transform: uppercase; transform: rotate(12deg); box-shadow: 0 6px 16px -6px rgba(0,0,0,.5);
+    animation: stampIn .35s 1.05s cubic-bezier(.2,.9,.3,1.4) both; }
+  @keyframes stampIn { 0% { transform: scale(3) rotate(30deg); opacity: 0; } 100% { transform: rotate(12deg); opacity: 1; } }
+  .p-head { margin: 22px 0 0; font: italic 800 clamp(2.3rem, 9.5vw, 3.6rem)/.95 "Barlow Condensed", "Arial Narrow", sans-serif; text-transform: uppercase; color: var(--pink); }
+  .p-head span { display: inline-block; animation: pRise .45s both; }
+  @keyframes pRise { from { transform: translateY(26px) scale(.6); opacity: 0; } }
+  .p-sub { margin: 8px 0 0; font-weight: 600; color: rgba(255,255,255,.88); animation: pRise .4s 1.2s both; }
+  .p-stats { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 16px; animation: pRise .4s 1.3s both; }
+  .p-stat { background: rgba(255,255,255,.08); border: 1px solid rgba(254,144,174,.45); border-radius: 12px; padding: 8px 14px; min-width: 130px; }
+  .p-stat small { display: block; font: 700 .68rem/1.2 "Barlow", sans-serif; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.65); }
+  .p-stat b { display: block; font: italic 800 1.9rem/1.1 "Barlow Condensed", sans-serif; color: #fff; }
+  .roll { display: inline-block; height: 1.1em; overflow: hidden; vertical-align: bottom; }
+  .roll span { display: block; animation: rollUp .5s 1.6s cubic-bezier(.3,1.4,.5,1) both; }
+  @keyframes rollUp { to { transform: translateY(-100%); } }
+  .p-mile { display: inline-block; margin-top: 14px; padding: 8px 14px; border-radius: 999px; color: #000; font: 800 .95rem/1 "Barlow Condensed", sans-serif; letter-spacing: .06em; text-transform: uppercase;
+    background: linear-gradient(100deg, #ffd36e, #fff3c4 45%, #ffd36e 55%, #e8a93a) 0 0 / 250% 100%; box-shadow: 0 0 24px rgba(255,211,110,.6); animation: pRise .45s 1.5s both, goldShine 1.6s 2s linear infinite; }
+  @keyframes goldShine { to { background-position: -250% 0; } }
+  .p-skip { margin: 18px auto 0; width: min(240px, 80%); font-size: .82rem; color: rgba(255,255,255,.6); }
+  .p-bar { height: 3px; border-radius: 2px; background: rgba(255,255,255,.15); margin-top: 6px; overflow: hidden; }
+  .p-bar i { display: block; height: 100%; background: var(--pink); transform-origin: left; animation: pBar var(--dur, 4.6s) linear forwards; }
+  @keyframes pBar { from { transform: scaleX(0); } }
+  .rsec.bump { animation: bump 1.2s ease-out; }
+  .rsec.bump .rcount { animation: countPop .6s .1s cubic-bezier(.2,.9,.3,1.5); }
+  @keyframes bump { 0% { box-shadow: 0 0 0 0 rgba(254,144,174,.9); } 100% { box-shadow: 0 0 0 18px rgba(254,144,174,0); } }
+  @keyframes countPop { 40% { transform: scale(1.5); color: var(--pink); } }
+  @media (prefers-reduced-motion: reduce) {
+    .party, .party::before, .p-tape i, .p-bib, .p-stamp, .p-kick, .p-head span, .p-sub, .p-stats, .p-mile, .roll span, .p-bar i, .rsec.bump, .rsec.bump .rcount { animation: none !important; }
+    .party .p-comet, .party .p-flash, .party .p-ring, .party .p-tape { display: none; }
+    .roll span:first-child { display: none; }
+  }
   .overlay { position: fixed; inset: 0; z-index: 56; background: rgba(0,0,0,.8); display: grid; place-items: center; padding: 16px; overflow-y: auto; }
   .xbtn { position: absolute; top: 10px; right: 10px; width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(0,0,0,.65); color: #fff; font-size: 1.3rem; cursor: pointer; z-index: 2; }
   .rbanner { position: relative; background: var(--white); border-radius: 20px; overflow: hidden; width: 100%; max-width: 560px; }
@@ -872,8 +938,123 @@
     const tr = $("regSections").querySelector('tr[data-k="' + p.k + '"]');
     if (tr) tr.classList.add("flash");
     const id = out.row[iOf("Club ID")];
-    toast(p.status === "Active" ? (id + " activated. Welcome email goes out within a minute.") : "Deactivated");
+    if (p.status === "Active") celebrate(out.row, () => toast(id + " activated. Welcome email goes out within a minute."));
+    else toast("Deactivated");
   });
+
+  // ---------- Activation celebration: break the tape, slam the bib, confetti, then back to work ----------
+  const MILESTONES = [1, 10, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 750, 1000];
+  let party = null;
+  function celebrate(row, after) {
+    if (party) party.close(true);
+    const calm = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+    const st = iOf("Membership status"), paid = row[iOf("Payment screenshot")] === "Yes";
+    const id = String(row[iOf("Club ID")] || ""), name = String(row[iOf("Full name")] || "");
+    const active = rows.filter((r) => r[st] === "Active").length, pendingLeft = rows.filter((r) => r[st] === "Pending").length;
+    const milestone = MILESTONES.includes(active) || (active > 1000 && active % 100 === 0);
+    const DUR = milestone ? 6200 : 4600;
+    const head = "Welcome to the club!".split("").map((c, i) => c === " " ? " " : '<span style="animation-delay:' + (0.95 + i * 0.03).toFixed(2) + 's">' + esc(c) + "</span>").join("");
+    const el = document.createElement("div");
+    el.className = "party"; el.tabIndex = -1;
+    el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "New member activated");
+    el.style.setProperty("--dur", DUR + "ms");
+    el.innerHTML =
+      '<canvas aria-hidden="true"></canvas><div class="p-tape" aria-hidden="true"><i></i><i></i></div><div class="p-comet" aria-hidden="true"></div><div class="p-flash" aria-hidden="true"></div><div class="p-ring" aria-hidden="true"></div>' +
+      '<div class="p-card">' +
+        '<span class="p-kick">Activated' + (paid ? " · ₹ paid" : "") + "</span>" +
+        '<div class="p-bib"><span class="pin p1"></span><span class="pin p2"></span><span class="pin p3"></span><span class="pin p4"></span>' +
+          '<span class="p-club">UNBND RUN CLUB</span><b class="p-id" id="pId">' + esc(id) + '</b><span class="p-name">' + esc(name) + '</span><span class="p-stamp">Active</span></div>' +
+        '<h2 class="p-head" aria-hidden="true">' + head + "</h2>" +
+        '<p class="p-sub">' + esc(name) + " is now an active member. Welcome email on its way.</p>" +
+        '<div class="p-stats"><div class="p-stat"><small>Active members</small><b><span class="roll"><span>' + (active - 1) + "</span><span>" + active + "</span></span></b></div>" +
+          '<div class="p-stat"><small>Still pending</small><b>' + pendingLeft + "</b></div></div>" +
+        (milestone ? '<div class="p-mile">Milestone · ' + active + " active member" + (active === 1 ? "" : "s") + "!</div>" : "") +
+        '<div class="p-skip">Tap anywhere to continue<div class="p-bar"><i></i></div></div>' +
+        '<p class="sr" aria-live="assertive">' + esc(name + ", " + id + ", is now an active member. " + active + " active members" + (milestone ? ", a milestone!" : ".")) + "</p>" +
+      "</div>";
+    document.body.appendChild(el);
+    const back = document.activeElement;
+    try { el.focus({ preventScroll: true }); } catch (e) {}
+    if (!calm) { rollId(el.querySelector("#pId"), id); fireworks(el.querySelector("canvas"), milestone); try { if (navigator.vibrate) setTimeout(() => navigator.vibrate([25, 40, 70]), 450); } catch (e) {} }
+
+    let done = false;
+    const timer = setTimeout(() => close(false), DUR);
+    function close(instant) {
+      if (done) return; done = true; clearTimeout(timer); party = null;
+      el.removeEventListener("keydown", onKey);
+      const finish = () => { el.remove(); if (back && back.focus && document.contains(back)) { try { back.focus({ preventScroll: true }); } catch (e) {} } bumpSection(row); if (after) after(); };
+      if (instant || calm) return finish();
+      flyBib(el, row);
+      el.classList.add("leaving"); setTimeout(finish, 420);
+    }
+    const onKey = (e) => { if (["Escape", "Enter", " "].includes(e.key)) { e.preventDefault(); close(false); } };
+    el.addEventListener("click", () => close(false));
+    el.addEventListener("keydown", onKey);
+    party = { close: close };
+  }
+  // Club ID rolls into place like a stadium scoreboard
+  function rollId(node, id) {
+    if (!/\d/.test(id)) return;
+    const t0 = performance.now(), lockAt = (i) => 520 + i * 110;
+    (function frame(t) {
+      if (!node.isConnected) return;
+      const dt = t - t0; let out = "", still = false;
+      for (let i = 0; i < id.length; i++) { const c = id[i]; if (/\d/.test(c) && dt < lockAt(i)) { out += (Math.random() * 10) | 0; still = true; } else out += c; }
+      node.textContent = out;
+      if (still) requestAnimationFrame(frame);
+    })(t0);
+  }
+  // Where the new member now lives
+  function secFor(row) { return row[iOf("Payment screenshot")] === "Yes" ? "activePaid" : "activeUnpaid"; }
+  function flyBib(el, row) {
+    const bib = el.querySelector(".p-bib"), to = document.querySelector('.rsec[data-sec="' + secFor(row) + '"] summary');
+    if (!bib || !to || !bib.animate) return;
+    const a = bib.getBoundingClientRect(), b = to.getBoundingClientRect();
+    if (b.bottom < 0 || b.top > innerHeight) return;
+    const dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2);
+    bib.style.animation = "none";
+    bib.animate([{ transform: "rotate(-2deg)", opacity: 1 }, { transform: "translate(" + dx + "px," + dy + "px) scale(.12) rotate(8deg)", opacity: .2 }], { duration: 420, easing: "cubic-bezier(.5,0,.8,.4)", fill: "forwards" });
+  }
+  function bumpSection(row) {
+    const s = document.querySelector('.rsec[data-sec="' + secFor(row) + '"]'); if (!s) return;
+    s.classList.remove("bump"); void s.offsetWidth; s.classList.add("bump");
+    setTimeout(() => s.classList.remove("bump"), 1300);
+  }
+  // Confetti cannons, a burst from the bib, and fireworks for milestones
+  function fireworks(canvas, big) {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2), W = innerWidth, H = innerHeight;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    const x = canvas.getContext("2d"); x.scale(dpr, dpr);
+    const cols = ["#fe90ae", "#fe90ae", "#ff5f8f", "#ffd0dc", "#ffffff", "#000000"].concat(big ? ["#ffd36e", "#ffe9a8", "#ffd36e"] : []);
+    const pick = () => cols[(Math.random() * cols.length) | 0], P = [], T0 = performance.now(), jobs = [];
+    const confetti = (px, py, n, ang, spread, speed) => { for (let i = 0; i < n; i++) { const a = ang + (Math.random() - .5) * spread, v = speed * (.55 + Math.random() * .6);
+      P.push({ k: "c", x: px, y: py, vx: Math.cos(a) * v, vy: Math.sin(a) * v, w: 6 + Math.random() * 7, h: 4 + Math.random() * 4, r: Math.random() * 6, vr: (Math.random() - .5) * .35, c: pick(), t: 0, max: 3000 + Math.random() * 1400, wob: Math.random() * 6 }); } };
+    const sparks = (px, py, n, c) => { for (let i = 0; i < n; i++) { const a = Math.random() * Math.PI * 2, v = 2 + Math.random() * 5.5;
+      P.push({ k: "s", x: px, y: py, vx: Math.cos(a) * v, vy: Math.sin(a) * v, c: c || pick(), t: 0, max: 900 + Math.random() * 700 }); } };
+    const at = (ms, fn) => jobs.push({ ms: ms, fn: fn });
+    at(380, () => { confetti(0, H, 90, -Math.PI / 3, .7, 22); confetti(W, H, 90, -Math.PI * 2 / 3, .7, 22); });
+    at(470, () => confetti(W / 2, H * .42, 70, -Math.PI / 2, Math.PI * 2, 12));
+    if (big) [900, 1250, 1600, 1950, 2300, 2700].forEach((ms, i) => at(ms, () => P.push({ k: "r", x: W * (.15 + ((i * 37) % 70) / 100), y: H, vx: (Math.random() - .5) * 2, vy: -(H * .018 + 9 + Math.random() * 4), c: ["#ffd36e", "#fe90ae", "#7af0ff", "#ffffff"][i % 4], t: 0, max: 5000 })));
+    let last = T0;
+    (function frame(now) {
+      if (!canvas.isConnected) return;
+      const el = now - T0, dt = Math.min(40, now - last) / 16.7; last = now;
+      while (jobs.length && jobs[0].ms <= el) jobs.shift().fn();
+      x.clearRect(0, 0, W, H);
+      for (let i = P.length - 1; i >= 0; i--) {
+        const p = P[i]; p.t += dt * 16.7;
+        if (p.k === "c") { p.vy += .32 * dt; p.vx *= Math.pow(.985, dt); p.vy *= Math.pow(.992, dt); p.x += (p.vx + Math.sin(p.t / 180 + p.wob) * .8) * dt; p.y += p.vy * dt; p.r += p.vr * dt;
+          x.save(); x.globalAlpha = Math.max(0, Math.min(1, (p.max - p.t) / 500)); x.translate(p.x, p.y); x.rotate(p.r); x.scale(1, Math.cos(p.t / 120 + p.wob)); x.fillStyle = p.c; x.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); x.restore(); }
+        else if (p.k === "s") { p.vy += .06 * dt; p.vx *= Math.pow(.97, dt); p.vy *= Math.pow(.97, dt); p.x += p.vx * dt; p.y += p.vy * dt;
+          x.globalAlpha = Math.max(0, 1 - p.t / p.max); x.fillStyle = p.c; x.beginPath(); x.arc(p.x, p.y, 2.2, 0, Math.PI * 2); x.fill(); x.globalAlpha = 1; }
+        else { p.vy += .22 * dt; p.x += p.vx * dt; p.y += p.vy * dt;
+          x.fillStyle = p.c; x.beginPath(); x.arc(p.x, p.y, 3, 0, Math.PI * 2); x.fill();
+          if (p.vy >= -1) { sparks(p.x, p.y, 70, p.c); sparks(p.x, p.y, 25, "#ffffff"); p.t = p.max; } }
+        if (p.t >= p.max || p.y > H + 60) P.splice(i, 1);
+      }
+      if (P.length || jobs.length) requestAnimationFrame(frame);
+    })(T0);
+  }
 
   // ---------- Excel download ----------
   $("download").addEventListener("click", () => {
