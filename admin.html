@@ -218,10 +218,22 @@
   .apreview b { font: italic 800 1rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; background: #000; color: #fe90ae; padding: 5px 8px; border-radius: 6px; }
   .acount { text-align: right; color: var(--muted); font-size: .85rem; }
   /* Menu after login */
-  .mhero { position: relative; overflow: hidden; background: #000; color: #fff; border-radius: 22px; padding: 26px 22px 24px; }
+  .mhero { position: relative; overflow: hidden; background: #000; color: #fff; border-radius: 22px; padding: 26px 22px 34px; }
   .mhero::after { content: ""; position: absolute; inset: 0; pointer-events: none;
     background: repeating-linear-gradient(118deg, transparent 0 42px, rgba(254,144,174,.24) 42px 44px);
-    -webkit-mask-image: linear-gradient(to left, #000, transparent 75%); mask-image: linear-gradient(to left, #000, transparent 75%); }
+    -webkit-mask-image: linear-gradient(to left, #000, transparent 75%); mask-image: linear-gradient(to left, #000, transparent 75%);
+    background-size: 49.833px 100%; animation: lanes-a 1.6s linear infinite; }   /* lanes drift; 49.833px = one lane repeat, so the loop is seamless */
+  @keyframes lanes-a { to { background-position-x: -49.833px; } }
+  /* speed streaks flying past, and a checkered finish-line ribbon sliding along the bottom */
+  .mhero::before { content: ""; position: absolute; inset: 0; pointer-events: none; background-repeat: no-repeat;
+    background-image: linear-gradient(90deg, rgba(254,144,174,.9), transparent), linear-gradient(90deg, rgba(255,255,255,.75), transparent), linear-gradient(90deg, rgba(254,144,174,.7), transparent);
+    background-size: 150px 2px, 90px 2px, 230px 3px; background-position: calc(100% + 300px) 24%, calc(100% + 420px) 58%, calc(100% + 360px) 84%;
+    animation: streaks 4.2s linear infinite; }
+  @keyframes streaks { to { background-position: -300px 24%, -420px 58%, -360px 84%; } }
+  .mhero .flag { position: absolute; left: 0; right: 0; bottom: 0; height: 16px; opacity: .9;
+    background: conic-gradient(#000 25%, var(--pink) 0 50%, #000 0 75%, var(--pink) 0) 0 0 / 16px 16px; animation: flag 1.2s linear infinite; }
+  @keyframes flag { to { background-position-x: -16px; } }
+  @media (prefers-reduced-motion: reduce) { .mhero::after, .mhero .flag { animation: none; } .mhero::before { display: none; } }
   .mhero > * { position: relative; z-index: 1; }
   .mhero .mk { display: inline-block; margin: 0 0 12px; background: var(--pink); color: #000; font: 700 .9rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; padding: 6px 9px; border-radius: 6px; }
   .mhero h2 { font: italic 800 clamp(2rem, 8vw, 3.2rem)/.95 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--pink); margin: 0; }
@@ -233,6 +245,7 @@
   .board b { display: block; font: italic 800 1.55rem/1.1 "Barlow Condensed", sans-serif; font-variant-numeric: tabular-nums; color: var(--pink); }
   .mhero .lap { display: none; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); width: 210px; overflow: visible; }
   .lap circle { filter: drop-shadow(0 0 4px rgba(254,144,174,.9)); }
+  .mhero > .flag { position: absolute; }
   @media (min-width: 700px) { .mhero .lap { display: block; } .mhero h2, .mhero .board { max-width: calc(100% - 240px); } }
   .menu button i { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; background: #000; margin-bottom: 12px; }
   .menu button i svg { width: 26px; height: 26px; fill: none; stroke: var(--pink); stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
@@ -387,6 +400,7 @@
       <div class="board" aria-hidden="true">
         <div><small>Today</small><b id="bdDate">&nbsp;</b></div>
       </div>
+      <div class="flag" aria-hidden="true"></div>
       <svg class="lap" viewBox="0 0 220 130" aria-hidden="true" focusable="false">
         <path id="lapA" d="M55,35 H165 A30,30 0 0 1 165,95 H55 A30,30 0 0 1 55,35 Z" fill="none" stroke="rgba(254,144,174,.45)" stroke-width="1.5"/>
         <path id="lapB" d="M55,25 H165 A40,40 0 0 1 165,105 H55 A40,40 0 0 1 55,25 Z" fill="none" stroke="rgba(254,144,174,.32)" stroke-width="1.5"/>
@@ -659,9 +673,11 @@
   $("logout").addEventListener("click", () => logout());
 
   // ---------- Tabs ----------
+  let menuTick = () => {};   // refreshes the greeting and date on the main page (set below)
   function showSection(id) {
     ["menuPanel", "dashPanel", "regPanel", "racePanel", "homePanel", "fbPanel", "annPanel"].forEach((p) => ($(p).hidden = p !== id));
     window.scrollTo({ top: 0 });
+    if (id === "menuPanel") menuTick();
     if (id === "regPanel" && !regLoaded) loadRegistrations();
     if (id === "racePanel") openRaces();
     if (id === "homePanel") openHomeGallery();
@@ -694,7 +710,7 @@
       set($("bdDate"), p.weekday + " " + p.day + " " + p.month);
     }
     const set = (el, v) => { if (el.textContent !== v) el.textContent = v; };
-    tick(); setInterval(tick, 1000);   // cheap: fills in right after login and only touches the page when the text changes
+    menuTick = tick; tick(); setInterval(tick, 1000);   // cheap: also runs whenever the main page is shown, and only touches the page when the text changes
     const lines = ["Let's build Mumbai's most loved run club, one start line at a time.", "Every runner who shows up is a win.", "Consistency beats speed. Keep the club moving.",
       "Good things happen at the start line.", "One more member, one more stride."], el = $("mhLine");
     let i = 0;

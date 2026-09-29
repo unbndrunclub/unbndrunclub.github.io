@@ -141,7 +141,19 @@
   .home-hero::after { content: ""; position: absolute; inset: 0; pointer-events: none;
     background: repeating-linear-gradient(118deg, transparent 0 46px, rgba(254,144,174,.22) 46px 48px);
     mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.3) 45%, transparent 75%);
-    -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.3) 45%, transparent 75%); }
+    -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.3) 45%, transparent 75%);
+    background-size: 54.363px 100%; animation: lanes-h 1.8s linear infinite; }   /* lanes drift; 54.363px = one lane repeat, so the loop is seamless */
+  @keyframes lanes-h { to { background-position-x: -54.363px; } }
+  /* speed streaks flying past the photo, and a checkered finish-line ribbon sliding under the ticker */
+  .home-hero::before { content: ""; position: absolute; inset: 0; pointer-events: none; background-repeat: no-repeat;
+    background-image: linear-gradient(90deg, rgba(254,144,174,.9), transparent), linear-gradient(90deg, rgba(255,255,255,.7), transparent), linear-gradient(90deg, rgba(254,144,174,.7), transparent), linear-gradient(90deg, rgba(255,255,255,.55), transparent);
+    background-size: 180px 2px, 110px 2px, 260px 3px, 140px 2px; background-position: calc(100% + 360px) 18%, calc(100% + 520px) 42%, calc(100% + 440px) 66%, calc(100% + 300px) 84%;
+    animation: streaks-h 5s linear infinite; }
+  @keyframes streaks-h { to { background-position: -360px 18%, -520px 42%, -440px 66%, -300px 84%; } }
+  .ticker::after { content: ""; position: absolute; left: 0; right: 0; bottom: -9px; height: 8px;
+    background: conic-gradient(#000 25%, var(--pink) 0 50%, #000 0 75%, var(--pink) 0) 0 0 / 8px 8px; animation: flag-h 1s linear infinite; }
+  @keyframes flag-h { to { background-position-x: -8px; } }
+  @media (prefers-reduced-motion: reduce) { .home-hero::after, .ticker::after { animation: none; } .home-hero::before { display: none; } }
   .home-hero .inner { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; padding-top: 56px; }
   .home-hero h1 { font-size: clamp(4.2rem, 21vw, 9rem); }
   .home-hero .tagline { max-width: 30ch; }
