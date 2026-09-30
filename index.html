@@ -14,6 +14,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script src="config.js"></script>
 <script src="site.js" defer></script>
+<script>
+  // Sections slide in as you scroll (skipped for people who prefer reduced motion)
+  if (window.matchMedia && !matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) document.documentElement.classList.add("rv");
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
@@ -21,15 +25,22 @@
   :root {
     --black: #000000;
     --pink: #fe90ae;
+    --pink-2: #ff5f8f;
     --white: #ffffff;
     --paper: #f4f4f5;
     --line: #e2e2e6;
     --muted: #686873;
     --error: #d0021b;
+    --top-h: 64px;
+    --safe-top: env(safe-area-inset-top, 0px);
     color-scheme: light;
     box-sizing: border-box;
     padding-bottom: env(safe-area-inset-bottom, 0px);
+    scroll-padding-top: calc(var(--top-h) + 24px);
   }
+  @media (min-width: 861px) { :root { --top-h: 76px; } }
+  @media (prefers-reduced-motion: no-preference) { :root { scroll-behavior: smooth; } }
+  html.locked body { overflow: hidden; }
   [hidden] { display: none !important; }
   *, *::before, *::after { box-sizing: inherit; }
   body {
@@ -37,284 +48,549 @@
     font: 400 16px/1.55 "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
     -webkit-font-smoothing: antialiased;
   }
-  .display { font-family: "Barlow Condensed", "Arial Narrow", sans-serif; }
+  a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid var(--pink); outline-offset: 2px; }
+  .wide { max-width: 1080px; margin: 0 auto; }
 
-  /* ---------- Hero ---------- */
-  .hero {
-    position: relative; overflow: hidden; background: var(--black); color: var(--white);
-    padding: calc(env(safe-area-inset-top, 0px) + 18px) 20px 120px;
-  }
-  /* Running-track lanes sweeping across the hero */
-  .hero::after {
-    content: ""; position: absolute; inset: 0; pointer-events: none;
-    background: repeating-linear-gradient(118deg, transparent 0 46px, rgba(254,144,174,.28) 46px 48px);
-    mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.35) 45%, transparent 75%);
-    -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.35) 45%, transparent 75%);
-  }
-  .bar { max-width: 620px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
-  .bar img { width: 56px; height: 56px; display: block; }
-  .bar .fee { margin: 0; text-align: right; line-height: 1.1; color: rgba(255,255,255,.7); font-size: .85rem; }
-  .bar .fee b { display: block; color: var(--pink); font: italic 800 1.6rem/1 "Barlow Condensed", sans-serif; }
-  h1 {
-    font: italic 800 clamp(3.8rem, 23vw, 7.5rem)/.86 "Barlow Condensed", "Arial Narrow", sans-serif;
-    text-transform: uppercase; letter-spacing: -.02em; margin: 0; color: var(--pink);
-  }
-  .tagline { font: 600 1.3rem/1.3 "Barlow", sans-serif; margin: 18px 0 0; max-width: 26ch; }
-
-  /* ---------- Form ---------- */
-  main { position: relative; z-index: 2; max-width: 620px; margin: -80px auto 0; padding: 0 14px 56px; }
-  fieldset { border: 0; padding: 0; margin: 26px 0 0; }
-  legend {
-    font: 700 1.3rem/1.2 "Barlow Condensed", "Arial Narrow", sans-serif; padding: 0 0 0 12px;
-    border-left: 4px solid var(--pink); float: left; width: 100%;
-  }
-  legend + * { clear: both; }
-
-  label.lbl { display: block; font-weight: 600; margin-bottom: 6px; }
-  input[type="text"], input[type="tel"], input[type="email"], input[type="number"], select {
-    width: 100%; font: inherit; color: var(--black); background: var(--paper);
-    border: 1.5px solid transparent; border-radius: 12px; padding: 13px 14px;
-    appearance: none; -webkit-appearance: none; transition: border-color .15s, background .15s;
-  }
-  input:focus, select:focus { background: var(--white); border-color: var(--black); outline: none; }
-  select {
-    background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
-    background-position: calc(100% - 20px) 55%, calc(100% - 14px) 55%;
-    background-size: 6px 6px; background-repeat: no-repeat; padding-right: 40px;
-  }
-  button:focus-visible, a:focus-visible, .check input:focus-visible { outline: 3px solid var(--pink); outline-offset: 2px; }
-  .err { color: var(--error); font-size: .9rem; margin: 6px 0 0; }
-  .err:empty { display: none; }
-
-
-  .check { display: flex; gap: 12px; align-items: flex-start; margin-top: 14px; }
-  .check input { width: 20px; height: 20px; margin: 2px 0 0; flex: none; accent-color: var(--black); }
-
-
+  /* ---------- Buttons ---------- */
   .btn {
-    display: block; width: 100%; margin-top: 28px; border: 0; border-radius: 14px; padding: 17px 18px;
-    font: italic 800 1.35rem/1 "Barlow Condensed", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: .02em;
-    background: var(--black); color: var(--pink); cursor: pointer; text-align: center; text-decoration: none;
-    transition: transform .12s;
+    position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    border: 0; border-radius: 14px; padding: 16px 22px; cursor: pointer; text-align: center; text-decoration: none;
+    font: italic 800 1.3rem/1 "Barlow Condensed", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: .02em;
+    background: var(--black); color: var(--pink); -webkit-tap-highlight-color: transparent;
+    transition: transform .15s, background-color .2s, color .2s, box-shadow .2s;
   }
-  .btn:active { transform: scale(.98); }
-  .btn.pink { background: var(--pink); color: var(--black); }
+  .btn:active { transform: scale(.97); }
+  .btn.pink { background: var(--pink); color: var(--black); box-shadow: 0 12px 30px -14px rgba(254,144,174,.9); }
+  .btn.ghost { background: rgba(255,255,255,.06); color: var(--white); box-shadow: inset 0 0 0 2px rgba(255,255,255,.8); }
+  .btn.ghost:hover { background: var(--white); color: var(--black); }
+  .btn .arr { display: inline-block; font-style: normal; transition: transform .2s; }
+  .btn:hover .arr { transform: translateX(4px); }
   .btn[disabled] { opacity: .6; cursor: progress; }
 
-  /* ---------- Success: race bib ---------- */
-  .copy { border: 0; background: var(--paper); color: var(--black); border-radius: 12px; padding: 11px 16px; font: 600 .95rem "Barlow", sans-serif; cursor: pointer; }
-  .status { font-weight: 700; margin: 18px 0 0; }
-  .status::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--pink); margin-right: 8px; vertical-align: 1px; }
+  /* ---------- Header: logo, menu, scroll track ---------- */
+  .hdr {
+    position: sticky; top: 0; z-index: 60; color: var(--white); padding-top: var(--safe-top);
+    background: linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,0)); transition: background-color .25s, box-shadow .25s;
+  }
+  .hdr.solid { background: rgba(8,8,10,.9); -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4); box-shadow: 0 12px 30px -20px rgba(0,0,0,.7); }
+  .hdr-in { max-width: 1116px; height: var(--top-h); margin: 0 auto; padding: 0 18px; display: flex; align-items: center; gap: 10px; }
+  .brand { display: block; flex: none; line-height: 0; }
+  .brand img { width: 44px; height: 44px; display: block; transition: transform .35s cubic-bezier(.3,1.6,.5,1); }
+  .brand:hover img { transform: rotate(-10deg) scale(1.06); }
+  .menu-d { margin-left: auto; display: flex; gap: 2px; }
+  .menu-d a { position: relative; color: var(--white); text-decoration: none; font: 700 1.05rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .05em; padding: 12px 12px; }
+  .menu-d a::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 5px; height: 2px; border-radius: 2px; background: var(--pink); transform: scaleX(0); transform-origin: left; transition: transform .25s; }
+  .menu-d a:hover::after, .menu-d a:focus-visible::after { transform: scaleX(1); }
+  .join {
+    display: inline-flex; align-items: center; gap: 8px; margin-left: 8px; padding: 6px 6px 6px 16px; border-radius: 999px;
+    background: var(--pink); color: var(--black); text-decoration: none; font: italic 800 1.15rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase;
+    transition: transform .15s, box-shadow .2s; box-shadow: 0 8px 22px -10px rgba(254,144,174,.9);
+  }
+  .join small { font: 700 .9rem/1 "Barlow Condensed", sans-serif; background: var(--black); color: var(--pink); padding: 6px 8px; border-radius: 999px; font-style: normal; }
+  .join:hover { transform: translateY(-1px); box-shadow: 0 12px 26px -10px rgba(254,144,174,1); }
+  .burger { display: none; flex: none; width: 44px; height: 44px; border: 0; border-radius: 12px; background: rgba(255,255,255,.1); cursor: pointer; place-items: center; -webkit-tap-highlight-color: transparent; }
+  .burger span { grid-area: 1 / 1; display: block; width: 20px; height: 2px; border-radius: 2px; background: var(--white); transition: transform .3s cubic-bezier(.3,1.4,.5,1); }
+  .burger span:first-child { transform: translateY(-4px); }
+  .burger span:last-child { transform: translateY(4px); width: 14px; justify-self: end; margin-right: 12px; }
+  .burger[aria-expanded="true"] span:first-child { transform: rotate(45deg); }
+  .burger[aria-expanded="true"] span:last-child { transform: rotate(-45deg); width: 20px; justify-self: center; margin-right: 0; }
+  @media (max-width: 860px) {
+    .menu-d { display: none; }
+    .join { margin-left: auto; }
+    .burger { display: grid; }
+  }
+  @media (max-width: 340px) { .join small { display: none; } }
 
-  @media (max-width: 380px) { }
+  /* Scroll track: a runner jogs along the bottom of the header as you move down the page */
+  .track { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: rgba(255,255,255,.14); pointer-events: none; }
+  .track .fill { position: absolute; inset: 0; background: linear-gradient(90deg, var(--pink-2), var(--pink)); transform-origin: left; transform: scaleX(0); box-shadow: 0 0 10px rgba(254,144,174,.8); }
+  .track .runner { position: absolute; left: 0; bottom: 1px; width: 18px; height: 18px; color: var(--pink); will-change: transform; }
+  .track .runner svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .track .runner .pb { opacity: 0; }
+  .track.go .runner svg { animation: bob .36s ease-in-out infinite; }
+  .track.go .runner .pa { animation: pose .36s steps(1) infinite; }
+  .track.go .runner .pb { animation: pose .36s steps(1) infinite reverse; }
+  @keyframes pose { 0% { opacity: 1; } 50% { opacity: 0; } }
+  @keyframes bob { 50% { transform: translateY(-1.5px); } }
+  .track .flag { position: absolute; right: 0; bottom: 2px; width: 10px; height: 10px; background: conic-gradient(#fff 25%, #000 0 50%, #fff 0 75%, #000 0) 0 0 / 5px 5px; border-radius: 1px; }
+  .finish-chip { position: absolute; right: 10px; top: calc(100% + 8px); background: var(--black); color: var(--pink); font: italic 800 1rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; padding: 8px 12px; border-radius: 10px; box-shadow: 0 10px 24px -10px rgba(0,0,0,.6); pointer-events: none; }
+  .spark { position: absolute; width: 16px; height: 3px; margin-top: -1.5px; border-radius: 3px; transform-origin: 0 50%; pointer-events: none; }
+  .ring { position: absolute; width: 80px; height: 80px; margin: -40px 0 0 -40px; border-radius: 50%; border: 2px solid var(--pink); pointer-events: none; }
+
+  /* Mobile menu */
+  .sheet {
+    position: fixed; inset: 0; z-index: 55; overflow-y: auto; background: var(--black); color: var(--white);
+    padding: calc(var(--top-h) + var(--safe-top) + 14px) 22px calc(env(safe-area-inset-bottom, 0px) + 28px);
+  }
+  .sheet::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(118deg, transparent 0 46px, rgba(254,144,174,.16) 46px 48px);
+    -webkit-mask-image: linear-gradient(to top, #000, transparent 60%); mask-image: linear-gradient(to top, #000, transparent 60%); }
+  .sheet-in { position: relative; max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; min-height: 100%; }
+  .sheet-nav a { display: flex; align-items: baseline; gap: 14px; color: var(--white); text-decoration: none; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.1);
+    font: italic 800 clamp(2.5rem, 12vw, 3.4rem)/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .sheet-nav a span { font: 700 .85rem/1 "Barlow Condensed", sans-serif; font-style: normal; letter-spacing: .12em; color: var(--pink); min-width: 20px; }
+  .sheet-nav a[aria-current="page"] { color: var(--pink); }
+  .sheet-quick { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .sheet-quick a { color: var(--white); text-decoration: none; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 14px; font: 700 1.05rem/1.15 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .sheet-quick a small { display: block; color: var(--pink); font: 600 .8rem/1.2 "Barlow", sans-serif; text-transform: none; margin-top: 4px; }
+  .sheet .btn { width: 100%; }
+  .sheet-ig { margin: auto 0 0; color: rgba(255,255,255,.7); }
+  .sheet-ig a { color: var(--pink); font-weight: 700; text-decoration: none; }
   @media (prefers-reduced-motion: no-preference) {
-    h1 { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; }
-    @keyframes rise { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
-    @keyframes pin { from { transform: rotate(-4deg) scale(.94); opacity: 0; } to { transform: none; opacity: 1; } }
+    .sheet:not([hidden]) { animation: sheet-in .28s ease-out both; }
+    .sheet:not([hidden]) .sheet-in > * , .sheet:not([hidden]) .sheet-nav a { animation: dash-in .5s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--i, 0) * 55ms + 60ms); }
   }
+  @keyframes sheet-in { from { opacity: 0; } }
+  @keyframes dash-in { from { opacity: 0; transform: translateX(40px) skewX(-10deg); } }
 
-  .nav { position: relative; z-index: 3; max-width: 1080px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 10px 14px; flex-wrap: wrap; }
-  .nav .logo { display: block; flex: none; }
-  .nav img { width: 76px; height: 76px; display: block; }
-  .nav .links { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
-  .nav .links a { color: var(--white); text-decoration: none; font: 700 1rem/1 "Barlow Condensed", sans-serif; padding: 9px 12px; border-radius: 999px; white-space: nowrap; }
-  .nav .links a:hover, .nav .links a[aria-current="page"] { background: rgba(255,255,255,.14); }
-  .nav .links a.cta { background: var(--pink); color: var(--black); }
-  @media (max-width: 560px) {
-    .nav img { width: 64px; height: 64px; }
-    .nav .links { width: 100%; justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; margin: 0 -4px; scrollbar-width: none; }
-    .nav .links::-webkit-scrollbar { display: none; }
+  /* ---------- Hero ---------- */
+  .stage {
+    position: relative; overflow: hidden; color: var(--white); background: var(--black);
+    margin-top: calc(-1 * (var(--top-h) + var(--safe-top)));
+    padding: calc(var(--top-h) + var(--safe-top) + 20px) 18px 74px;
+    -webkit-tap-highlight-color: transparent;
   }
-  /* Keep the logo and headline lined up with the cards on wide screens */
-  @media (min-width: 1110px) { .nav, .home-hero .inner { padding-left: 14px; padding-right: 14px; } }
-  .wide { max-width: 1080px; margin: 0 auto; }
-  .countdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 4px 0 16px; max-width: 460px; }
-  .countdown div { background: var(--black); color: var(--white); border-radius: 14px; padding: 12px 6px 10px; text-align: center; }
-  .countdown b { display: block; font: italic 800 clamp(2rem, 9vw, 3rem)/1 "Barlow Condensed", sans-serif; color: var(--pink); font-variant-numeric: tabular-nums; }
-  .countdown span { font-size: .75rem; color: rgba(255,255,255,.75); text-transform: uppercase; letter-spacing: .08em; }
-  .site-foot { background: var(--black); color: rgba(255,255,255,.75); padding: 28px 18px calc(env(safe-area-inset-bottom,0px) + 28px); margin-top: 40px; }
-  .site-foot .wide { padding: 0 14px; display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
-  .site-foot a { color: var(--pink); font-weight: 700; text-decoration: none; }
-
-  .home-hero { position: relative; overflow: hidden; color: var(--white); padding: calc(env(safe-area-inset-top, 0px) + 18px) 20px 130px;
-    background: linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.85)), url("hero.jpg") center 55% / cover no-repeat, #000; }
-  .home-hero::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  .stage-bg { position: absolute; z-index: 0; inset: 0 0 -14% 0; will-change: transform;
+    background: radial-gradient(90% 55% at 0% 100%, rgba(254,144,174,.3), transparent 70%),
+      linear-gradient(rgba(0,0,0,.62), rgba(0,0,0,.4) 38%, rgba(0,0,0,.92)), url("hero.jpg") center 55% / cover no-repeat, #000; }
+  /* Running-track lanes drifting across, and speed streaks flying past */
+  .stage::after { content: ""; position: absolute; z-index: 1; inset: 0; pointer-events: none;
     background: repeating-linear-gradient(118deg, transparent 0 46px, rgba(254,144,174,.22) 46px 48px);
-    mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.3) 45%, transparent 75%);
-    -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.3) 45%, transparent 75%);
-    background-size: 54.363px 100%; animation: lanes-h 1.8s linear infinite; }   /* lanes drift; 54.363px = one lane repeat, so the loop is seamless */
+    -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.3) 45%, transparent 75%); mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.3) 45%, transparent 75%);
+    background-size: 54.363px 100%; animation: lanes-h 1.8s linear infinite; }   /* 54.363px = one lane repeat, so the loop is seamless */
   @keyframes lanes-h { to { background-position-x: -54.363px; } }
-  /* speed streaks flying past the photo, and a checkered finish-line ribbon sliding under the ticker */
-  .home-hero::before { content: ""; position: absolute; inset: 0; pointer-events: none; background-repeat: no-repeat;
+  .stage::before { content: ""; position: absolute; z-index: 1; inset: 0; pointer-events: none; background-repeat: no-repeat;
     background-image: linear-gradient(90deg, rgba(254,144,174,.9), transparent), linear-gradient(90deg, rgba(255,255,255,.7), transparent), linear-gradient(90deg, rgba(254,144,174,.7), transparent), linear-gradient(90deg, rgba(255,255,255,.55), transparent);
     background-size: 180px 2px, 110px 2px, 260px 3px, 140px 2px; background-position: calc(100% + 360px) 18%, calc(100% + 520px) 42%, calc(100% + 440px) 66%, calc(100% + 300px) 84%;
     animation: streaks-h 5s linear infinite; }
   @keyframes streaks-h { to { background-position: -360px 18%, -520px 42%, -440px 66%, -300px 84%; } }
-  .ticker::after { content: ""; position: absolute; left: 0; right: 0; bottom: -9px; height: 8px;
-    background: conic-gradient(#000 25%, var(--pink) 0 50%, #000 0 75%, var(--pink) 0) 0 0 / 8px 8px; animation: flag-h 1s linear infinite; }
-  @keyframes flag-h { to { background-position-x: -8px; } }
-  @media (prefers-reduced-motion: reduce) { .home-hero::after, .ticker::after { animation: none; } .home-hero::before { display: none; } }
-  .home-hero .inner { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; padding-top: 56px; }
-  .home-hero h1 { font-size: clamp(4.2rem, 21vw, 9rem); }
-  .home-hero .tagline { max-width: 30ch; }
-  /* Hero motion: rotating line, scoreboard ticker, runners lapping a track */
-  .home-hero .lap { position: absolute; z-index: 1; top: 120px; right: max(20px, calc((100% - 1080px) / 2 + 14px)); width: min(300px, 30vw); overflow: visible; }
-  .lap circle { filter: drop-shadow(0 0 4px rgba(254,144,174,.9)); }
-  .ticker { position: relative; display: flex; align-items: stretch; margin-top: 30px; border-block: 1px solid rgba(254,144,174,.5); background: rgba(0,0,0,.5); }
-  .ticker .tk-view { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; -webkit-mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent); }
-  .tk-track { display: inline-flex; padding: 10px 0; animation: tk 40s linear infinite; will-change: transform; }
-  .tk-set { display: inline-flex; }
-  .tk-track span { font: italic 800 1.1rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; padding: 0 18px 0 0; }
-  .tk-track span::before { content: "\25C6"; color: var(--pink); font-style: normal; font-size: .8em; margin-right: 18px; }
-  .tk-track span.hot { color: var(--pink); }
-  .ticker.paused .tk-track { animation-play-state: paused; }
-  .tk-btn { flex: none; border: 0; border-left: 1px solid rgba(254,144,174,.5); background: transparent; color: var(--pink); width: 42px; cursor: pointer; font-size: .95rem; }
-  .tk-btn:focus-visible { outline: 3px solid var(--pink); outline-offset: -3px; }
-  @keyframes tk { to { transform: translateX(-50%); } }
-  @media (max-width: 760px) { .home-hero .lap { display: none; } }
-  @media (prefers-reduced-motion: reduce) {
-    .tk-track { animation: none; display: flex; flex-wrap: wrap; justify-content: center; white-space: normal; }
-    .tk-set { flex-wrap: wrap; justify-content: center; row-gap: 6px; } .tk-set.dup, .tk-btn { display: none; }
+  .stage-fx { position: absolute; z-index: 4; inset: 0; pointer-events: none; overflow: hidden; }
+  .stage-in { position: relative; z-index: 2; max-width: 1080px; margin: 0 auto; display: grid; gap: 18px; }
+  .city { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 12px; background: var(--pink); color: var(--black); font: 700 .95rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .05em; padding: 7px 10px; border-radius: 6px; }
+  .stage h1 {
+    margin: 0; color: var(--pink); cursor: pointer; user-select: none; -webkit-user-select: none;
+    font: italic 800 clamp(3.9rem, 17.5vw, 8.6rem)/.84 "Barlow Condensed", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: -.02em;
   }
-  .city { display: inline-block; margin: 0 0 14px; background: var(--pink); color: #000; font: 700 1rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .04em; padding: 7px 10px; border-radius: 6px; }
-  .ctas { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 26px; }
-  .ctas .btn { width: auto; margin: 0; padding: 16px 22px; }
-  .btn.light { background: var(--white); color: var(--black); }
-  main.home { max-width: 1080px; margin: -80px auto 0; padding: 0 14px; position: relative; z-index: 2; }
-  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 14px; }
-  .tile { background: var(--white); border-radius: 22px; padding: 22px 20px 24px; display: flex; flex-direction: column; box-shadow: 0 24px 60px -34px rgba(0,0,0,.45); }
-  .tile .kicker { align-self: flex-start; background: var(--pink); color: var(--black); font: 700 .9rem/1 "Barlow Condensed", sans-serif; padding: 6px 10px; border-radius: 6px; }
-  .tile h2 { font: italic 800 2.3rem/.95 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 12px 0 8px; }
-  .tile p { margin: 0 0 8px; }
-  .tile .btn { margin-top: auto; }
-  .tile ul { margin: 0 0 14px; padding-left: 20px; }
-  .tile .countdown { margin: 10px 0 0; }
-  .tile .countdown b { font-size: 1.9rem; }
-  .support { margin-top: 30px; display: grid; grid-template-columns: 1fr 1.3fr; gap: 18px; align-items: start; }
-  .support textarea { width: 100%; font: inherit; color: var(--black); background: var(--paper); border: 1.5px solid transparent; border-radius: 12px; padding: 13px 14px; min-height: 130px; resize: vertical; }
-  .support textarea:focus { background: var(--white); border-color: var(--black); outline: none; }
-  .sent { text-align: center; padding: 10px 0; }
-  .sent .tick { width: 60px; height: 60px; border-radius: 50%; background: var(--pink); margin: 6px auto 10px; display: grid; place-items: center; font-size: 1.8rem; }
-  .next-ribbon { background: #fff; color: #000; padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 12px; position: relative; z-index: 5; }
-  #unbndAnnc ~ .next-ribbon { padding-top: 12px; }
-  .next-ribbon .in { max-width: 1080px; margin: 0 auto; display: flex; align-items: center; gap: 10px 16px; flex-wrap: wrap; }
-  .next-ribbon .lbl { font: italic 800 1.05rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; background: #000; color: var(--pink); padding: 6px 9px; border-radius: 6px; }
-  .next-ribbon .what { flex: 1; min-width: 220px; }
-  .next-ribbon .what b { display: block; font: italic 800 1.35rem/1.05 "Barlow Condensed", sans-serif; text-transform: uppercase; }
-  .next-ribbon .what small { color: #444; font-weight: 600; display: block; }
-  .next-ribbon .mini { display: flex; gap: 6px; }
-  .next-ribbon .mini div { background: #000; color: #fff; border-radius: 8px; padding: 5px 7px; text-align: center; min-width: 46px; }
-  .next-ribbon .mini b { display: block; font: italic 800 1.25rem/1 "Barlow Condensed", sans-serif; color: var(--pink); font-variant-numeric: tabular-nums; }
-  .next-ribbon .mini span { font-size: .62rem; text-transform: uppercase; letter-spacing: .06em; opacity: .8; }
-  .next-ribbon .today { background: var(--pink); color: #000; font: 700 .95rem "Barlow Condensed", sans-serif; padding: 7px 10px; border-radius: 8px; }
-  .next-ribbon a { background: var(--pink); color: #000; text-decoration: none; font: italic 800 1.05rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; padding: 11px 16px; border-radius: 10px; white-space: nowrap; }
-  #fForm input { width: 100%; font: inherit; color: var(--black); background: var(--paper); border: 1.5px solid transparent; border-radius: 12px; padding: 13px 14px; margin-top: 6px; }
-  #fForm input:focus { background: #fff; border-color: #000; outline: none; }
+  .stage h1 .w { display: block; white-space: nowrap; }
+  .stage h1 .w1 { color: var(--white); }
+  .stage h1 .ch { display: inline-block; }
+  .tagline { font: 600 clamp(1.08rem, 4.3vw, 1.35rem)/1.35 "Barlow", sans-serif; margin: 12px 0 0; max-width: 30ch; color: rgba(255,255,255,.9); }
+  .ctas { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+  .stage .ctas .btn.pink::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.6) 50%, transparent 65%); transform: translateX(-120%); animation: shine 5s ease-in-out 2s infinite; }
+  @keyframes shine { 0%, 72% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+  @media (max-width: 560px) { .ctas .btn { flex: 1 1 0; padding: 15px 12px; font-size: 1.2rem; } }
+  @media (max-width: 360px) { .ctas .btn { font-size: 1.08rem; padding: 14px 8px; } .stage .ctas .arr { display: none; } }
+  @media (min-width: 900px) {
+    .stage { padding-top: calc(var(--top-h) + var(--safe-top) + 48px); padding-bottom: 100px; }
+    .stage-in { grid-template-columns: minmax(0, 1fr) 390px; align-items: end; gap: 40px; }
+    .city { margin-bottom: 16px; }
+    .stage-in.solo { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .stage h1 .ch { animation: sprint .75s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--i) * 45ms + 80ms); }
+    .city, .tagline, .stage .ctas, .nr { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; }
+    .tagline { animation-delay: .35s; } .stage .ctas { animation-delay: .45s; } .nr { animation-delay: .6s; }
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .stage h1 .ch { transition: transform .25s cubic-bezier(.3,1.8,.5,1), color .2s; }
+    .stage h1 .ch:hover { transform: translateY(-12%) rotate(-4deg); color: var(--white); }
+    .stage h1 .w1 .ch:hover { color: var(--pink); }
+  }
+  @keyframes sprint { from { opacity: 0; transform: translateX(-70px) skewX(-20deg); } 60% { opacity: 1; transform: translateX(6px) skewX(4deg); } to { transform: none; } }
+  @keyframes rise { from { opacity: 0; transform: translateY(22px); } }
+
+  /* Next race card, with runners lapping a little track */
+  .nr {
+    position: relative; overflow: hidden; display: grid; grid-template-columns: auto 1fr; gap: 12px 14px; align-items: center;
+    padding: 14px; border-radius: 22px; color: var(--white); text-decoration: none;
+    background: rgba(14,14,16,.58); border: 1px solid rgba(254,144,174,.4); -webkit-backdrop-filter: blur(12px) saturate(1.3); backdrop-filter: blur(12px) saturate(1.3);
+    box-shadow: 0 30px 60px -30px rgba(0,0,0,.9); transition: transform .2s, border-color .2s;
+  }
+  .nr:hover { border-color: var(--pink); transform: translateY(-2px); }
+  .nr::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(105deg, transparent 40%, rgba(254,144,174,.18) 50%, transparent 60%); transform: translateX(-100%); animation: shine 6s ease-in-out 3s infinite; }
+  .nr-track { position: relative; width: 104px; }
+  @media (max-width: 560px) { .nr { padding: 12px; gap: 8px 12px; } .nr-track { width: 84px; } .nr-name { font-size: 1.4rem !important; } .nr-meta { margin-top: 3px !important; } .nr-cd b { font-size: 1.45rem !important; } .nr-cd span { font-size: .6rem !important; } .nr-cd .box { padding: 5px 4px 3px !important; border-radius: 10px !important; } }
+  .nr-track .lap { width: 100%; display: block; overflow: visible; }
+  .lap circle { filter: drop-shadow(0 0 4px rgba(254,144,174,.9)); }
+  .nr-km { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; font: italic 800 1.6rem/.9 "Barlow Condensed", sans-serif; color: var(--pink); }
+  .nr-km small { display: block; font-size: .7rem; letter-spacing: .12em; color: rgba(255,255,255,.8); }
+  .nr-lbl { margin: 0 0 3px; display: flex; align-items: center; gap: 7px; font: 700 .85rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .12em; color: var(--pink); }
+  .live { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--pink); }
+  .live::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--pink); animation: ping 1.6s ease-out infinite; }
+  @keyframes ping { from { transform: scale(.4); opacity: 1; } to { transform: scale(1.6); opacity: 0; } }
+  .nr-name { margin: 0; font: italic 800 1.55rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .nr-meta { margin: 5px 0 0; font-size: .92rem; line-height: 1.3; color: rgba(255,255,255,.82); }
+  .nr-cd { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, 1fr) 46px; gap: 6px; }
+  .nr-cd .box { background: rgba(0,0,0,.55); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 7px 4px 6px; text-align: center; overflow: hidden; }
+  .nr-cd b { display: block; font: italic 800 1.75rem/1 "Barlow Condensed", sans-serif; color: var(--pink); font-variant-numeric: tabular-nums; }
+  .nr-cd b.flip { animation: flip .35s cubic-bezier(.2,.8,.2,1); }
+  @keyframes flip { from { transform: translateY(-60%); opacity: 0; } }
+  .nr-cd span { font-size: .66rem; text-transform: uppercase; letter-spacing: .08em; color: rgba(255,255,255,.7); }
+  .nr-cd .today { grid-column: 1 / 5; min-height: 50px; padding: 10px; display: grid; place-items: center; background: var(--pink); color: var(--black); border-radius: 12px; font: italic 800 1.3rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .nr-go { display: grid; place-items: center; border-radius: 12px; background: var(--pink); color: var(--black); font-size: 1.3rem; font-weight: 700; transition: transform .2s; }
+  .nr:hover .nr-go { transform: translateX(3px); }
+
+  /* Race tape: the scoreboard ticker on a pink tape, crossed by a black one */
+  .tapes { position: relative; z-index: 5; margin-top: -60px; padding: 34px 0 30px; overflow: hidden; pointer-events: none; }
+  @supports (overflow: clip) { .tapes { overflow: visible; overflow-x: clip; } }
+  .tape { position: relative; left: -4%; width: 108%; display: flex; align-items: stretch; pointer-events: auto; }
+  .tape.tk { rotate: -2deg; background: var(--pink); color: var(--black); box-shadow: 0 16px 30px -16px rgba(0,0,0,.6); padding: 6px 0; }
+  .tape.tk::before, .tape.tk::after { content: ""; position: absolute; left: 0; right: 0; height: 6px; background: conic-gradient(#000 25%, #fff 0 50%, #000 0 75%, #fff 0) 0 0 / 6px 6px; animation: flag-h 1s linear infinite; }
+  .tape.tk::before { top: 0; } .tape.tk::after { bottom: 0; animation-direction: reverse; }
+  @keyframes flag-h { to { background-position-x: -12px; } }
+  .tape.bk { position: absolute; top: 30px; rotate: 3.2deg; background: #111; color: var(--pink); overflow: hidden; white-space: nowrap; }
+  .tb-run { display: inline-flex; padding: 8px 0; animation: tape-b 26s linear infinite; }
+  .tb-run span { font: italic 800 .95rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .12em; padding-right: 14px; }
+  @keyframes tape-b { from { transform: translateX(-50%); } }
+  .tk-view { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; padding-left: 4%; }
+  .tk-track { display: inline-flex; padding: 12px 0; animation: tk 40s linear infinite; will-change: transform; }
+  .tk-set { display: inline-flex; }
+  .tk-set .rep { display: contents; }
+  .tk-track span { font: italic 800 1.15rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; padding: 0 18px 0 0; }
+  .tk-track span::before { content: "\25C6"; color: var(--white); font-style: normal; font-size: .8em; margin-right: 18px; }
+  .ticker.paused .tk-track { animation-play-state: paused; }
+  .tk-btn { flex: none; border: 0; border-left: 1.5px solid rgba(0,0,0,.25); background: transparent; color: var(--black); width: 46px; margin-right: 4%; cursor: pointer; font-size: .95rem; }
+  .tk-btn:focus-visible { outline: 3px solid var(--black); outline-offset: -3px; }
+  @keyframes tk { to { transform: translateX(-50%); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stage::after, .tape.tk::before, .tape.tk::after, .tb-run, .nr::after { animation: none; }
+    .live::after { display: none; }
+    .stage::before { display: none; }
+    .tk-track { animation: none; display: flex; flex-wrap: wrap; justify-content: center; white-space: normal; }
+    .tk-set { flex-wrap: wrap; justify-content: center; row-gap: 6px; } .tk-set.dup, .tk-set .rep, .tk-btn { display: none; }
+    .tk-view { white-space: normal; padding: 0 5%; }
+  }
+
+  /* ---------- Sections ---------- */
+  main.home { max-width: 1112px; margin: 0 auto; padding: 0 16px; }
+  .sec { margin-top: 12px; }
+  .sec + .sec { margin-top: 64px; }
+  .sec-h { margin-bottom: 18px; }
+  .kick { display: inline-block; margin: 0 0 8px; background: var(--black); color: var(--pink); font: 700 .9rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .08em; padding: 6px 9px; border-radius: 6px; }
+  .sec-h h2 { margin: 0; font: italic 800 clamp(2.5rem, 10vw, 4rem)/.92 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: -.01em; }
+  .sec-h .sub { margin: 8px 0 0; color: var(--muted); max-width: 52ch; }
+
+  /* Pick your lane */
+  .bento { display: grid; gap: 14px; grid-template-columns: 1fr; }
+  @media (min-width: 700px) {
+    .bento { grid-template-columns: 1fr 1fr; }
+    .c-join { grid-row: span 2; }
+    .c-find { grid-column: 1 / -1; }
+  }
+  @media (min-width: 980px) {
+    .bento { grid-template-columns: 1.1fr 1fr 1fr; }
+    .c-find { grid-column: 2 / span 2; }
+  }
+  .card {
+    position: relative; overflow: hidden; isolation: isolate; display: flex; flex-direction: column; background: var(--white); border-radius: 24px; padding: 22px 20px 22px;
+    box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 24px 50px -32px rgba(0,0,0,.45); transition: transform .25s ease-out, box-shadow .25s;
+  }
+  .card::after { content: attr(data-lane); position: absolute; z-index: -1; right: 12px; top: -26px; pointer-events: none;
+    font: italic 800 10rem/1 "Barlow Condensed", sans-serif; color: transparent; -webkit-text-stroke: 2px rgba(0,0,0,.08); }
+  .card .lane { margin: 0 0 10px; display: flex; align-items: center; gap: 8px; font: 700 .85rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+  .card .lane b { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--black); color: var(--pink); font-size: .85rem; letter-spacing: 0; }
+  .card h3 { margin: 0 0 8px; font: italic 800 2.25rem/.95 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .card p { margin: 0 0 12px; }
+  .card .btn { margin-top: auto; width: 100%; }
+  .card .push { margin-top: auto; }
+  .c-join { background: var(--black); color: var(--white); }
+  .c-join::before { content: ""; position: absolute; z-index: -1; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(118deg, transparent 0 46px, rgba(254,144,174,.14) 46px 48px);
+    -webkit-mask-image: linear-gradient(to top, #000, transparent 65%); mask-image: linear-gradient(to top, #000, transparent 65%);
+    background-size: 54.363px 100%; animation: lanes-h 2.4s linear infinite; }
+  .c-join::after { -webkit-text-stroke-color: rgba(254,144,174,.25); }
+  .c-join .lane { color: rgba(255,255,255,.7); }
+  .c-join .lane b { background: var(--pink); color: var(--black); }
+  .c-join h3 { color: var(--pink); font-size: clamp(2.6rem, 11vw, 3.4rem); }
+  .price { display: flex; align-items: baseline; gap: 10px; margin: 6px 0 14px !important; }
+  .price b { font: italic 800 3.6rem/.9 "Barlow Condensed", sans-serif; color: var(--white); }
+  .price span { color: rgba(255,255,255,.75); font-weight: 600; }
+  .perks { list-style: none; margin: 0 0 22px; padding: 0; display: grid; gap: 10px; }
+  .perks li { display: flex; gap: 10px; align-items: center; font-weight: 600; }
+  .perks li::before { content: "\2713"; flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: rgba(254,144,174,.18); color: var(--pink); font-size: .85rem; font-weight: 800; }
+  .c-races { background: var(--pink); }
+  .c-races::after { -webkit-text-stroke-color: rgba(0,0,0,.14); }
+  .c-races .lane { color: rgba(0,0,0,.65); }
+  .count { display: flex; align-items: baseline; gap: 8px; margin: 0 0 10px !important; }
+  .count b { font: italic 800 3.2rem/.9 "Barlow Condensed", sans-serif; }
+  .count span { font: 700 1.05rem/1.1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .04em; }
+  .c-find { scroll-margin-top: calc(var(--top-h) + 20px); }
+  .c-find.flash { animation: flash 1.2s ease-out; }
+  @keyframes flash { 0%, 40% { box-shadow: 0 0 0 4px var(--pink), 0 24px 50px -32px rgba(0,0,0,.45); } }
+  .frow { display: flex; gap: 10px; flex-wrap: wrap; }
+  .frow input { flex: 1 1 220px; min-width: 0; font: inherit; font-size: 1.05rem; color: var(--black); background: var(--paper); border: 1.5px solid transparent; border-radius: 14px; padding: 14px 16px; }
+  .frow input:focus { background: var(--white); border-color: var(--black); outline: none; }
+  .frow .btn { flex: 1 1 200px; width: auto; margin: 0; }
+  .err { color: var(--error); font-size: .9rem; margin: 8px 0 0; }
+  .err:empty { display: none; }
   .fres { background: var(--paper); border-radius: 14px; padding: 12px 14px; margin-top: 12px; }
   .fres b.id { display: block; font: italic 800 2rem/1 "Barlow Condensed", sans-serif; }
   .fres .st { display: inline-block; font: 700 .9rem "Barlow Condensed", sans-serif; padding: 4px 9px; border-radius: 6px; margin-bottom: 6px; }
   .fres .st.Active { background: #d8f3e4; color: #0b5e36; } .fres .st.Pending { background: #fff1c2; color: #7a5a00; } .fres .st.Deactivated { background: #ffd9de; color: #9c0019; }
   .fres small { display: block; color: var(--muted); margin-top: 4px; }
-  .rdp { margin-top: 34px; }
-  .rdp-title { font: italic 800 clamp(2.2rem, 9vw, 3.4rem)/.95 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 0; }
-  .rdp-sub { color: var(--muted); margin: 6px 0 16px; }
-  .rgroup { background: #fff; border-radius: 20px; padding: 16px; margin-bottom: 14px; }
-  .rgroup h3 { font: italic 800 1.6rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 0; }
-  .rgroup .meta { color: var(--muted); font-size: .92rem; margin: 6px 0 12px; }
-  .rgroup .meta b { background: #000; color: var(--pink); font: 700 .85rem "Barlow Condensed", sans-serif; padding: 3px 7px; border-radius: 5px; margin-right: 6px; }
-  .pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
-  .pgrid button { padding: 0; border: 0; background: var(--paper); border-radius: 12px; overflow: hidden; cursor: zoom-in; aspect-ratio: 1; }
-  .pgrid img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .lb { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,.92); display: grid; place-items: center; padding: 16px; }
+  @media (hover: hover) and (pointer: fine) { .tilt:hover { box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 34px 60px -30px rgba(0,0,0,.55); } }
+
+  /* How it works: race bibs */
+  .bibs { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; grid-template-columns: 1fr; counter-reset: bib; }
+  @media (max-width: 699px) {
+    .bibs { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 16px; margin: -10px -16px 0; padding: 14px 16px 22px; scrollbar-width: none; overscroll-behavior-x: contain; }
+    .bibs::-webkit-scrollbar { display: none; }
+    .bibs::after { content: ""; flex: none; width: 4px; }
+    .bib { flex: 0 0 76%; scroll-snap-align: start; }
+  }
+  .swipe-hint { display: none; }
+  @media (max-width: 699px) and (pointer: coarse) { .swipe-hint { display: inline-flex; align-items: center; gap: 6px; margin: 10px 0 0; color: var(--muted); font: 700 .85rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .1em; } }
+  @media (max-width: 699px) and (pointer: coarse) and (prefers-reduced-motion: no-preference) { .swipe-hint i { display: inline-block; font-style: normal; animation: nudge 1.4s ease-in-out infinite; } }
+  @keyframes nudge { 50% { transform: translateX(6px); } }
+  @media (min-width: 700px) { .bibs { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 980px) { .bibs { grid-template-columns: repeat(4, 1fr); } }
+  .bib { --r: -1.2deg; rotate: var(--r); }
+  .bib:nth-child(2) { --r: 1deg; } .bib:nth-child(3) { --r: -.6deg; } .bib:nth-child(4) { --r: 1.3deg; }
+  .bib > a, .bib > div { position: relative; display: block; height: 100%; color: inherit; text-decoration: none; background: var(--white); border-radius: 16px; padding: 44px 18px 18px; box-shadow: 0 18px 40px -28px rgba(0,0,0,.5); transition: transform .25s cubic-bezier(.3,1.5,.5,1); }
+  .bib > a:hover { transform: translateY(-4px) rotate(-1deg); }
+  .bib > * > .band { position: absolute; left: 0; right: 0; top: 0; height: 30px; border-radius: 16px 16px 0 0; background: var(--black); color: var(--pink); display: flex; align-items: center; justify-content: center; font: 700 .8rem/1 "Barlow Condensed", sans-serif; letter-spacing: .2em; text-transform: uppercase; }
+  /* safety pins */
+  .bib > *::before, .bib > *::after { content: ""; position: absolute; top: 40px; width: 9px; height: 9px; border-radius: 50%; background: var(--paper); box-shadow: inset 0 1px 2px rgba(0,0,0,.35); }
+  .bib > *::before { left: 12px; } .bib > *::after { right: 12px; }
+  .bib-n { display: block; font: italic 800 4.2rem/.85 "Barlow Condensed", sans-serif; letter-spacing: -.02em; }
+  .bib h3 { margin: 8px 0 6px; font: italic 800 1.6rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .bib p { margin: 0; color: #3a3a42; }
+  .bib .go { display: inline-block; margin-top: 10px; font: 700 .95rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .06em; border-bottom: 2px solid var(--pink); padding-bottom: 2px; }
+  .bib.fin > * { background: var(--black); color: var(--white); }
+  .bib.fin > * > .band { background: conic-gradient(#fff 25%, #000 0 50%, #fff 0 75%, #000 0) 0 0 / 12px 12px; color: transparent; }
+  .bib.fin > *::before, .bib.fin > *::after { background: #222; }
+  .bib.fin .bib-n { color: var(--pink); }
+  .bib.fin p { color: rgba(255,255,255,.8); }
+
+  /* Race day photos: a film strip you can swipe, drag or step through */
+  .rgroup { background: var(--white); border-radius: 24px; padding: 18px 0 16px; margin-bottom: 14px; box-shadow: 0 24px 50px -36px rgba(0,0,0,.45); }
+  .rg-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding: 0 18px 14px; }
+  .rgroup h3 { font: italic 800 1.7rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 0; }
+  .rgroup .meta { color: var(--muted); font-size: .92rem; margin: 6px 0 0; }
+  .rgroup .meta b { background: var(--black); color: var(--pink); font: 700 .85rem "Barlow Condensed", sans-serif; padding: 3px 7px; border-radius: 5px; margin-right: 6px; }
+  .rg-nav { display: flex; gap: 8px; flex: none; }
+  .rg-btn { width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--black); color: var(--pink); font-size: 1.2rem; cursor: pointer; transition: opacity .2s, transform .15s; }
+  .rg-btn:active { transform: scale(.92); }
+  .rg-btn[disabled] { opacity: .25; cursor: default; }
+  @media (max-width: 699px) { .rg-nav { display: none; } }
+  .strip { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 18px; padding: 0 18px; overscroll-behavior-x: contain; scrollbar-width: none; cursor: grab; }
+  .strip::-webkit-scrollbar { display: none; }
+  .strip.dragging { scroll-snap-type: none; cursor: grabbing; }
+  .strip.dragging button { pointer-events: none; }
+  .strip button { flex: none; height: 260px; min-width: 150px; padding: 0; border: 0; border-radius: 16px; overflow: hidden; background: var(--paper); cursor: zoom-in; scroll-snap-align: start; }
+  .strip img { height: 100%; width: auto; max-width: 80vw; object-fit: cover; display: block; transition: transform .4s; -webkit-user-drag: none; user-select: none; }
+  .strip button:hover img { transform: scale(1.04); }
+  .strip::after { content: ""; flex: none; width: 8px; }
+  @media (min-width: 700px) { .strip button { height: 330px; } .strip img { max-width: 560px; } }
+  .strip-bar { height: 4px; margin: 14px 18px 0; border-radius: 4px; background: var(--paper); overflow: hidden; }
+  .strip-bar i { display: block; height: 100%; width: 30%; border-radius: 4px; background: linear-gradient(90deg, var(--pink-2), var(--pink)); transform-origin: left; }
+
+  .lb { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,.94); display: grid; place-items: center; padding: 16px; touch-action: pan-y; }
   .lb[hidden] { display: none; }
-  .lb img { max-width: 96vw; max-height: 88vh; border-radius: 10px; }
-  .lbx { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 12px); right: 12px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(255,255,255,.18); color: #fff; font-size: 1.3rem; cursor: pointer; }
-  @media (max-width: 760px) { .support { grid-template-columns: 1fr; } }
+  .lb img { max-width: 94vw; max-height: 84vh; border-radius: 10px; user-select: none; -webkit-user-drag: none; }
+  .lbx, .lbn { position: absolute; width: 46px; height: 46px; border-radius: 50%; border: 0; background: rgba(255,255,255,.16); color: var(--white); font-size: 1.3rem; cursor: pointer; }
+  .lbx { top: calc(var(--safe-top) + 12px); right: 12px; }
+  .lbn { top: 50%; margin-top: -23px; } .lbn.prev { left: 12px; } .lbn.next { right: 12px; }
+  .lbc { position: absolute; left: 0; right: 0; bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); margin: 0; text-align: center; color: rgba(255,255,255,.75); font: 700 1rem/1 "Barlow Condensed", sans-serif; letter-spacing: .1em; }
+
+  /* Closing call to action */
+  .finale { position: relative; overflow: hidden; margin-top: 70px; background: var(--black); color: var(--white); padding: 64px 20px 70px; }
+  .finale::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(118deg, transparent 0 46px, rgba(254,144,174,.2) 46px 48px);
+    -webkit-mask-image: linear-gradient(to top, #000, transparent 80%); mask-image: linear-gradient(to top, #000, transparent 80%);
+    background-size: 54.363px 100%; animation: lanes-h 1.8s linear infinite; }
+  .finale::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 12px; background: conic-gradient(#fff 25%, #000 0 50%, #fff 0 75%, #000 0) 0 0 / 12px 12px; }
+  .finale-in { position: relative; max-width: 1080px; margin: 0 auto; }
+  .finale h2 { margin: 0; font: italic 800 clamp(3rem, 13vw, 6.4rem)/.86 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--pink); }
+  .finale h2 span { color: var(--white); }
+  .finale .kick { background: var(--pink); color: var(--black); }
+  @media (prefers-reduced-motion: reduce) { .c-join::before, .finale::before { animation: none; } }
+
+  .site-foot { background: var(--black); color: rgba(255,255,255,.75); padding: 28px 18px calc(env(safe-area-inset-bottom,0px) + 28px); }
+  .site-foot .wide { padding: 0; display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .site-foot a { color: var(--pink); font-weight: 700; text-decoration: none; }
+
+  /* Scroll reveal */
+  .rv .reveal { opacity: 0; translate: 0 34px; transition: opacity .7s cubic-bezier(.2,.8,.2,1), translate .7s cubic-bezier(.2,.8,.2,1); transition-delay: calc(var(--d, 0) * 90ms); }
+  .rv .reveal.in { opacity: 1; translate: none; }
 </style>
 </head>
 <body>
-<div class="next-ribbon" id="nextRibbon" hidden></div>
-<section class="home-hero">
-  <nav class="nav" aria-label="Site">
-    <a class="logo" href="index.html"><img src="logo.png" alt="UNBND Run Club home"></a>
-    <div class="links"><a href="index.html" aria-current="page">Home</a><a href="races.html">Races</a><a href="rules.html">Club rules</a><a href="support.html">Support</a><a class="cta" href="register.html">Join</a></div>
-  </nav>
-  <div class="inner">
-    <p class="city">Mumbai's run club</p>
-    <h1>Run<br>unbound.</h1>
-    <p class="tagline">Group runs and races across Mumbai. Every pace, every distance, one club.</p>
-    <div class="ctas">
-      <a class="btn pink" href="register.html">Join the club</a>
-      <a class="btn light" href="races.html">Race schedule</a>
-    </div>
-    <div class="ticker" aria-label="Upcoming runs">
-      <div class="tk-view"><div class="tk-track" id="tkTrack"></div></div>
-      <button class="tk-btn" id="tkPause" type="button" aria-pressed="false" aria-label="Pause scrolling">&#10074;&#10074;</button>
-    </div>
+<header class="hdr" id="hdr">
+  <div class="hdr-in">
+    <a class="brand" href="index.html"><img src="logo.png" alt="UNBND Run Club home" width="44" height="44"></a>
+    <nav class="menu-d" aria-label="Site">
+      <a href="races.html">Races</a><a href="rules.html">Club rules</a><a href="support.html">Support</a><a href="#find">Find my Club ID</a>
+    </nav>
+    <a class="join" href="register.html">Join <small>₹999</small></a>
+    <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="sheet" aria-label="Open menu"><span></span><span></span></button>
   </div>
-  <svg class="lap" viewBox="0 0 220 130" aria-hidden="true" focusable="false">
-      <path id="lapA" d="M55,35 H165 A30,30 0 0 1 165,95 H55 A30,30 0 0 1 55,35 Z" fill="none" stroke="rgba(254,144,174,.45)" stroke-width="1.5"/>
-      <path id="lapB" d="M55,25 H165 A40,40 0 0 1 165,105 H55 A40,40 0 0 1 55,25 Z" fill="none" stroke="rgba(254,144,174,.32)" stroke-width="1.5"/>
-      <path id="lapC" d="M55,15 H165 A50,50 0 0 1 165,115 H55 A50,50 0 0 1 55,15 Z" fill="none" stroke="rgba(254,144,174,.22)" stroke-width="1.5"/>
-      <circle r="4.5" fill="#fe90ae" data-lane="#lapA" data-dur="6" data-off="1"/>
-      <circle r="4" fill="#ffffff" data-lane="#lapB" data-dur="7.4" data-off="4"/>
-      <circle r="3.6" fill="#ff5f8f" data-lane="#lapC" data-dur="9.1" data-off="2"/>
-    </svg>
+  <div class="track" id="track" aria-hidden="true">
+    <i class="fill" id="trFill"></i>
+    <span class="runner" id="runner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="15.5" cy="3.8" r="2.3" fill="currentColor" stroke="none"/>
+      <path d="M14 7.2 11.2 13.4"/>
+      <g class="pa"><path d="M13.6 8.4 16.6 10.6 19 9M13.6 8.4 10.2 9.6 8.4 7.6M11.2 13.4 15 15.6 14.2 20.6M11.2 13.4 8.6 17.4 4.4 17.6"/></g>
+      <g class="pb"><path d="M13.6 8.4 14.8 11.6 17 12.6M13.6 8.4 12 11.2 10 12M11.2 13.4 12.8 17.2 11 21M11.2 13.4 10.2 17.4 7 19.4"/></g>
+    </svg></span>
+    <i class="flag"></i>
+  </div>
+</header>
+
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="sheet-in">
+    <nav class="sheet-nav" aria-label="Menu">
+      <a href="index.html" aria-current="page" style="--i:0"><span>01</span>Home</a>
+      <a href="races.html" style="--i:1"><span>02</span>Races</a>
+      <a href="rules.html" style="--i:2"><span>03</span>Club rules</a>
+      <a href="support.html" style="--i:3"><span>04</span>Support</a>
+    </nav>
+    <div class="sheet-quick" style="--i:4">
+      <a href="#find">Find my Club ID<small>For members</small></a>
+      <a href="pay.html">Complete payment<small>Registered, not paid?</small></a>
+    </div>
+    <a class="btn pink" href="register.html" style="--i:5">Join the club · ₹999 <span class="arr">→</span></a>
+    <p class="sheet-ig" style="--i:6">Follow us on Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></p>
+  </div>
+</div>
+
+<section class="stage" id="stage">
+  <div class="stage-bg" id="stageBg" aria-hidden="true"></div>
+  <div class="stage-fx" id="stageFx" aria-hidden="true"></div>
+  <div class="stage-in solo" id="stageIn">
+    <div class="lead">
+      <p class="city">Mumbai's run club</p>
+      <h1 id="h1" aria-label="Run unbound."><span class="w w1" aria-hidden="true"><span class="ch" style="--i:0">R</span><span class="ch" style="--i:1">u</span><span class="ch" style="--i:2">n</span></span><span class="w w2" aria-hidden="true"><span class="ch" style="--i:3">u</span><span class="ch" style="--i:4">n</span><span class="ch" style="--i:5">b</span><span class="ch" style="--i:6">o</span><span class="ch" style="--i:7">u</span><span class="ch" style="--i:8">n</span><span class="ch" style="--i:9">d</span><span class="ch" style="--i:10">.</span></span></h1>
+      <p class="tagline">Group runs and races across Mumbai. Every pace, every distance, one club.</p>
+      <div class="ctas">
+        <a class="btn pink" href="register.html">Join the club <span class="arr">→</span></a>
+        <a class="btn ghost" href="races.html">Race schedule</a>
+      </div>
+    </div>
+    <a class="nr" id="nextRace" href="races.html" hidden>
+      <div class="nr-track">
+        <svg class="lap" viewBox="0 0 220 130" aria-hidden="true" focusable="false">
+          <path id="lapA" d="M55,35 H165 A30,30 0 0 1 165,95 H55 A30,30 0 0 1 55,35 Z" fill="none" stroke="rgba(254,144,174,.5)" stroke-width="2"/>
+          <path id="lapB" d="M55,25 H165 A40,40 0 0 1 165,105 H55 A40,40 0 0 1 55,25 Z" fill="none" stroke="rgba(254,144,174,.36)" stroke-width="2"/>
+          <path id="lapC" d="M55,15 H165 A50,50 0 0 1 165,115 H55 A50,50 0 0 1 55,15 Z" fill="none" stroke="rgba(254,144,174,.24)" stroke-width="2"/>
+          <circle r="6" fill="#fe90ae" data-lane="#lapA" data-dur="6" data-off="1"/>
+          <circle r="5.5" fill="#ffffff" data-lane="#lapB" data-dur="7.4" data-off="4"/>
+          <circle r="5" fill="#ff5f8f" data-lane="#lapC" data-dur="9.1" data-off="2"/>
+        </svg>
+        <b class="nr-km" id="nrKm"></b>
+      </div>
+      <div>
+        <p class="nr-lbl"><i class="live"></i>Next race</p>
+        <h2 class="nr-name" id="nrName"></h2>
+        <p class="nr-meta" id="nrWhen"></p>
+        <p class="nr-meta" id="nrWhere"></p>
+      </div>
+      <div class="nr-cd"><div id="nrCd" style="display:contents"></div><span class="nr-go" aria-hidden="true">→</span></div>
+    </a>
+  </div>
 </section>
 
-<main class="home">
-  <div class="tiles">
-    <article class="tile">
-      <span class="kicker">New here?</span>
-      <h2>Join UNBND</h2>
-      <p>Become a member in about two minutes.</p>
-      <ul>
-        <li>Membership fee of ₹999</li>
-        <li>Club t-shirt included</li>
-        <li>Free entry to club races</li>
-        <li>All levels welcome</li>
-      </ul>
-      <a class="btn" href="register.html">Join the club</a>
-    </article>
-
-    <article class="tile">
-      <span class="kicker">Already registered?</span>
-      <h2>Complete your payment</h2>
-      <p>If you've registered but haven't paid the ₹999 membership fee yet, or paid but didn't upload the screenshot, finish here using your registered mobile number.</p>
-      <p>Once we've checked your payment, we'll activate your membership and email you your Club ID.</p>
-      <a class="btn" href="pay.html">Pay and upload screenshot</a>
-    </article>
-
-    <article class="tile">
-      <span class="kicker">On the calendar</span>
-      <h2>Race schedule</h2>
-      <p>See every upcoming UNBND race in Mumbai, with start points, race-day weather and a live countdown.</p>
-      <a class="btn" href="races.html">View all races</a>
-    </article>
-
-    <article class="tile">
-      <span class="kicker">Already a member?</span>
-      <h2>Find your Club ID</h2>
-      <p>Enter the mobile number you registered with.</p>
-      <form id="fForm" novalidate>
-        <input id="fPhone" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number" autocomplete="tel-national" aria-label="Registered mobile number">
-        <p class="err" id="fErr"></p>
-        <button class="btn" id="fBtn" type="submit" style="margin-top:12px">Find my Club ID</button>
-      </form>
-      <div id="fOut" aria-live="polite"></div>
-    </article>
+<div class="tapes">
+  <div class="tape bk" aria-hidden="true"><div class="tb-run" id="tbRun"><span>UNBND Run Club ✦ Mumbai ✦ Every pace welcome ✦ Run hard ✦ Be kind ✦ Have fun ✦</span></div></div>
+  <div class="tape tk ticker" aria-label="Upcoming runs">
+    <div class="tk-view"><div class="tk-track" id="tkTrack"></div></div>
+    <button class="tk-btn" id="tkPause" type="button" aria-pressed="false" aria-label="Pause scrolling">&#10074;&#10074;</button>
   </div>
+</div>
 
-  <section class="rdp" id="rdp" hidden>
-    <h2 class="rdp-title">Race day photos</h2>
-    <p class="rdp-sub">Moments from UNBND races around Mumbai.</p>
+<main class="home" id="start">
+  <section class="sec" aria-labelledby="laneTitle">
+    <div class="sec-h reveal">
+      <p class="kick">Start here</p>
+      <h2 id="laneTitle">Pick your lane.</h2>
+    </div>
+    <div class="bento">
+      <article class="card c-join tilt reveal" data-lane="1">
+        <p class="lane"><b>1</b>New here?</p>
+        <h3>Join UNBND</h3>
+        <p class="price"><b>₹999</b><span>membership fee</span></p>
+        <ul class="perks">
+          <li>Club t-shirt included</li>
+          <li>Free entry to club races</li>
+          <li>All levels welcome</li>
+          <li>Become a member in about two minutes</li>
+        </ul>
+        <a class="btn pink" href="register.html">Join the club <span class="arr">→</span></a>
+      </article>
+
+      <article class="card c-pay tilt reveal" data-lane="2" style="--d:1">
+        <p class="lane"><b>2</b>Already registered?</p>
+        <h3>Complete your payment</h3>
+        <p>Registered but haven't paid the ₹999 membership fee yet, or paid but didn't upload the screenshot? Finish here using your registered mobile number.</p>
+        <a class="btn" href="pay.html">Pay and upload screenshot</a>
+      </article>
+
+      <article class="card c-races tilt reveal" data-lane="3" style="--d:2">
+        <p class="lane"><b>3</b>On the calendar</p>
+        <h3>Race schedule</h3>
+        <p class="count" id="rcCount" hidden><b></b><span></span></p>
+        <p>See every upcoming UNBND race in Mumbai, with start points, race-day weather and a live countdown.</p>
+        <a class="btn" href="races.html">View all races <span class="arr">→</span></a>
+      </article>
+
+      <article class="card c-find reveal" id="find" data-lane="4" style="--d:1">
+        <p class="lane"><b>4</b>Already a member?</p>
+        <h3>Find your Club ID</h3>
+        <p>Enter the mobile number you registered with.</p>
+        <form id="fForm" novalidate>
+          <div class="frow">
+            <input id="fPhone" type="tel" inputmode="numeric" placeholder="10-digit mobile number" autocomplete="tel-national" aria-label="Registered mobile number">
+            <button class="btn" id="fBtn" type="submit">Find my Club ID</button>
+          </div>
+          <p class="err" id="fErr"></p>
+        </form>
+        <div id="fOut" aria-live="polite"></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="howTitle">
+    <div class="sec-h reveal">
+      <p class="kick">How it works</p>
+      <h2 id="howTitle">Three steps to the start line.</h2>
+      <p class="swipe-hint">Swipe <i>→</i></p>
+    </div>
+    <ol class="bibs" id="bibs">
+      <li class="bib reveal"><a href="register.html"><span class="band">UNBND Run Club</span><b class="bib-n">01</b><h3>Register</h3><p>Sign up online, one quick question at a time.</p><span class="go">Join the club →</span></a></li>
+      <li class="bib reveal" style="--d:1"><a href="pay.html"><span class="band">UNBND Run Club</span><b class="bib-n">02</b><h3>Pay ₹999</h3><p>Pay the membership fee and upload your payment screenshot.</p><span class="go">Pay now →</span></a></li>
+      <li class="bib reveal" style="--d:2"><div><span class="band">UNBND Run Club</span><b class="bib-n">03</b><h3>Get your Club ID</h3><p>Once we've checked your payment, we'll activate your membership and email you your Club ID.</p></div></li>
+      <li class="bib fin reveal" style="--d:3"><a href="races.html"><span class="band" aria-hidden="true">Finish</span><b class="bib-n">Run!</b><h3>Race with us</h3><p>Club races are free for members. Every pace welcome.</p><span class="go">See the races →</span></a></li>
+    </ol>
+  </section>
+
+  <section class="sec rdp" id="rdp" hidden aria-labelledby="rdpTitle">
+    <div class="sec-h reveal">
+      <p class="kick">Gallery</p>
+      <h2 id="rdpTitle">Race day photos</h2>
+      <p class="sub">Moments from UNBND races around Mumbai.</p>
+    </div>
     <div id="rdpList"></div>
   </section>
 </main>
 
+<section class="finale" aria-labelledby="finTitle">
+  <div class="finale-in reveal">
+    <p class="kick">Your move</p>
+    <h2 id="finTitle"><span>See you at the</span><br>start line.</h2>
+    <div class="ctas">
+      <a class="btn pink" href="register.html">Join the club <span class="arr">→</span></a>
+      <a class="btn ghost" href="races.html">Race schedule</a>
+    </div>
+  </div>
+</section>
+
 <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Photo">
   <button class="lbx" type="button" id="lbClose" aria-label="Close">✕</button>
+  <button class="lbn prev" type="button" id="lbPrev" aria-label="Previous photo">←</button>
   <img id="lbImg" alt="">
+  <button class="lbn next" type="button" id="lbNext" aria-label="Next photo">→</button>
+  <p class="lbc" id="lbCount"></p>
 </div>
 
 <footer class="site-foot"><div class="wide"><span>&copy; <span class="yr">2026</span> UNBND Run Club. All rights reserved.</span><span>Follow us on Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></span></div></footer>
@@ -329,6 +605,7 @@
   const niceDate = (iso) => { const [y, m, d] = iso.split("-").map(Number); return d + " " + MONTHS[m - 1] + " " + y; };
   const time12 = (t) => { const [H, M] = t.split(":").map(Number); return (H % 12 || 12) + ":" + String(M).padStart(2, "0") + " " + (H < 12 ? "AM" : "PM"); };
   const raceStart = (r) => new Date(r.date + "T" + r.time + ":00+05:30");
+  const calmMotion = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
   async function post(payload, timeoutMs) {
     const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), timeoutMs || 30000);
     try {
@@ -380,28 +657,152 @@
   }
   if (outbox().length) setTimeout(sendOutbox, 1500);
 
-  // ---- Next race teaser ----
-  // Next race ribbon: moves to the following race once a race day has passed, and hides when none are scheduled
-  function renderNext(list) {
-    const el = $("nextRibbon");
-    if (!list || !list.length) { el.hidden = true; if (!document.getElementById("unbndAnnc")) document.documentElement.classList.remove("has-ribbon"); return; }
-    const r = list[0];
-    el.innerHTML = '<div class="in"><span class="lbl">Next race</span><div class="what"><b>' + esc(r.name) + "</b><small>" +
-      esc(r.day) + ", " + niceDate(r.date) + " at " + time12(r.time) + "</small><small>Start: " + esc(r.start) + (r.landmark ? " (" + esc(r.landmark) + ")" : "") + "</small></div>" +
-      '<div class="mini" data-mini="' + raceStart(r).toISOString() + '"></div>' +
-      '<a href="races.html#' + encodeURIComponent(r.id) + '">View details</a></div>';
-    el.hidden = false;
-    document.documentElement.classList.add("has-ribbon");
-    tickMini(); if (!renderNext.t) renderNext.t = setInterval(tickMini, 1000);
+  // ---- Little bursts of pink streaks (taps on the hero, the finish line) ----
+  function burst(host, x, y, opts) {
+    if (calmMotion || !host.animate) return;
+    opts = opts || {};
+    const n = opts.n || 12, colors = opts.colors || ["#fe90ae", "#ffffff", "#ff5f8f"];
+    for (let i = 0; i < n; i++) {
+      const s = document.createElement("i"); s.className = "spark";
+      const deg = opts.spread ? opts.dir + (Math.random() - 0.5) * opts.spread : (i / n) * 360 + Math.random() * 20;
+      const dist = (opts.dist || 64) * (0.6 + Math.random() * 0.7);
+      s.style.left = x + "px"; s.style.top = y + "px"; s.style.background = colors[i % colors.length];
+      host.appendChild(s);
+      s.animate([
+        { transform: "rotate(" + deg + "deg) translateX(4px) scaleX(.2)", opacity: 1 },
+        { transform: "rotate(" + deg + "deg) translateX(" + dist + "px) scaleX(1)", opacity: 0 }
+      ], { duration: 520 + Math.random() * 260, easing: "cubic-bezier(.2,.7,.3,1)" }).onfinish = () => s.remove();
+    }
+    if (opts.ring === false) return;
+    const r = document.createElement("i"); r.className = "ring"; r.style.left = x + "px"; r.style.top = y + "px";
+    host.appendChild(r);
+    r.animate([{ transform: "scale(.1)", opacity: 0.9 }, { transform: "scale(1)", opacity: 0 }], { duration: 520, easing: "ease-out" }).onfinish = () => r.remove();
   }
-  function tickMini() {
-    document.querySelectorAll("[data-mini]").forEach((m) => {
-      const ms = new Date(m.dataset.mini) - new Date();
-      if (ms <= 0) { m.outerHTML = '<span class="today">Race day is here</span>'; return; }
-      const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, mi = Math.floor(ms / 6e4) % 60, s = Math.floor(ms / 1e3) % 60;
-      m.innerHTML = [[d, "days"], [h, "hrs"], [mi, "mins"], [s, "secs"]].map((x) => "<div><b>" + String(x[0]).padStart(2, "0") + "</b><span>" + x[1] + "</span></div>").join("");
+
+  // ---- Header: goes solid once you scroll, runner jogs along the track, finish-line cheer ----
+  const hdr = $("hdr"), stage = $("stage"), track = $("track"), runner = $("runner"), sheet = $("sheet"), burger = $("burger");
+  let sheetOpen = false, docMax = 1, trackW = 0, stageH = 0, finished = false, goTimer = 0;
+  function measure() {
+    docMax = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+    trackW = track.offsetWidth; stageH = stage.offsetHeight;
+  }
+  function paint() {
+    const y = Math.max(0, scrollY), p = Math.min(1, y / docMax);
+    hdr.classList.toggle("solid", y > 8 || sheetOpen);
+    $("trFill").style.transform = "scaleX(" + p.toFixed(4) + ")";
+    runner.style.transform = "translateX(" + (p * (trackW - 30)).toFixed(1) + "px)";
+    if (!calmMotion && y < stageH + 200) $("stageBg").style.transform = "translate3d(0," + (y * 0.35).toFixed(1) + "px,0)";
+    if (p > 0.985 && docMax > 300 && !finished) { finished = true; cheer(); }
+    if (p < 0.6) finished = false;
+  }
+  function cheer() {
+    const x = trackW - 6, y = hdr.offsetHeight - 6;
+    burst(hdr, x, y, { n: 16, dist: 70, spread: 160, dir: 170, ring: false, colors: ["#fe90ae", "#ffffff", "#ff5f8f", "#ffd1de"] });
+    if (calmMotion) return;
+    const chip = document.createElement("span"); chip.className = "finish-chip"; chip.textContent = "Finish line!";
+    hdr.appendChild(chip);
+    chip.animate([{ opacity: 0, transform: "translateY(-6px) scale(.9)" }, { opacity: 1, transform: "none", offset: 0.15 }, { opacity: 1, transform: "none", offset: 0.85 }, { opacity: 0, transform: "translateY(-4px)" }], { duration: 2200, easing: "ease-out" }).onfinish = () => chip.remove();
+  }
+
+  // The faster you scroll, the faster the lanes, streaks and tapes run
+  let boost = 1, lastY = scrollY, lastT = 0, boosting = false;
+  const SPEEDY = ["lanes-h", "streaks-h", "tk", "tape-b", "flag-h"];
+  function speedAnims() { try { return document.getAnimations().filter((a) => SPEEDY.indexOf(a.animationName) > -1); } catch (e) { return []; } }
+  function setRate(list, r) { list.forEach((a) => { try { a.updatePlaybackRate ? a.updatePlaybackRate(r) : (a.playbackRate = r); } catch (e) {} }); }
+  function kick(v) {
+    if (calmMotion || !document.getAnimations) return;
+    const target = Math.min(5, 1 + v * 2.4);
+    if (target <= boost + 0.05) return;
+    boost = target;
+    if (boosting) return;
+    boosting = true;
+    const list = speedAnims();
+    (function step() {
+      boost += (1 - boost) * 0.05;
+      if (boost < 1.02) { boost = 1; setRate(list, 1); boosting = false; return; }
+      setRate(list, boost); requestAnimationFrame(step);
+    })();
+  }
+  let ticking = false;
+  addEventListener("scroll", () => {
+    const now = performance.now(), dy = Math.abs(scrollY - lastY), dt = Math.max(16, now - lastT);
+    lastY = scrollY; lastT = now;
+    if (dt < 200) kick(dy / dt);
+    track.classList.add("go"); clearTimeout(goTimer); goTimer = setTimeout(() => track.classList.remove("go"), 160);
+    if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; paint(); }); }
+  }, { passive: true });
+  addEventListener("resize", () => { measure(); paint(); if (innerWidth > 860 && sheetOpen) setSheet(false); });
+  addEventListener("load", () => { measure(); paint(); });
+  if (window.ResizeObserver) new ResizeObserver(() => { measure(); paint(); }).observe(document.body);   // page grows as photos and results load
+  measure(); paint();
+
+  // ---- Mobile menu ----
+  function setSheet(open) {
+    sheetOpen = open; sheet.hidden = !open;
+    burger.setAttribute("aria-expanded", String(open)); burger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    document.documentElement.classList.toggle("locked", open);
+    paint();
+  }
+  burger.addEventListener("click", () => setSheet(!sheetOpen));
+  sheet.addEventListener("click", (e) => { if (e.target.closest("a")) setSheet(false); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && sheetOpen) { setSheet(false); burger.focus(); } });
+
+  // Jumping to "Find my Club ID" gives the card a quick pink flash
+  function flashFind() { if (location.hash !== "#find") return; const c = $("find"); c.classList.remove("flash"); void c.offsetWidth; c.classList.add("flash"); }
+  addEventListener("hashchange", flashFind);
+  document.addEventListener("click", (e) => { const a = e.target.closest('a[href="#find"]'); if (a && location.hash === "#find") setTimeout(flashFind, 350); });
+
+  // ---- Hero play: tap for a burst of speed, tap the headline to make it jump ----
+  function wave() {
+    if (calmMotion) return;
+    $("h1").querySelectorAll(".ch").forEach((c, i) => c.animate([
+      { transform: "none" }, { transform: "translateY(-16%) skewX(-10deg)", color: "#ffffff", offset: 0.4 }, { transform: "none" }
+    ], { duration: 560, delay: i * 45, easing: "cubic-bezier(.3,.7,.3,1)" }));
+  }
+  stage.addEventListener("click", (e) => {
+    if (e.target.closest("a, button")) return;
+    const r = stage.getBoundingClientRect();
+    burst($("stageFx"), e.clientX - r.left, e.clientY - r.top);
+    if (e.target.closest("#h1")) wave();
+    try { if (navigator.vibrate) navigator.vibrate(8); } catch (err) {}
+  });
+
+  // ---- Next race card ----
+  // Moves to the following race once a race day has passed, and hides when none are scheduled
+  function renderNext(list) {
+    const el = $("nextRace");
+    if (!list || !list.length) { el.hidden = true; $("stageIn").classList.add("solo"); return; }
+    const r = list[0], [, m, d] = r.date.split("-").map(Number);
+    el.href = "races.html#" + encodeURIComponent(r.id);
+    $("nrName").textContent = r.name;
+    $("nrWhen").textContent = (r.day ? r.day.slice(0, 3) + ", " : "") + d + " " + MONTHS[m - 1] + " · " + time12(r.time);
+    $("nrWhere").textContent = (r.start || "") + (r.landmark ? " (" + r.landmark + ")" : "");
+    $("nrKm").innerHTML = r.distance ? esc(r.distance) + "<small>km</small>" : "Go";
+    $("nrCd").dataset.cd = raceStart(r).toISOString(); $("nrCd").innerHTML = "";
+    el.hidden = false; $("stageIn").classList.remove("solo");
+    tickCd(); if (!renderNext.t) renderNext.t = setInterval(tickCd, 1000);
+    measure();
+  }
+  function tickCd() {
+    const box = $("nrCd"); if (!box.dataset.cd) return;
+    const ms = new Date(box.dataset.cd) - new Date();
+    if (ms <= 0) { box.innerHTML = '<div class="today">Race day is here</div>'; delete box.dataset.cd; return; }
+    const v = [Math.floor(ms / 864e5), Math.floor(ms / 36e5) % 24, Math.floor(ms / 6e4) % 60, Math.floor(ms / 1e3) % 60];
+    if (!box.querySelector("b")) box.innerHTML = ["days", "hrs", "mins", "secs"].map((u) => '<div class="box"><b></b><span>' + u + "</span></div>").join("");
+    box.querySelectorAll("b").forEach((b, i) => {
+      const t = String(v[i]).padStart(2, "0"); if (b.textContent === t) return;
+      const first = !b.textContent; b.textContent = t;
+      if (!first && !calmMotion) { b.classList.remove("flip"); void b.offsetWidth; b.classList.add("flip"); }
     });
   }
+  // How many races are coming up, on the Race schedule card
+  function renderCount(list) {
+    const el = $("rcCount"); if (!list) { el.hidden = true; return; }
+    el.querySelector("b").textContent = list.length ? String(list.length).padStart(2, "0") : "";
+    el.querySelector("span").textContent = list.length === 1 ? "upcoming race" : list.length ? "upcoming races" : "New races coming soon";
+    el.hidden = false;
+  }
+
   // ---- Hero motion ----
   // Runners on the track: positioned along each lane every frame (still, but spread out, for people who prefer reduced motion)
   function runTrack(svg, calm) {
@@ -411,7 +812,6 @@
     if (calm) return;
     (function frame(t) { if (!document.hidden && svg.getClientRects().length) place(t); requestAnimationFrame(frame); })(0);
   }
-  const calmMotion = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
   (function () {
     document.querySelectorAll(".lap").forEach((s) => runTrack(s, calmMotion));
     $("tkPause").addEventListener("click", () => {
@@ -428,16 +828,27 @@
     });
     ["Run hard", "Be kind", "Have fun"].forEach((t) => items.push({ text: t }));
     const set = items.map((x) => "<span" + (x.hot ? ' class="hot"' : "") + ">" + esc(x.text) + "</span>").join("");
-    $("tkTrack").innerHTML = '<div class="tk-set">' + set + '</div><div class="tk-set dup" aria-hidden="true">' + set + "</div>";
+    $("tkTrack").innerHTML = '<div class="tk-set">' + set + "</div>";
+    const one = $("tkTrack").firstChild.offsetWidth, reps = one ? Math.max(1, Math.ceil($("tkTrack").parentNode.clientWidth / one)) : 1;
+    const full = set + (reps > 1 ? '<span class="rep" aria-hidden="true">' + set.repeat(reps - 1) + "</span>" : "");   // a short list is repeated so the tape is never half empty
+    $("tkTrack").innerHTML = '<div class="tk-set">' + full + '</div><div class="tk-set dup" aria-hidden="true">' + full + "</div>";
     const w = $("tkTrack").firstChild.offsetWidth;
     if (w) $("tkTrack").style.animationDuration = Math.max(20, w / 55) + "s";   // same speed whatever the length
   }
+  // The black tape behind: its slogan repeated enough to cover the widest screen
+  (function () {
+    const run = $("tbRun"), one = run.firstChild.offsetWidth, need = Math.max(run.parentNode.offsetWidth, screen.width || 0, screen.height || 0) * 3;
+    if (one) run.innerHTML = run.innerHTML.repeat(Math.max(2, Math.ceil(need / one / 2) * 2));
+  })();
+  let tickerList = null, tickerW = innerWidth;
   renderTicker(null);
-  loadRaces((list) => { renderNext(list); renderTicker(list); });
+  loadRaces((list) => { tickerList = list; renderNext(list); renderTicker(list); renderCount(list); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => renderTicker(tickerList));   // re-measure once the club fonts arrive
+  addEventListener("resize", () => { if (innerWidth === tickerW) return; tickerW = innerWidth; clearTimeout(renderTicker.t); renderTicker.t = setTimeout(() => renderTicker(tickerList), 200); });
 
   // ---- Find your Club ID ----
   const fmtD = (dmy) => { const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(dmy || ""); return m ? Number(m[1]) + " " + MONTHS[Number(m[2]) - 1] + " " + m[3] : ""; };
-  $("fPhone").addEventListener("input", (e) => { let d = e.target.value.replace(/\D/g, ""); if (d.length === 12 && d.startsWith("91")) d = d.slice(2); e.target.value = d.slice(0, 10); });
+  $("fPhone").addEventListener("input", (e) => { let d = e.target.value.replace(/\D/g, ""); if (d.length === 12 && d.startsWith("91")) d = d.slice(2); e.target.value = d.slice(0, d.startsWith("91") ? 12 : 10); });   // room for a typed +91, dropped once the number is complete
   $("fForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     $("fErr").textContent = ""; $("fOut").innerHTML = "";
@@ -457,26 +868,109 @@
   });
   try { $("fPhone").addEventListener("focus", () => fetch(API_URL + "?warm=1", { mode: "no-cors", cache: "no-store" }).catch(() => {}), { once: true }); } catch (e) {}
 
+  // ---- Scroll reveal ----
+  const revealAll = (function () {
+    if (!document.documentElement.classList.contains("rv")) return () => {};
+    const io = new IntersectionObserver((ents) => ents.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } }), { rootMargin: "0px 0px -6% 0px", threshold: 0.08 });
+    const run = () => document.querySelectorAll(".reveal:not(.in)").forEach((el) => io.observe(el));
+    run(); return run;
+  })();
+
+  // ---- Cards lean towards the pointer (mouse only) ----
+  if (!calmMotion && window.matchMedia && matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    document.querySelectorAll(".tilt").forEach((c) => {
+      c.addEventListener("pointermove", (e) => {
+        const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+        c.style.transform = "perspective(1000px) rotateX(" + (-y * 5).toFixed(2) + "deg) rotateY(" + (x * 6).toFixed(2) + "deg) translateY(-3px)";
+      });
+      c.addEventListener("pointerleave", () => { c.style.transform = ""; });
+    });
+  }
+
   // ---- Race day photos ----
+  function setupStrip(strip) {
+    const group = strip.closest(".rgroup"), bar = group.querySelector(".strip-bar i"), [prev, next] = group.querySelectorAll(".rg-btn");
+    const update = () => {
+      const max = strip.scrollWidth - strip.clientWidth, p = max > 0 ? strip.scrollLeft / max : 1;
+      const w = strip.scrollWidth ? Math.min(1, strip.clientWidth / strip.scrollWidth) : 1;
+      bar.style.width = (w * 100) + "%"; bar.style.transform = "translateX(" + (p * (1 / w - 1) * 100) + "%)";
+      prev.disabled = strip.scrollLeft < 4; next.disabled = strip.scrollLeft > max - 4;
+    };
+    strip.addEventListener("scroll", update, { passive: true });
+    strip.addEventListener("load", update, true);
+    addEventListener("resize", update);
+    [prev, next].forEach((b, i) => b.addEventListener("click", () => strip.scrollBy({ left: (i ? 1 : -1) * strip.clientWidth * 0.8, behavior: calmMotion ? "auto" : "smooth" })));
+    update();
+    // Drag with the mouse to scroll; a drag doesn't open the photo
+    let down = null;
+    strip.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse" || e.button) return; down = { x: e.clientX, left: strip.scrollLeft, moved: false }; });
+    addEventListener("pointermove", (e) => {
+      if (!down) return; const dx = e.clientX - down.x;
+      if (!down.moved && Math.abs(dx) > 6) { down.moved = true; strip.classList.add("dragging"); }
+      if (down.moved) strip.scrollLeft = down.left - dx;
+    });
+    addEventListener("pointerup", () => {
+      if (!down) return;
+      if (down.moved) { strip.dataset.dragged = "1"; setTimeout(() => delete strip.dataset.dragged, 0); const left = strip.scrollLeft; strip.classList.remove("dragging"); strip.scrollLeft = left; }
+      down = null;
+    });
+    nudge(strip);
+  }
+  // On touch screens, nudge a sideways row once so it's clear it swipes
+  function nudge(row) {
+    if (calmMotion || !window.matchMedia || !matchMedia("(pointer: coarse)").matches || !("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver((ents) => {
+      if (!ents[0].isIntersecting) return; io.disconnect();
+      if (row.scrollLeft > 0 || row.scrollWidth <= row.clientWidth + 10) return;
+      setTimeout(() => { row.scrollTo({ left: 70, behavior: "smooth" }); setTimeout(() => { if (row.scrollLeft <= 80) row.scrollTo({ left: 0, behavior: "smooth" }); }, 650); }, 300);
+    }, { threshold: 0.6 });
+    io.observe(row);
+  }
+  nudge($("bibs"));
   (async () => {
     let data = null;
     try { const res = await fetch("data/home-gallery.json?t=" + Date.now(), { cache: "no-store" }); if (res.ok) data = await res.json(); } catch (e) {}
     const races = (data && data.races || []).filter((r) => r.photos && r.photos.length);
     if (!races.length) return;
     $("rdpList").innerHTML = races.map((r) =>
-      '<div class="rgroup"><h3>' + esc(r.name) + '</h3><p class="meta"><b>' + esc(r.id) + "</b>" +
-      (r.date ? esc(r.day ? r.day + ", " : "") + niceDate(r.date) : "") + (r.start ? " · " + esc(r.start) : "") + "</p>" +
-      '<div class="pgrid">' + r.photos.map((p) => '<button type="button" data-full="' + esc(p.path) + '"><img loading="lazy" src="' + esc(p.path) + '" alt="Race day photo, ' + esc(r.name) + '"></button>').join("") + "</div></div>").join("");
+      '<div class="rgroup reveal"><div class="rg-head"><div><h3>' + esc(r.name) + '</h3><p class="meta"><b>' + esc(r.id) + "</b>" +
+      (r.date ? esc(r.day ? r.day + ", " : "") + niceDate(r.date) : "") + (r.start ? " · " + esc(r.start) : "") + " · " + r.photos.length + (r.photos.length === 1 ? " photo" : " photos") + "</p></div>" +
+      '<div class="rg-nav"><button type="button" class="rg-btn" aria-label="Previous photos">←</button><button type="button" class="rg-btn" aria-label="More photos">→</button></div></div>' +
+      '<div class="strip" role="group" aria-label="' + esc(r.name) + ' photos">' + r.photos.map((p, i) => '<button type="button" data-full="' + esc(p.path) + '"><img loading="lazy" draggable="false" src="' + esc(p.path) + '" alt="Race day photo ' + (i + 1) + ", " + esc(r.name) + '"></button>').join("") + "</div>" +
+      '<div class="strip-bar" aria-hidden="true"><i></i></div></div>').join("");
     $("rdp").hidden = false;
+    document.querySelectorAll(".strip").forEach(setupStrip);
+    revealAll(); measure();
   })();
+
+  // ---- Photo viewer: arrows, arrow keys or swipe to move between photos ----
+  let lbList = [], lbI = 0, lbFrom = null, lbX = null;
+  function showLb(dir) {
+    $("lbImg").src = lbList[lbI];
+    $("lbCount").textContent = lbList.length > 1 ? (lbI + 1) + " / " + lbList.length : "";
+    $("lbPrev").hidden = $("lbNext").hidden = lbList.length < 2;
+    if (dir && !calmMotion && $("lbImg").animate) $("lbImg").animate([{ transform: "translateX(" + (dir * 40) + "px)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 260, easing: "ease-out" });
+  }
+  function stepLb(d) { if (lbList.length < 2) return; lbI = (lbI + d + lbList.length) % lbList.length; showLb(d); }
+  function closeLb() { if ($("lb").hidden) return; $("lb").hidden = true; document.documentElement.classList.remove("locked"); if (lbFrom) lbFrom.focus({ preventScroll: true }); }
   document.addEventListener("click", (e) => {
     const b = e.target.closest("[data-full]"); if (!b) return;
-    $("lbImg").src = b.dataset.full; $("lb").hidden = false;
+    const strip = b.closest(".strip"); if (strip && strip.dataset.dragged) return;
+    lbList = strip ? [...strip.querySelectorAll("[data-full]")].map((x) => x.dataset.full) : [b.dataset.full];
+    lbI = Math.max(0, lbList.indexOf(b.dataset.full)); lbFrom = b;
+    showLb(0); $("lb").hidden = false; document.documentElement.classList.add("locked"); $("lbClose").focus({ preventScroll: true });
   });
-  $("lbClose").addEventListener("click", () => ($("lb").hidden = true));
-  $("lb").addEventListener("click", (e) => { if (e.target.id === "lb") $("lb").hidden = true; });
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") $("lb").hidden = true; });
-
+  $("lbClose").addEventListener("click", closeLb);
+  $("lbPrev").addEventListener("click", () => stepLb(-1));
+  $("lbNext").addEventListener("click", () => stepLb(1));
+  let lbSwiped = false;
+  $("lb").addEventListener("click", (e) => { if (e.target.id === "lb" && !lbSwiped) closeLb(); lbSwiped = false; });
+  $("lb").addEventListener("pointerdown", (e) => { lbX = e.clientX; lbSwiped = false; });
+  $("lb").addEventListener("pointerup", (e) => { if (lbX === null) return; const dx = e.clientX - lbX; lbX = null; if (Math.abs(dx) > 50) { lbSwiped = true; stepLb(dx < 0 ? 1 : -1); } });
+  document.addEventListener("keydown", (e) => {
+    if ($("lb").hidden) return;
+    if (e.key === "Escape") closeLb(); else if (e.key === "ArrowRight") stepLb(1); else if (e.key === "ArrowLeft") stepLb(-1);
+  });
 </script>
 </body>
 </html>
