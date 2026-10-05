@@ -280,6 +280,14 @@
   .waacts .wasend:disabled, .waacts button:disabled { opacity: .45; cursor: default; }
   .wanote { color: var(--muted); font-size: .88rem; margin: 8px 0 0; }
   .msum { margin: 0 0 12px; }
+  .srefresh { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; margin: 0 0 12px; padding: 16px 18px; border: 0; border-radius: 14px; background: var(--black); color: var(--pink); font: italic 800 1.3rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .02em; cursor: pointer; }
+  .srefresh svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .srefresh:active { transform: scale(.985); }
+  .srefresh:focus-visible { outline: 3px solid var(--pink); outline-offset: 2px; }
+  .srefresh[disabled] { opacity: .6; cursor: progress; }
+  .srefresh[disabled] svg { animation: spin .9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .srefresh[disabled] svg { animation: none; } }
   .mkpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
   @media (min-width: 720px) { .mkpis { grid-template-columns: repeat(6, 1fr); } }
   .mkpis .kpi { position: relative; padding: 12px 14px 11px; border-radius: 14px; border: 1px solid rgba(0,0,0,.07); }
@@ -292,18 +300,12 @@
   .mchart .mhead { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
   .mchart h3 { margin-bottom: 2px; }
   .mchart .msub { margin: 0 0 8px 14px; color: var(--muted); font-size: .88rem; }
-  .mchart .mref { flex: none; border: 1.5px solid var(--line); background: var(--white); border-radius: 999px; padding: 5px 11px; font: 700 .85rem/1 "Barlow Condensed", sans-serif; cursor: pointer; color: var(--black); }
-  .mchart .mref:focus-visible { outline: 3px solid var(--pink); outline-offset: 2px; }
   .mchart-body { position: relative; }
   .mchart-body svg { display: block; max-width: 100%; touch-action: pan-y; }
   .mchart-body svg text { font-family: "Barlow", system-ui, sans-serif; fill: #1a1a1a; }
   .mchart-body svg .ax { font-size: 11px; fill: #686873; }
   .mchart-body svg .val { font-size: 11px; font-weight: 600; }
-  .mchart-body svg .call { font-size: 12px; font-weight: 700; }
-  .mchart-body .mhit { fill: transparent; }
-  .mchart-body .mhit:hover { fill: rgba(0,0,0,.045); }
-  .mchart-tip { position: absolute; z-index: 3; transform: translate(-50%, -100%); background: var(--black); color: var(--white); border-radius: 8px; padding: 6px 9px; font-size: .82rem; line-height: 1.3; white-space: nowrap; pointer-events: none; box-shadow: 0 8px 20px -8px rgba(0,0,0,.5); }
-  .mchart-tip b { display: block; font-size: 1.05rem; color: var(--pink); }
+  .mstar { transform-box: fill-box; transform-origin: 50% 50%; }
   @media (prefers-reduced-motion: no-preference) {
     .mchart-body.grow .mbar { transform-box: fill-box; transform-origin: 50% 100%; animation: mgrow .6s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--i) * 18ms); }
     @keyframes mgrow { from { transform: scaleY(0); } }
@@ -547,10 +549,11 @@
 
   <section class="panel" id="dashPanel" hidden>
     <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">See Summary Stats</h2></div>
+    <button class="srefresh" id="sRefresh" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg><span>Refresh the stats</span></button>
     <section class="msum" aria-label="Registration summary">
       <div class="kpis mkpis" id="mKpis"><div class="panel-loading" style="grid-column:1/-1">Loading…</div></div>
       <div class="dcard mchart" id="mChart">
-        <div class="mhead"><div><h3>Registrations received per day</h3><p class="msub" id="mChartSub">&nbsp;</p></div><button class="mref" id="mRefresh" type="button">Refresh</button></div>
+        <div class="mhead"><div><h3>Registrations received per day</h3><p class="msub" id="mChartSub">&nbsp;</p></div></div>
         <div class="mchart-body" id="mChartBody"></div>
       </div>
     </section>
@@ -558,7 +561,6 @@
     <div class="dtoggle" role="group" aria-label="Breakdown for">
       <button type="button" data-dset="all" aria-pressed="true">All registrations</button>
       <button type="button" data-dset="active" aria-pressed="false">Active members only</button>
-      <button type="button" id="dRefresh" style="margin-left:auto">Refresh</button>
     </div>
     <div class="dgrid" id="dgrid"></div>
   </section>
@@ -1440,12 +1442,8 @@
     document.querySelectorAll("[data-dset]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
     renderDashboard();
   }));
-  $("dRefresh").addEventListener("click", async () => {
-    const out = await api({ action: "adminList" }, "Refreshing", READ);
-    if (out.ok) { setData(out); regLoaded = true; renderDashboard(); } else toast((out.errors || ["Refresh failed"])[0]);
-  });
   function renderDashboard() {
-    if (!headers.length) { $("trend").innerHTML = '<div class="panel-loading">Couldn\'t load member data. Tap Refresh.</div>'; $("dgrid").innerHTML = ""; return; }
+    if (!headers.length) { $("trend").innerHTML = '<div class="panel-loading">Couldn\'t load member data. Tap Refresh the stats.</div>'; $("dgrid").innerHTML = ""; return; }
     const I = (h) => headers.indexOf(h);
     const st = I("Membership status");
     const count = (k) => rows.filter((r) => r[st] === k).length;
@@ -1536,7 +1534,16 @@
     sumFailed = !headers.length;
     renderSummary();
   }
-  $("mRefresh").addEventListener("click", () => refreshMain(true));
+  // One button refreshes the whole Summary Stats page: tiles, chart, tables and breakdowns
+  $("sRefresh").addEventListener("click", async () => {
+    const b = $("sRefresh"), label = b.querySelector("span"); if (b.disabled) return;
+    b.disabled = true; label.textContent = "Refreshing…";
+    try {
+      const out = await api({ action: "adminList" }, "", READ);
+      if (out.ok) { setData(out); regLoaded = true; mainAt = Date.now(); sumFailed = false; renderDashboard(); toast("Stats are up to date"); }
+      else toast((out.errors || ["Refresh failed"])[0]);
+    } finally { b.disabled = false; label.textContent = "Refresh the stats"; }
+  });
 
   const dNo = (iso) => Math.round(Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) / 864e5);
   const dParts = (n) => { const d = new Date(n * 864e5); return { d: String(d.getUTCDate()).padStart(2, "0"), m: MONTHS[d.getUTCMonth()], y: d.getUTCFullYear(), w: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d.getUTCDay()] }; };
@@ -1545,7 +1552,7 @@
 
   function renderSummary() {
     if (!headers.length) {
-      $("mKpis").innerHTML = '<div class="panel-loading" style="grid-column:1/-1">' + (sumFailed ? "Couldn't load the registrations. Tap Refresh to try again." : "Loading…") + "</div>";
+      $("mKpis").innerHTML = '<div class="panel-loading" style="grid-column:1/-1">' + (sumFailed ? "Couldn't load the registrations. Tap Refresh the stats to try again." : "Loading…") + "</div>";
       $("mChartBody").innerHTML = ""; $("mChartSub").innerHTML = "&nbsp;";
       return;
     }
@@ -1581,24 +1588,23 @@
   function drawChart() {
     const host = $("mChartBody"), days = regDays();
     if (!days) { host.innerHTML = '<p class="hint" style="margin:6px 0 0">No registrations yet.</p>'; $("mChartSub").innerHTML = "&nbsp;"; return; }
-    const BAR = "#4c72b0", TOP = "#c44e52";
+    const BAR = "#4c72b0", TOP = "#fe90ae";   // the busiest day(s) in the website pink
     const W = Math.max(260, Math.floor(host.clientWidth) || 320), small = W < 460, H = small ? 260 : 300;
     const n = days.length, max = Math.max.apply(null, days.map((d) => d.v)), total = days.reduce((a, d) => a + d.v, 0);
     const step = [1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000].find((x) => Math.ceil(max / x) <= 5) || 2000;
     const yMax = step * Math.max(1, Math.ceil(max / step));
-    const ml = 16 + 7 * String(yMax).length, mr = 10, mt = max ? 68 : 16, pw = W - ml - mr, slot = pw / n, rot = slot < 46, mb = rot ? 48 : 28, ph = H - mt - mb;
+    const ml = 16 + 7 * String(yMax).length, mr = 10, mt = max ? 44 : 16, pw = W - ml - mr, slot = pw / n, rot = slot < 46, mb = rot ? 48 : 28, ph = H - mt - mb;
     const bw = Math.min(24, Math.max(3, slot - 3)), X = (i) => ml + slot * i + slot / 2, Y = (v) => mt + ph - (v / yMax) * ph, f = (x) => Math.round(x * 10) / 10;
-    const peaks = max ? days.filter((d) => d.v === max) : [], peak = peaks[peaks.length - 1];
+    const peaks = max ? days.filter((d) => d.v === max) : [], peak = peaks[peaks.length - 1];   // a tie gives each busiest day a star
     const first = dParts(days[0].n), last = dParts(days[n - 1].n);
     $("mChartSub").textContent = (n === 1 ? dLong(days[0].n) : (first.y === last.y ? dShort(days[0].n) : dLong(days[0].n)) + " – " + dLong(days[n - 1].n)) + "  ·  " + total + " registration" + (total === 1 ? "" : "s") + " in this period";
 
-    let g = '<defs><marker id="mArr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="' + TOP + '"/></marker></defs>';
+    let g = "";
     for (let t = 0; t <= yMax; t += step) g += '<line x1="' + ml + '" x2="' + (W - mr) + '" y1="' + f(Y(t)) + '" y2="' + f(Y(t)) + '" stroke="' + (t ? "#e6e6ea" : "#8a8a93") + '"/><text class="ax" x="' + (ml - 6) + '" y="' + f(Y(t) + 4) + '" text-anchor="end">' + t + "</text>";
-    days.forEach((d, i) => { g += '<rect class="mhit" data-i="' + i + '" x="' + f(ml + slot * i) + '" y="' + (mt - 20) + '" width="' + f(slot) + '" height="' + (ph + 20) + '"/>'; });
     days.forEach((d, i) => {
       const x = X(i) - bw / 2, y = Y(d.v), h = Y(0) - y, r = Math.min(4, bw / 2, h);
       if (h > 0) g += '<path class="mbar" style="--i:' + i + '" pointer-events="none" fill="' + (max && d.v === max ? TOP : BAR) + '" d="M' + f(x) + " " + f(y + h) + "V" + f(y + r) + "A" + r + " " + r + " 0 0 1 " + f(x + r) + " " + f(y) + "H" + f(x + bw - r) + "A" + r + " " + r + " 0 0 1 " + f(x + bw) + " " + f(y + r) + "V" + f(y + h) + 'Z"/>';
-      if (slot >= 22 || i === n - 1 || d === peak) g += '<text class="val" pointer-events="none" x="' + f(X(i)) + '" y="' + f(y - 5) + '" text-anchor="middle">' + d.v + "</text>";
+      if (slot >= 17 || i === n - 1 || d === peak) g += '<text class="val" pointer-events="none" x="' + f(X(i)) + '" y="' + f(y - 5) + '" text-anchor="middle">' + d.v + "</text>";
     });
     const k = rot ? Math.ceil(15 / slot) : 1;
     days.forEach((d, i) => {
@@ -1606,31 +1612,16 @@
       const x = X(i), y = mt + ph + (rot ? 14 : 18);
       g += '<text class="ax" pointer-events="none" ' + (rot ? 'transform="rotate(-45 ' + f(x + 3) + " " + f(y - 4) + ')" x="' + f(x + 3) + '" y="' + f(y - 4) + '" text-anchor="end"' : 'x="' + f(x) + '" y="' + y + '" text-anchor="middle"') + ">" + dShort(d.n) + "</text>";
     });
-    if (peak) {
-      const bx = X(days.indexOf(peak)), by = Y(max);
-      const l1 = small ? "Highest in a day: " + max : "Highest registrations in a day so far: " + max;
-      const l2 = "(" + dLong(peak.n) + (peaks.length > 1 ? " and " + (peaks.length - 1) + " other day" + (peaks.length > 2 ? "s" : "") : "") + ")";
-      const tw = Math.max(l1.length, l2.length) * 6.6, tx = Math.min(Math.max(bx, tw / 2 + 6), W - tw / 2 - 6), ax = Math.min(Math.max(bx, tx - tw / 2 + 14), tx + tw / 2 - 14);
-      g += '<text class="call" pointer-events="none" x="' + f(tx) + '" y="16" text-anchor="middle">' + l1 + '</text><text class="call" pointer-events="none" x="' + f(tx) + '" y="32" text-anchor="middle">' + l2 + "</text>" +
-        '<path pointer-events="none" d="M' + f(ax) + " 40L" + f(bx) + " " + f(by - 18) + '" stroke="' + TOP + '" stroke-width="2" fill="none" marker-end="url(#mArr)"/>';
-    }
+    // A gold star sits just above each busiest bar (above its number, clear of the bar)
+    peaks.forEach((d) => {
+      const i = days.indexOf(d), sz = Math.min(18, Math.max(12, slot + 2)), cx = X(i), cy = Y(d.v) - 28;
+      g += '<path class="mstar" transform="translate(' + f(cx - sz / 2) + " " + f(cy - sz / 2) + ") scale(" + (sz / 24).toFixed(3) + ')" d="M12 1.8l3 6.6 7.2.8-5.4 4.9 1.5 7.1L12 17.5l-6.3 3.7 1.5-7.1L1.8 9.2l7.2-.8z" fill="#e0a410" stroke="#a87400" stroke-width="1.4" stroke-linejoin="round"/>';
+    });
     host.innerHTML = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Bar chart of registrations received per day, ' + dLong(days[0].n) + " to " + dLong(days[n - 1].n) + (peak ? ". Highest: " + max + " on " + dLong(peak.n) : "") + '.">' + g + "</svg>" +
-      '<div class="mchart-tip" hidden></div><table class="sr"><caption>Registrations received per day</caption><thead><tr><th>Date</th><th>Registrations</th></tr></thead><tbody>' +
+      '<table class="sr"><caption>Registrations received per day</caption><thead><tr><th>Date</th><th>Registrations</th></tr></thead><tbody>' +
       days.map((d) => "<tr><td>" + dLong(d.n) + "</td><td>" + d.v + "</td></tr>").join("") + "</tbody></table>";
     host.classList.toggle("grow", !chartDrawn); chartDrawn = true;
 
-    // Point or tap a day to see its count
-    const tip = host.querySelector(".mchart-tip");
-    const showTip = (e) => {
-      const hit = e.target.closest && e.target.closest("[data-i]"); if (!hit) return;
-      const i = +hit.dataset.i, d = days[i], p = dParts(d.n);
-      tip.innerHTML = p.w + ", " + dLong(d.n) + "<b>" + d.v + " registration" + (d.v === 1 ? "" : "s") + "</b>";
-      tip.hidden = false;
-      tip.style.left = Math.min(Math.max(X(i), 64), W - 64) + "px"; tip.style.top = Math.max(Y(d.v) - 8, 58) + "px";
-      clearTimeout(showTip.t); if (e.pointerType !== "mouse") showTip.t = setTimeout(() => (tip.hidden = true), 3000);
-    };
-    host.onpointermove = host.onpointerdown = showTip;
-    host.onpointerleave = (e) => { if (e.pointerType === "mouse") tip.hidden = true; };
   }
   if (window.ResizeObserver) { let lastW = 0; new ResizeObserver(() => { const w = Math.floor($("mChartBody").clientWidth); if (w && w !== lastW) { lastW = w; if (headers.length) drawChart(); } }).observe($("mChartBody")); }
 
