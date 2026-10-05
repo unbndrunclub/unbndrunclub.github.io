@@ -507,15 +507,17 @@
   .llane span:nth-child(3) { animation-duration: 13s; animation-delay: -8s; }
   @keyframes jog { to { left: calc(100% + 40px); } }
   /* Access notice: a gold card so it can't be missed */
-  .lpay { background: linear-gradient(135deg, #ffd23f, #ffb000); color: #000; border-radius: 20px; padding: 16px 16px 14px; box-shadow: 0 22px 50px -24px rgba(255,190,0,.75); text-align: center; }
+  .lpay { background: linear-gradient(135deg, #ffd23f, #ffb000); color: #000; border-radius: 20px; padding: 12px 14px 12px; box-shadow: 0 22px 50px -24px rgba(255,190,0,.75); text-align: center; }
   .lpay .lp-k { display: inline-flex; align-items: center; gap: 7px; margin: 0; font: 800 .82rem/1 "Barlow Condensed", sans-serif; letter-spacing: .14em; text-transform: uppercase; }
   .lpay .lp-k svg { width: 17px; height: 17px; fill: none; stroke: #000; stroke-width: 2.4; stroke-linecap: round; }
-  .lpay .lp-d { margin: 8px 0 2px; font: italic 800 clamp(1.9rem, 8.6vw, 2.4rem)/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
-  .lpay .lp-t { margin: 0; font-weight: 700; font-size: 1rem; }
-  .lpay .lp-cd { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 14px; }
-  .lpay .lp-cd div { background: #000; border-radius: 12px; padding: 9px 4px 7px; }
-  .lpay .lp-cd b { display: block; font: italic 800 2rem/1 "Barlow Condensed", sans-serif; color: #ffc61a; font-variant-numeric: tabular-nums; }
-  .lpay .lp-cd span { font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.75); }
+  .lpay .lp-d { margin: 5px 0 1px; font: italic 800 clamp(1.7rem, 7.6vw, 2.1rem)/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .lpay .lp-t { margin: 0; font-weight: 700; font-size: .92rem; line-height: 1.3; }
+  .lpay .lp-cd { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-top: 9px; }
+  .lpay .lp-cd div { display: flex; align-items: baseline; justify-content: center; gap: 4px; background: #000; border-radius: 11px; padding: 6px 4px 6px; }
+  .lpay .lp-cd b { display: inline; font: italic 800 1.55rem/1 "Barlow Condensed", sans-serif; color: #ffc61a; font-variant-numeric: tabular-nums; }
+  .lpay .lp-cd span { font-size: .6rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.75); }
+  .lpay .lp-renew { margin: 9px 0 0; padding: 7px 10px; border-radius: 10px; background: #000; color: #ffc61a; font: 700 .86rem/1.25 "Barlow", sans-serif; }
+  .lpay .lp-renew b { color: #fff; }
   /* Sign-in card */
   .lcard { background: #fff; color: #000; border-radius: 22px; padding: 20px 18px 22px; box-shadow: 0 30px 60px -30px rgba(0,0,0,.9); }
   .lcard h3 { margin: 0 0 14px; font: italic 800 1.7rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
@@ -551,6 +553,7 @@
       <p class="lp-d" id="lpDate">&nbsp;</p>
       <p class="lp-t">11:59:59 PM IST</p>
       <div class="lp-cd" id="lpCd"><div><b>--</b><span>Days</span></div><div><b>--</b><span>Hrs</span></div><div><b>--</b><span>Mins</span></div><div><b>--</b><span>Secs</span></div></div>
+      <p class="lp-renew"><b>Contact the developer</b> to renew portal access.</p>
     </section>
     <form class="lcard" id="loginForm" novalidate>
       <h3><i aria-hidden="true">🔐</i>Admin login</h3>
