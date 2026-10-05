@@ -919,6 +919,7 @@
       '<button type="button" data-photos="' + esc(r.id) + '">Upload race day photos</button><button type="button" class="alt" data-fb="' + esc(r.id) + '">Share feedback</button></div>' +
       '<div class="wallbox" data-wallbox="' + esc(r.id) + '" data-name="' + esc(r.name) + '"><div class="wallhead"><b>Photo wall</b><small></small></div><div class="wall"></div><p class="wallempty" hidden>Photos from this race will show up here as soon as we feature them. Upload yours with the button above.</p></div>').join("");
     $("raceday").hidden = false;
+    if (location.hash === "#raceday") setTimeout(() => $("raceday").scrollIntoView({ behavior: "smooth", block: "start" }), 150);   // the box appears after the page loads, so jump to it
     refreshWalls(true);
     setInterval(() => { if (!document.hidden) refreshWalls(false); }, 60000);
     document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshWalls(false); });

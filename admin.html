@@ -261,6 +261,25 @@
   .palert .what { flex: 1; min-width: 190px; }
   .palert button { border: 0; background: #000; color: var(--pink); border-radius: 9px; padding: 8px 12px; font: italic 800 .95rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; cursor: pointer; }
   .palert button:focus-visible { outline: 3px solid #000; outline-offset: 2px; }
+  .palert .tag svg { width: 18px; height: 18px; flex: none; display: block; }
+  .palert .tag { display: inline-flex; align-items: center; gap: 7px; padding: 6px 10px 6px 7px; }
+  .menu button i.wa, .menu button:hover i.wa { background: #25d366; }
+  .menu button i.wa svg, .menu button:hover i.wa svg { fill: #fff; stroke: none; }
+  .wacard { background: var(--white); border-radius: 18px; padding: 16px; margin-bottom: 12px; }
+  .wacard h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 4px; font: italic 800 1.5rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .wacard h3 i { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: #25d366; flex: none; }
+  .wacard h3 i svg { width: 19px; height: 19px; fill: #fff; }
+  .wacard .hint { margin: 0 0 10px; }
+  .wacard select, .wacard textarea { display: block; width: 100%; font: inherit; color: var(--black); background: var(--paper); border: 1.5px solid transparent; border-radius: 12px; padding: 11px 12px; }
+  .wacard select:focus, .wacard textarea:focus { background: var(--white); border-color: var(--black); outline: none; }
+  .wacard textarea { margin-top: 10px; min-height: 120px; resize: vertical; overflow: hidden; font-size: .95rem; line-height: 1.5; }
+  .waacts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .waacts button { border-radius: 14px; padding: 13px 16px; font: italic 800 1.1rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; cursor: pointer; }
+  .waacts .wasend { flex: 1 1 210px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; background: #128c7e; color: #fff; }
+  .waacts .wasend svg { width: 20px; height: 20px; fill: #fff; flex: none; }
+  .waacts .wasend:disabled, .waacts button:disabled { opacity: .45; cursor: default; }
+  .waacts .wacopy { border: 1.5px solid var(--black); background: var(--white); color: var(--black); }
+  .wanote { color: var(--muted); font-size: .88rem; margin: 8px 0 0; }
   .msum { margin-top: 16px; }
   .mkpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
   @media (min-width: 720px) { .mkpis { grid-template-columns: repeat(6, 1fr); } }
@@ -495,7 +514,7 @@
 
   <section class="panel" id="menuPanel">
     <div class="palert" id="photoAlert" role="status" hidden>
-      <span class="tag">Action needed</span>
+      <span class="tag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2 21.4 20H2.6z" fill="#ffc400" stroke="#ffc400" stroke-width="2.4" stroke-linejoin="round"/><path d="M12 9.6v4.6" stroke="#000" stroke-width="2.3" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.35" fill="#000"/></svg>Action needed</span>
       <span class="what" id="paText"></span>
       <button type="button" id="paGo">Upload photos</button>
     </div>
@@ -524,18 +543,18 @@
       </div>
     </section>
     <div class="menu">
-      <button type="button" data-go="dashPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></i><b>More Summary Stats</b><span>Member totals, sign-up trends and breakdowns.</span></button>
+      <button type="button" data-go="dashPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></i><b>See More Summary Stats</b><span>Member totals, sign-up trends and breakdowns.</span></button>
       <button type="button" data-go="regPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.3-6 6.5-6s5.9 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16.5 14.2c2.6.2 4.5 2.3 5 5.3"/></svg></i><b>Manage Registrations</b><span>Activate or deactivate members, add notes, download Excel.</span></button>
       <button type="button" data-go="racePanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h11l-2 3.5L16 11H5"/><circle cx="17" cy="18" r="2.2"/><path d="M8 21c1.5-2 3.2-2.8 6.8-3"/></svg></i><b>Post or Manage Races</b><span>Post, view, edit or delete races.</span></button>
-      <button type="button" data-go="homePanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="2"/><path d="M3 17l5-4.5 4 3.5 3-2.5 6 5"/></svg></i><b>Manage Homepage Gallery</b><span>Choose race day photos to show on the homepage.</span></button>
-      <button type="button" data-go="fbPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12.5h5"/></svg></i><b>Race Feedback</b><span>Ratings, recommend score and comments from each race.</span></button>
-      <button type="button" data-go="annPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4h3l7 5V5L6 10H3z"/><path d="M17 8.5a5 5 0 0 1 0 7M19.5 6a8.5 8.5 0 0 1 0 12"/></svg></i><b>Announcement</b><span>Show or clear a notice ribbon at the top of the website.</span></button>
+      <button type="button" data-go="waPanel"><i class="wa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></i><b>Generate WhatsApp Messages</b><span>Ready-to-send messages for the club group: the next race, or feedback and photos for the last one.</span></button>
+      <button type="button" data-go="homePanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="2"/><path d="M3 17l5-4.5 4 3.5 3-2.5 6 5"/></svg></i><b>Upload Race Day Photos</b><span>Choose race day photos to show on the homepage.</span></button>
+      <button type="button" data-go="fbPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12.5h5"/></svg></i><b>See Race Feedback</b><span>Ratings, recommend score and comments from each race.</span></button>
+      <button type="button" data-go="annPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4h3l7 5V5L6 10H3z"/><path d="M17 8.5a5 5 0 0 1 0 7M19.5 6a8.5 8.5 0 0 1 0 12"/></svg></i><b>Post an Announcement</b><span>Show or clear a notice ribbon at the top of the website.</span></button>
     </div>
   </section>
 
   <section class="panel" id="dashPanel" hidden>
-    <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">More Summary Stats</h2></div>
-    <div class="kpis" id="kpis"><div class="panel-loading">Loading…</div></div>
+    <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">See More Summary Stats</h2></div>
     <div class="dcard" id="trend" style="margin-top:12px"></div>
     <div class="dtoggle" role="group" aria-label="Breakdown for">
       <button type="button" data-dset="all" aria-pressed="true">All registrations</button>
@@ -545,8 +564,29 @@
     <div class="dgrid" id="dgrid"></div>
   </section>
 
+  <section class="panel" id="waPanel" hidden>
+    <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Generate WhatsApp Messages</h2></div>
+    <p class="note-exp">Choose a race, check the wording (you can edit it), then send it to the club's WhatsApp group.</p>
+    <div class="wacard">
+      <h3><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></i>Upcoming race</h3>
+      <p class="hint">Tells the group about the next run, with a link to its page on the website.</p>
+      <select id="waUpRace" aria-label="Upcoming race"></select>
+      <textarea id="waUpText" aria-label="Message about the upcoming race"></textarea>
+      <div class="waacts"><button class="wasend" id="waUpSend" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>Send on WhatsApp</button><button class="wacopy" id="waUpCopy" type="button">Copy message</button></div>
+    </div>
+    <div class="wacard">
+      <h3><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></i>Previous race: feedback and photos</h3>
+      <p class="hint">Thanks the runners and asks for feedback and race day photos, with a link to the Race day box on the races page.</p>
+      <select id="waPrevRace" aria-label="Previous race"></select>
+      <textarea id="waPrevText" aria-label="Message about the previous race"></textarea>
+      <p class="wanote" id="waPrevNote" hidden></p>
+      <div class="waacts"><button class="wasend" id="waPrevSend" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>Send on WhatsApp</button><button class="wacopy" id="waPrevCopy" type="button">Copy message</button></div>
+    </div>
+    <p class="wanote">Send on WhatsApp opens WhatsApp with the message ready. Pick the UNBND group there. Or copy the message and <a id="waGroup" href="#" target="_blank" rel="noopener">open the group</a>.</p>
+  </section>
+
   <section class="panel" id="homePanel" hidden>
-    <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Manage Homepage Gallery</h2></div>
+    <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Upload Race Day Photos</h2></div>
     <p class="note-exp">Photos members upload after a race appear here, grouped by race. Choose which ones show on the homepage. Please skip photos of members who opted out of photo sharing.</p>
     <form class="acard" id="hUpForm" novalidate style="margin-bottom:14px">
       <p class="lbl" style="margin:0 0 6px">Add your own photos to a race</p>
@@ -558,13 +598,13 @@
   </section>
 
   <section class="panel" id="fbPanel" hidden>
-    <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Race Feedback</h2></div>
+    <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">See Race Feedback</h2></div>
     <div class="ghead" style="margin-top:0"><b>Grouped by race, newest first</b><button class="linkbtn" id="fbRefresh" type="button" style="color:var(--black);border-color:var(--line)">Refresh</button></div>
     <div id="fbList"><div class="panel-loading">Loading…</div></div>
   </section>
 
   <section class="panel" id="annPanel" hidden>
-    <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Announcement</h2></div>
+    <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Post an Announcement</h2></div>
     <p class="note-exp">Shows as a ribbon at the top of every page of the website, within about a minute of publishing.</p>
     <form class="acard" id="annForm" novalidate>
       <div class="field">
@@ -684,22 +724,6 @@
   <div class="lightbox"><button class="xbtn" type="button" data-close="photoView" aria-label="Close">✕</button><img id="photoViewImg" alt=""><p id="photoViewId"></p></div>
 </div>
 
-<div class="overlay" id="promoView" hidden role="dialog" aria-modal="true" aria-label="Instagram image">
-  <div class="rbanner" style="max-width:460px;padding:18px 18px 20px">
-    <button class="xbtn" type="button" data-close="promoView" aria-label="Close">✕</button>
-    <h3 style="font:italic 800 1.7rem/1 'Barlow Condensed',sans-serif;text-transform:uppercase;margin:4px 0 10px">Instagram image</h3>
-    <div class="subseg" role="group" aria-label="Format">
-      <button type="button" data-fmt="story" aria-pressed="true">Story 1080 × 1920</button>
-      <button type="button" data-fmt="post" aria-pressed="false">Post 1080 × 1350</button>
-    </div>
-    <img id="promoImg" alt="Race image preview" style="display:block;width:100%;max-width:300px;margin:6px auto 0;border-radius:12px;box-shadow:0 16px 40px -20px rgba(0,0,0,.5)">
-    <div class="modal-actions" style="margin-top:14px">
-      <button class="ghostbtn" id="promoShare" type="button">Share</button>
-      <button class="btn" id="promoSave" type="button" style="margin:0">Download</button>
-    </div>
-  </div>
-</div>
-
 <div class="busy" id="busy" hidden role="status" aria-live="polite">
   <div class="busy-box"><div class="spinner" aria-hidden="true"></div><b id="busyText">Please wait</b></div>
 </div>
@@ -788,11 +812,12 @@
   // ---------- Tabs ----------
   let menuTick = () => {};   // refreshes the greeting and date on the main page (set below)
   function showSection(id) {
-    ["menuPanel", "dashPanel", "regPanel", "racePanel", "homePanel", "fbPanel", "annPanel"].forEach((p) => ($(p).hidden = p !== id));
+    ["menuPanel", "dashPanel", "regPanel", "racePanel", "waPanel", "homePanel", "fbPanel", "annPanel"].forEach((p) => ($(p).hidden = p !== id));
     window.scrollTo({ top: 0 });
     if (id === "menuPanel") { menuTick(); refreshMain(false); }
     if (id === "regPanel" && !regLoaded) loadRegistrations();
     if (id === "racePanel") openRaces();
+    if (id === "waPanel") openWhatsApp();
     if (id === "homePanel") openHomeGallery();
     if (id === "dashPanel") openDashboard();
     if (id === "annPanel") openAnnouncement();
@@ -1211,7 +1236,6 @@
       "<br><small>" + isoToDmy(r.date) + " · " + esc(r.day) + "</small></div>" +
       (r.expired ? '<span class="exptag">Expired</span>' :
         '<div class="btns"><button type="button" data-view="' + esc(r.id) + '">View</button>' +
-        '<button type="button" data-promo="' + esc(r.id) + '">Instagram image</button>' +
         '<button type="button" data-edit="' + esc(r.id) + '">Edit</button>' +
         '<button type="button" class="del" data-delr="' + esc(r.id) + '">Delete</button></div>') + "</div>"
     ).join("") : '<div class="empty">No races posted yet.</div>';
@@ -1262,8 +1286,8 @@
     $("raceView").hidden = false;
   }
   document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", () => ($(b.dataset.close).hidden = true)));
-  ["raceView", "photoView", "promoView"].forEach((id) => $(id).addEventListener("click", (e) => { if (e.target.id === id) $(id).hidden = true; }));
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { $("raceView").hidden = true; $("photoView").hidden = true; $("promoView").hidden = true; } });
+  ["raceView", "photoView"].forEach((id) => $(id).addEventListener("click", (e) => { if (e.target.id === id) $(id).hidden = true; }));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { $("raceView").hidden = true; $("photoView").hidden = true; } });
 
   function fillForm(r) {
     const v = r || {};
@@ -1312,107 +1336,6 @@
   });
   setMode("post");
 
-
-
-  // ---------- Instagram image for a race (Story 1080x1920, Post 1080x1350) ----------
-  let promoRace = null, promoFmt = "story", promoBlob = null;
-  if (!CanvasRenderingContext2D.prototype.roundRect) {
-    CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
-      this.moveTo(x + r, y); this.arcTo(x + w, y, x + w, y + h, r); this.arcTo(x + w, y + h, x, y + h, r);
-      this.arcTo(x, y + h, x, y, r); this.arcTo(x, y, x + w, y, r); this.closePath(); return this;
-    };
-  }
-  function imgLoad(src, cross) {
-    return new Promise((res) => { if (!src) return res(null); const i = new Image(); if (cross) i.crossOrigin = "anonymous"; i.onload = () => res(i); i.onerror = () => res(null); i.src = src; });
-  }
-  function wrapText(x, text, maxW) {
-    const words = String(text).split(/\s+/), lines = []; let line = "";
-    words.forEach((w) => { const t = line ? line + " " + w : w; if (x.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t; });
-    if (line) lines.push(line); return lines;
-  }
-  async function drawPromo(r, fmt, withPhoto) {
-    try { await Promise.all([document.fonts.load('italic 800 100px "Barlow Condensed"'), document.fonts.load('700 40px "Barlow Condensed"'), document.fonts.load('600 40px "Barlow"')]); } catch (e) {}
-    const W = 1080, H = fmt === "story" ? 1920 : 1350, s = H / 1920 < 1 ? 0.82 : 1;
-    const c = document.createElement("canvas"); c.width = W; c.height = H;
-    const x = c.getContext("2d"), PINK = "#fe90ae", C = '"Barlow Condensed", "Arial Narrow", sans-serif', B = 'Barlow, Arial, sans-serif';
-    x.fillStyle = "#000"; x.fillRect(0, 0, W, H);
-    if (withPhoto) {
-      const img = r.sitePhoto ? await imgLoad(r.sitePhoto, false) : await imgLoad(r.photo, true);
-      if (img) {
-        const k = Math.max(W / img.width, H / img.height), iw = img.width * k, ih = img.height * k;
-        x.drawImage(img, (W - iw) / 2, (H - ih) / 2, iw, ih);
-      }
-    }
-    const g = x.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, "rgba(0,0,0,.55)"); g.addColorStop(.35, "rgba(0,0,0,.72)"); g.addColorStop(1, "rgba(0,0,0,.92)");
-    x.fillStyle = g; x.fillRect(0, 0, W, H);
-    x.save(); x.strokeStyle = "rgba(254,144,174,.18)"; x.lineWidth = 3;
-    for (let i = -H; i < W + H; i += 70) { x.beginPath(); x.moveTo(i, H); x.lineTo(i + H * 0.53, 0); x.stroke(); }
-    x.restore();
-    const L = 84; let y = fmt === "story" ? 150 : 90;
-    const logo = await imgLoad("logo.png", false);
-    if (logo) x.drawImage(logo, L, y, 130 * s, 130 * s);
-    x.fillStyle = "#fff"; x.font = "700 " + Math.round(40 * s) + "px " + C; x.textBaseline = "alphabetic";
-    x.fillText("UNBND RUN CLUB · MUMBAI", L + 150 * s, y + 78 * s);
-    y += (fmt === "story" ? 470 : 200) * s;
-    x.fillStyle = PINK; x.beginPath(); x.roundRect(L, y, 330 * s, 64 * s, 10); x.fill();
-    x.fillStyle = "#000"; x.font = "italic 800 " + Math.round(44 * s) + "px " + C; x.fillText("UPCOMING RACE", L + 22 * s, y + 47 * s);
-    y += 64 * s + 110 * s;
-    x.fillStyle = PINK; x.font = "italic 800 " + Math.round(128 * s) + "px " + C;
-    wrapText(x, r.name.toUpperCase(), W - 2 * L).slice(0, 4).forEach((l) => { x.fillText(l, L, y); y += 118 * s; });
-    y += 30 * s;
-    const dur = (Number(r.hours) || Number(r.minutes)) ? ((Number(r.hours) ? r.hours + " hr " : "") + (Number(r.minutes) ? r.minutes + " min" : "")).trim() : "";
-    const rows = [["WHEN", r.day + ", " + niceDate(r.date)], ["REPORTING", to12(r.time).text], ["START", r.start + (r.landmark ? ", " + r.landmark : "")]];
-    if (r.distance || dur) rows.push(["RACE", [r.distance ? r.distance + " km" : "", dur].filter(Boolean).join(" · ")]);
-    rows.forEach(([k, v]) => {
-      x.fillStyle = PINK; x.font = "700 " + Math.round(34 * s) + "px " + C; x.fillText(k, L, y);
-      x.fillStyle = "#fff"; x.font = "600 " + Math.round(48 * s) + "px " + B;
-      const lines = wrapText(x, v, W - 2 * L - 250 * s).slice(0, 2);
-      lines.forEach((l, i) => x.fillText(l, L + 250 * s, y + i * 58 * s));
-      y += (lines.length * 58 + 34) * s;
-    });
-    // free banner + footer
-    const fy = H - (fmt === "story" ? 400 : 290);
-    x.fillStyle = "#fff"; x.beginPath(); x.roundRect(L, fy, W - 2 * L, 96 * s, 16); x.fill();
-    x.fillStyle = "#000"; x.textAlign = "center"; x.font = "italic 800 " + Math.round(50 * s) + "px " + C;
-    x.fillText("FREE FOR MEMBERS WITH AN ACTIVE CLUB ID", W / 2, fy + 64 * s);
-    x.fillStyle = "#fff"; x.font = "600 " + Math.round(38 * s) + "px " + B;
-    x.fillText("Details and your race card: unbndrunclub.github.io", W / 2, fy + 180 * s);
-    x.fillStyle = PINK; x.font = "italic 800 " + Math.round(60 * s) + "px " + C;
-    x.fillText("@UNBNDRUNCLUB", W / 2, fy + 262 * s);
-    return await new Promise((res) => { try { c.toBlob((b) => res(b), "image/png"); } catch (e) { res(null); } });
-  }
-  async function renderPromo() {
-    $("busyText").textContent = "Creating image"; $("busy").hidden = false;
-    try {
-      promoBlob = await drawPromo(promoRace, promoFmt, true);
-      if (!promoBlob) promoBlob = await drawPromo(promoRace, promoFmt, false); // photo couldn't be used
-      $("promoImg").src = URL.createObjectURL(promoBlob);
-    } finally { $("busy").hidden = true; }
-  }
-  $("raceList").addEventListener("click", (e) => {
-    const b = e.target.closest("[data-promo]"); if (!b) return;
-    promoRace = raceCache.find((r) => r.id === b.dataset.promo); promoFmt = "story";
-    document.querySelectorAll("[data-fmt]").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.fmt === "story")));
-    $("promoView").hidden = false; renderPromo();
-  });
-  document.querySelectorAll("[data-fmt]").forEach((b) => b.addEventListener("click", () => {
-    promoFmt = b.dataset.fmt;
-    document.querySelectorAll("[data-fmt]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
-    renderPromo();
-  }));
-  const promoName = () => "UNBND-" + promoRace.id + "-" + (promoFmt === "story" ? "story" : "post") + ".png";
-  $("promoSave").addEventListener("click", () => {
-    if (!promoBlob) return;
-    const a = document.createElement("a"); a.href = URL.createObjectURL(promoBlob); a.download = promoName();
-    document.body.appendChild(a); a.click(); a.remove();
-  });
-  $("promoShare").addEventListener("click", async () => {
-    if (!promoBlob) return;
-    const file = new File([promoBlob], promoName(), { type: "image/png" });
-    if (navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file] }); return; } catch (e) { if (e.name === "AbortError") return; } }
-    $("promoSave").click();
-  });
 
 
   // ---------- Manage Homepage Gallery ----------
@@ -1507,21 +1430,6 @@
   }
 
 
-  // ---------- Member stat cards (Dashboard) ----------
-  function statCards(target) {
-    const I = (h) => headers.indexOf(h), st = I("Membership status"), pay = I("Payment screenshot");
-    const isPaid = (r) => r[pay] === "Yes";
-    const grp = (k) => rows.filter((r) => r[st] === k);
-    const act = grp("Active"), pen = grp("Pending"), dea = grp("Deactivated");
-    const split = (list, a, b) => '<div class="split"><div class="' + a + '"><b>' + list.filter(isPaid).length + '</b><span>Paid</span></div><div class="' + b + '"><b>' +
-      list.filter((r) => !isPaid(r)).length + "</b><span>Unpaid</span></div></div>";
-    $(target).innerHTML =
-      '<div class="kpi hi"><b>' + rows.length + "</b><span>Total registrations</span></div>" +
-      '<div class="kpi green"><b>' + act.length + "</b><span>Active members</span>" + split(act, "sub-g", "sub-g2") + "</div>" +
-      '<div class="kpi neutral"><b>' + pen.length + "</b><span>Pending activation</span>" + split(pen, "sub-b", "sub-y") + "</div>" +
-      '<div class="kpi red"><b>' + dea.length + "</b><span>Deactivated</span></div>";
-  }
-
   // ---------- Dashboard ----------
   let dset = "all";
   async function openDashboard() {
@@ -1538,13 +1446,12 @@
     if (out.ok) { setData(out); regLoaded = true; renderDashboard(); } else toast((out.errors || ["Refresh failed"])[0]);
   });
   function renderDashboard() {
-    if (!headers.length) { $("kpis").innerHTML = '<div class="panel-loading">Couldn\'t load member data. Tap Refresh.</div>'; $("dgrid").innerHTML = ""; return; }
+    if (!headers.length) { $("trend").innerHTML = '<div class="panel-loading">Couldn\'t load member data. Tap Refresh.</div>'; $("dgrid").innerHTML = ""; return; }
     const I = (h) => headers.indexOf(h);
     const st = I("Membership status");
     const count = (k) => rows.filter((r) => r[st] === k).length;
     const pay = I("Payment screenshot");
     const isPaid = (r) => r[pay] === "Yes";
-    statCards("kpis");
 
     // Registrations received: time windows in India time, split paid / unpaid
     const todayIso = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date());
@@ -1729,12 +1636,13 @@
 
   // ---------- Reminder: photos of the race that has just finished ----------
   // Looks at the latest race that is over (up to 2 weeks back) and shows a strip until it has at least one photo on the homepage.
+  // When a race is over: its start (India time) plus its length, or 2 hours if no length is set
+  const raceEndMs = (r) => new Date(r.date + "T" + (r.time || "00:00") + ":00+05:30").getTime() + (((+r.hours || 0) * 60 + (+r.minutes || 0)) || 120) * 60000;
   let pendingRace = "", alertRace = null;
   async function checkPhotoAlert() {
     if (!passcode) return;
     const f = await siteFile("data/races.json"); if (!f || !f.races) return;   // can't tell: leave the strip as it is
-    const now = Date.now();
-    const endOf = (r) => new Date(r.date + "T" + (r.time || "00:00") + ":00+05:30").getTime() + (((+r.hours || 0) * 60 + (+r.minutes || 0)) || 120) * 60000;
+    const now = Date.now(), endOf = raceEndMs;
     const done = f.races.filter((r) => /^\d{4}-\d{2}-\d{2}$/.test(r.date || "") && endOf(r) <= now).sort((a, b) => endOf(b) - endOf(a))[0];
     let missing = false;
     if (done && now - endOf(done) <= 14 * 864e5) {
@@ -1749,6 +1657,71 @@
     if (pendingRace && [...$("hRace").options].some((o) => o.value === pendingRace)) { $("hRace").value = pendingRace; pendingRace = ""; }
   }
   $("paGo").addEventListener("click", () => { if (!alertRace) return; pendingRace = alertRace.id; showSection("homePanel"); applyPendingRace(); });
+
+  // ---------- Generate WhatsApp messages ----------
+  const SITE = "https://unbndrunclub.github.io/";
+  const raceDate = (r) => (r.day ? r.day + ", " : "") + niceDate(r.date);
+  function upcomingMsg(r) {
+    const where = (r.start || "") + (r.landmark ? " (" + r.landmark + ")" : "");
+    const age = r.minAge && r.maxAge ? r.minAge + " to " + r.maxAge : r.minAge ? r.minAge + " and above" : r.maxAge ? "up to " + r.maxAge : "";
+    const details = ["📅 " + raceDate(r), "⏰ Reporting time: " + to12(r.time).text, where && "📍 " + where, r.map && "🗺️ Map: " + r.map,
+      r.distance && "📏 Distance: " + r.distance + " km", age && "🎂 Age: " + age, r.activities && "✨ " + r.activities].filter(Boolean);
+    return ["🏃 *UNBND Run Club: next run*", "", "*" + r.name + "*"].concat(details, ["", "Free for all members with an active Club ID.",
+      "Details and a live countdown: " + SITE + "races.html#" + r.id, "", "See you at the start line! 💗"]).join("\n");
+  }
+  function previousMsg(r) {
+    return ["🏁 *" + r.name + "*", raceDate(r), "", "Thank you for running with us! We'd love to hear how it went:", "",
+      "💬 Share your feedback, it takes a minute", "📸 Upload your race day photos", "",
+      "Both are in the Race day box on the races page (open for 3 days after the race):", SITE + "races.html#raceday", "", "See you at the next one! 💗"].join("\n");
+  }
+  const WA_CARDS = [
+    { sel: "waUpRace", text: "waUpText", send: "waUpSend", copy: "waUpCopy", make: upcomingMsg },
+    { sel: "waPrevRace", text: "waPrevText", send: "waPrevSend", copy: "waPrevCopy", make: previousMsg, note: "waPrevNote" },
+  ];
+  let waLists = {};
+  const waFit = (t) => { t.style.height = "auto"; t.style.height = (t.scrollHeight + 4) + "px"; };   // the box grows to show the whole message
+  function waFill(c) {
+    const r = (waLists[c.sel] || []).find((x) => x.id === $(c.sel).value);
+    $(c.text).value = r ? c.make(r) : ""; waFit($(c.text));
+    [c.send, c.copy].forEach((id) => ($(id).disabled = !r));
+    if (c.note) {
+      const old = r && Date.now() > raceEndMs(r) + 3 * 864e5 + 6e4 * 330;   // the Race day box on the website closes 3 days after the race
+      $(c.note).hidden = !old;
+      if (old) $(c.note).textContent = "This race was more than 3 days ago, so the Race day box on the website has closed. The link will take people to the races page, but they can't send feedback or photos there any more.";
+    }
+  }
+  async function openWhatsApp() {
+    $("waGroup").href = window.UNBND_WHATSAPP || "#"; $("waGroup").hidden = !window.UNBND_WHATSAPP;
+    let list = changedRecently() ? null : ((await siteFile("data/races.json")) || {}).races;
+    if (!list) { const out = await api({ action: "adminRaceList" }, "Loading races", READ); list = out.ok ? out.races : null; }
+    if (!list) { toast("Couldn't load the races. Please try again."); return; }
+    const now = Date.now(), valid = list.filter((r) => /^\d{4}-\d{2}-\d{2}$/.test(r.date || ""));
+    waLists = {
+      waUpRace: valid.filter((r) => raceEndMs(r) > now).sort((a, b) => raceEndMs(a) - raceEndMs(b)),
+      waPrevRace: valid.filter((r) => raceEndMs(r) <= now).sort((a, b) => raceEndMs(b) - raceEndMs(a)).slice(0, 8),
+    };
+    WA_CARDS.forEach((c) => {
+      const keep = $(c.sel).value, l = waLists[c.sel];
+      $(c.sel).innerHTML = l.length ? l.map((r) => '<option value="' + esc(r.id) + '">' + esc(r.id + " · " + r.name + " · " + niceDate(r.date)) + "</option>").join("") : '<option value="">' + (c.sel === "waUpRace" ? "No upcoming races posted" : "No finished races yet") + "</option>";
+      if (keep && l.some((r) => r.id === keep)) $(c.sel).value = keep;
+      if ($(c.sel).value !== keep || !$(c.text).value) waFill(c);   // keep the admin's edits when nothing changed
+    });
+  }
+  WA_CARDS.forEach((c) => {
+    $(c.sel).addEventListener("change", () => waFill(c));
+    $(c.text).addEventListener("input", () => waFit($(c.text)));
+    $(c.send).addEventListener("click", () => {
+      const t = $(c.text).value.trim(); if (!t) return;
+      window.open("https://wa.me/?text=" + encodeURIComponent(t), "_blank", "noopener");
+    });
+    $(c.copy).addEventListener("click", async () => {
+      const t = $(c.text).value; if (!t.trim()) return;
+      let done = false;
+      try { await navigator.clipboard.writeText(t); done = true; } catch (e) {}
+      if (!done) { $(c.text).select(); try { done = document.execCommand("copy"); } catch (e) {} }
+      toast(done ? "Copied. Paste it into the WhatsApp group." : "Couldn't copy. Select the text and copy it.");
+    });
+  });
 
   // ---------- Stay logged in while this tab is open ----------
   (() => {
