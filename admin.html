@@ -306,6 +306,7 @@
   .mchart-body svg .ax { font-size: 11px; fill: #686873; }
   .mchart-body svg .val { font-size: 11px; font-weight: 600; }
   .mstar { transform-box: fill-box; transform-origin: 50% 50%; }
+  .mchart-body svg .val.vert { font-size: 10px; }
   @media (prefers-reduced-motion: no-preference) {
     .mchart-body.grow .mbar { transform-box: fill-box; transform-origin: 50% 100%; animation: mgrow .6s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--i) * 18ms); }
     @keyframes mgrow { from { transform: scaleY(0); } }
@@ -1593,8 +1594,8 @@
     const n = days.length, max = Math.max.apply(null, days.map((d) => d.v)), total = days.reduce((a, d) => a + d.v, 0);
     const step = [1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000].find((x) => Math.ceil(max / x) <= 5) || 2000;
     const yMax = step * Math.max(1, Math.ceil(max / step));
-    const ml = 16 + 7 * String(yMax).length, mr = 10, mt = max ? 44 : 16, pw = W - ml - mr, slot = pw / n, rot = slot < 46, mb = rot ? 48 : 28, ph = H - mt - mb;
-    const bw = Math.min(24, Math.max(3, slot - 3)), X = (i) => ml + slot * i + slot / 2, Y = (v) => mt + ph - (v / yMax) * ph, f = (x) => Math.round(x * 10) / 10;
+    const ml = 16 + 7 * String(yMax).length, mr = 10, mt = max ? 56 : 16, pw = W - ml - mr, slot = pw / n, rot = slot < 46, mb = rot ? 48 : 28, ph = H - mt - mb;
+    const vert = slot < 17, lblH = (v) => (vert ? String(v).length * 6.5 + 4 : 13), bw = Math.min(24, Math.max(3, slot - 3)), X = (i) => ml + slot * i + slot / 2, Y = (v) => mt + ph - (v / yMax) * ph, f = (x) => Math.round(x * 10) / 10;
     const peaks = max ? days.filter((d) => d.v === max) : [], peak = peaks[peaks.length - 1];   // a tie gives each busiest day a star
     const first = dParts(days[0].n), last = dParts(days[n - 1].n);
     $("mChartSub").textContent = (n === 1 ? dLong(days[0].n) : (first.y === last.y ? dShort(days[0].n) : dLong(days[0].n)) + " – " + dLong(days[n - 1].n)) + "  ·  " + total + " registration" + (total === 1 ? "" : "s") + " in this period";
@@ -1604,7 +1605,9 @@
     days.forEach((d, i) => {
       const x = X(i) - bw / 2, y = Y(d.v), h = Y(0) - y, r = Math.min(4, bw / 2, h);
       if (h > 0) g += '<path class="mbar" style="--i:' + i + '" pointer-events="none" fill="' + (max && d.v === max ? TOP : BAR) + '" d="M' + f(x) + " " + f(y + h) + "V" + f(y + r) + "A" + r + " " + r + " 0 0 1 " + f(x + r) + " " + f(y) + "H" + f(x + bw - r) + "A" + r + " " + r + " 0 0 1 " + f(x + bw) + " " + f(y + r) + "V" + f(y + h) + 'Z"/>';
-      if (slot >= 17 || i === n - 1 || d === peak) g += '<text class="val" pointer-events="none" x="' + f(X(i)) + '" y="' + f(y - 5) + '" text-anchor="middle">' + d.v + "</text>";
+      // every bar shows its number; on narrow screens the numbers stand upright so they never overlap
+      g += vert ? '<text class="val vert" transform="rotate(-90 ' + f(X(i) + 4) + " " + f(y - 5) + ')" x="' + f(X(i) + 4) + '" y="' + f(y - 5) + '" text-anchor="start">' + d.v + "</text>"
+        : '<text class="val" x="' + f(X(i)) + '" y="' + f(y - 5) + '" text-anchor="middle">' + d.v + "</text>";
     });
     const k = rot ? Math.ceil(15 / slot) : 1;
     days.forEach((d, i) => {
@@ -1614,7 +1617,7 @@
     });
     // A gold star sits just above each busiest bar (above its number, clear of the bar)
     peaks.forEach((d) => {
-      const i = days.indexOf(d), sz = Math.min(18, Math.max(12, slot + 2)), cx = X(i), cy = Y(d.v) - 28;
+      const i = days.indexOf(d), sz = Math.min(18, Math.max(12, slot + 2)), cx = X(i), cy = Y(d.v) - 5 - lblH(d.v) - sz / 2 - 4;
       g += '<path class="mstar" transform="translate(' + f(cx - sz / 2) + " " + f(cy - sz / 2) + ") scale(" + (sz / 24).toFixed(3) + ')" d="M12 1.8l3 6.6 7.2.8-5.4 4.9 1.5 7.1L12 17.5l-6.3 3.7 1.5-7.1L1.8 9.2l7.2-.8z" fill="#e0a410" stroke="#a87400" stroke-width="1.4" stroke-linejoin="round"/>';
     });
     host.innerHTML = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Bar chart of registrations received per day, ' + dLong(days[0].n) + " to " + dLong(days[n - 1].n) + (peak ? ". Highest: " + max + " on " + dLong(peak.n) : "") + '.">' + g + "</svg>" +
