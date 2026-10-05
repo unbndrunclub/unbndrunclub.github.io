@@ -278,7 +278,6 @@
   .waacts .wasend { flex: 1 1 210px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; background: #128c7e; color: #fff; }
   .waacts .wasend svg { width: 20px; height: 20px; fill: #fff; flex: none; }
   .waacts .wasend:disabled, .waacts button:disabled { opacity: .45; cursor: default; }
-  .waacts .wacopy { border: 1.5px solid var(--black); background: var(--white); color: var(--black); }
   .wanote { color: var(--muted); font-size: .88rem; margin: 8px 0 0; }
   .msum { margin-top: 16px; }
   .mkpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
@@ -545,8 +544,8 @@
     <div class="menu">
       <button type="button" data-go="dashPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></i><b>See More Summary Stats</b><span>Member totals, sign-up trends and breakdowns.</span></button>
       <button type="button" data-go="regPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.3-6 6.5-6s5.9 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16.5 14.2c2.6.2 4.5 2.3 5 5.3"/></svg></i><b>Manage Registrations</b><span>Activate or deactivate members, add notes, download Excel.</span></button>
-      <button type="button" data-go="racePanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h11l-2 3.5L16 11H5"/><circle cx="17" cy="18" r="2.2"/><path d="M8 21c1.5-2 3.2-2.8 6.8-3"/></svg></i><b>Post or Manage Races</b><span>Post, view, edit or delete races.</span></button>
       <button type="button" data-go="waPanel"><i class="wa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></i><b>Generate WhatsApp Messages</b><span>Ready-to-send messages for the club group: the next race, or feedback and photos for the last one.</span></button>
+      <button type="button" data-go="racePanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h11l-2 3.5L16 11H5"/><circle cx="17" cy="18" r="2.2"/><path d="M8 21c1.5-2 3.2-2.8 6.8-3"/></svg></i><b>Post or Manage Races</b><span>Post, view, edit or delete races.</span></button>
       <button type="button" data-go="homePanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="2"/><path d="M3 17l5-4.5 4 3.5 3-2.5 6 5"/></svg></i><b>Upload Race Day Photos</b><span>Choose race day photos to show on the homepage.</span></button>
       <button type="button" data-go="fbPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12.5h5"/></svg></i><b>See Race Feedback</b><span>Ratings, recommend score and comments from each race.</span></button>
       <button type="button" data-go="annPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4h3l7 5V5L6 10H3z"/><path d="M17 8.5a5 5 0 0 1 0 7M19.5 6a8.5 8.5 0 0 1 0 12"/></svg></i><b>Post an Announcement</b><span>Show or clear a notice ribbon at the top of the website.</span></button>
@@ -566,23 +565,23 @@
 
   <section class="panel" id="waPanel" hidden>
     <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Generate WhatsApp Messages</h2></div>
-    <p class="note-exp">Choose a race, check the wording (you can edit it), then send it to the club's WhatsApp group.</p>
+    <p class="note-exp">Choose a race, change anything you like in the message, then send it on WhatsApp to the club group or to one person.</p>
     <div class="wacard">
       <h3><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></i>Upcoming race</h3>
-      <p class="hint">Tells the group about the next run, with a link to its page on the website.</p>
+      <p class="hint">Tells people about the next run, with a link to its page on the website. You can edit anything in the box before sending.</p>
       <select id="waUpRace" aria-label="Upcoming race"></select>
       <textarea id="waUpText" aria-label="Message about the upcoming race"></textarea>
-      <div class="waacts"><button class="wasend" id="waUpSend" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>Send on WhatsApp</button><button class="wacopy" id="waUpCopy" type="button">Copy message</button></div>
+      <div class="waacts"><button class="wasend" id="waUpSend" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>Send on WhatsApp</button></div>
     </div>
     <div class="wacard">
       <h3><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></i>Previous race: feedback and photos</h3>
-      <p class="hint">Thanks the runners and asks for feedback and race day photos, with a link to the Race day box on the races page.</p>
+      <p class="hint">Thanks the runners and asks for feedback and race day photos, with a link to the Race day box on the races page. You can edit anything in the box before sending.</p>
       <select id="waPrevRace" aria-label="Previous race"></select>
       <textarea id="waPrevText" aria-label="Message about the previous race"></textarea>
       <p class="wanote" id="waPrevNote" hidden></p>
-      <div class="waacts"><button class="wasend" id="waPrevSend" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>Send on WhatsApp</button><button class="wacopy" id="waPrevCopy" type="button">Copy message</button></div>
+      <div class="waacts"><button class="wasend" id="waPrevSend" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>Send on WhatsApp</button></div>
     </div>
-    <p class="wanote">Send on WhatsApp opens WhatsApp with the message ready. Pick the UNBND group there. Or copy the message and <a id="waGroup" href="#" target="_blank" rel="noopener">open the group</a>.</p>
+    <p class="wanote">Send on WhatsApp opens WhatsApp with the message ready. Choose the group, or any one person, to send it to.</p>
   </section>
 
   <section class="panel" id="homePanel" hidden>
@@ -1661,29 +1660,31 @@
   // ---------- Generate WhatsApp messages ----------
   const SITE = "https://unbndrunclub.github.io/";
   const raceDate = (r) => (r.day ? r.day + ", " : "") + niceDate(r.date);
+  const RUNNERS = "🏃‍♂️🏃‍♀️";
   function upcomingMsg(r) {
-    const where = (r.start || "") + (r.landmark ? " (" + r.landmark + ")" : "");
+    const mins = (+r.hours || 0) * 60 + (+r.minutes || 0), dur = mins ? [mins >= 60 ? Math.floor(mins / 60) + " hr" : "", mins % 60 ? mins % 60 + " min" : ""].filter(Boolean).join(" ") : "";
     const age = r.minAge && r.maxAge ? r.minAge + " to " + r.maxAge : r.minAge ? r.minAge + " and above" : r.maxAge ? "up to " + r.maxAge : "";
-    const details = ["📅 " + raceDate(r), "⏰ Reporting time: " + to12(r.time).text, where && "📍 " + where, r.map && "🗺️ Map: " + r.map,
-      r.distance && "📏 Distance: " + r.distance + " km", age && "🎂 Age: " + age, r.activities && "✨ " + r.activities].filter(Boolean);
-    return ["🏃 *UNBND Run Club: next run*", "", "*" + r.name + "*"].concat(details, ["", "Free for all members with an active Club ID.",
-      "Details and a live countdown: " + SITE + "races.html#" + r.id, "", "See you at the start line! 💗"]).join("\n");
+    const details = ["📅 " + raceDate(r), "⏰ Reporting time: " + to12(r.time).text, dur && "⏱️ Duration: " + dur, r.distance && "📏 Distance: " + r.distance + " km",
+      r.start && "📍 Start: " + r.start + (r.landmark ? " (near " + r.landmark + ")" : ""), r.map && "🗺️ Location: " + r.map, age && "🎂 Age: " + age].filter(Boolean);
+    const goodies = String(r.goodies || "").trim(), acts = String(r.activities || "").trim();
+    return ["🏃 *UNBND Run Club: next run*", "", "*" + r.name + "*"].concat(details, goodies ? ["", goodies] : [], acts ? ["", "✨ After the race: " + acts] : [],
+      ["", "Free for all members with an active Club ID.", "Full details and a live countdown:", SITE + "races.html#" + r.id, "", "See you at the start line! " + RUNNERS]).join("\n");
   }
   function previousMsg(r) {
     return ["🏁 *" + r.name + "*", raceDate(r), "", "Thank you for running with us! We'd love to hear how it went:", "",
       "💬 Share your feedback, it takes a minute", "📸 Upload your race day photos", "",
-      "Both are in the Race day box on the races page (open for 3 days after the race):", SITE + "races.html#raceday", "", "See you at the next one! 💗"].join("\n");
+      "Both are in the Race day box on the races page (open for 3 days after the race):", SITE + "races.html#raceday", "", "See you at the next one! " + RUNNERS].join("\n");
   }
   const WA_CARDS = [
-    { sel: "waUpRace", text: "waUpText", send: "waUpSend", copy: "waUpCopy", make: upcomingMsg },
-    { sel: "waPrevRace", text: "waPrevText", send: "waPrevSend", copy: "waPrevCopy", make: previousMsg, note: "waPrevNote" },
+    { sel: "waUpRace", text: "waUpText", send: "waUpSend", make: upcomingMsg },
+    { sel: "waPrevRace", text: "waPrevText", send: "waPrevSend", make: previousMsg, note: "waPrevNote" },
   ];
   let waLists = {};
   const waFit = (t) => { t.style.height = "auto"; t.style.height = (t.scrollHeight + 4) + "px"; };   // the box grows to show the whole message
   function waFill(c) {
     const r = (waLists[c.sel] || []).find((x) => x.id === $(c.sel).value);
     $(c.text).value = r ? c.make(r) : ""; waFit($(c.text));
-    [c.send, c.copy].forEach((id) => ($(id).disabled = !r));
+    $(c.send).disabled = !r;
     if (c.note) {
       const old = r && Date.now() > raceEndMs(r) + 3 * 864e5 + 6e4 * 330;   // the Race day box on the website closes 3 days after the race
       $(c.note).hidden = !old;
@@ -1691,7 +1692,6 @@
     }
   }
   async function openWhatsApp() {
-    $("waGroup").href = window.UNBND_WHATSAPP || "#"; $("waGroup").hidden = !window.UNBND_WHATSAPP;
     let list = changedRecently() ? null : ((await siteFile("data/races.json")) || {}).races;
     if (!list) { const out = await api({ action: "adminRaceList" }, "Loading races", READ); list = out.ok ? out.races : null; }
     if (!list) { toast("Couldn't load the races. Please try again."); return; }
@@ -1713,13 +1713,6 @@
     $(c.send).addEventListener("click", () => {
       const t = $(c.text).value.trim(); if (!t) return;
       window.open("https://wa.me/?text=" + encodeURIComponent(t), "_blank", "noopener");
-    });
-    $(c.copy).addEventListener("click", async () => {
-      const t = $(c.text).value; if (!t.trim()) return;
-      let done = false;
-      try { await navigator.clipboard.writeText(t); done = true; } catch (e) {}
-      if (!done) { $(c.text).select(); try { done = document.execCommand("copy"); } catch (e) {} }
-      toast(done ? "Copied. Paste it into the WhatsApp group." : "Couldn't copy. Select the text and copy it.");
     });
   });
 
