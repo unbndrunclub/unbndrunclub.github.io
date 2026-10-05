@@ -489,23 +489,31 @@
   .spinner { width: 44px; height: 44px; margin: 0 auto; border-radius: 50%; border: 5px solid var(--paper); border-top-color: var(--pink); animation: spin .8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   /* ---------- Login: admin portal ---------- */
-  .lstage { position: relative; overflow: hidden; min-height: calc(100vh - 66px); min-height: calc(100svh - 66px); background: radial-gradient(120% 70% at 50% 0%, #2a0f19 0%, #000 60%); color: #fff; padding: 26px 16px 40px; }
-  .lstage::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(118deg, transparent 0 46px, rgba(254,144,174,.13) 46px 48px); background-size: 54.363px 100%; animation: lanes-l 2.2s linear infinite;
+  /* While logged out the login page is the whole screen: the admin bar hides (its logo would repeat) */
+  body.out .adminbar { display: none; }
+  .lstage { position: relative; overflow: hidden; min-height: 100vh; min-height: 100svh; background: radial-gradient(120% 60% at 50% 0%, #2a0f19 0%, #000 62%); color: #fff;
+    padding: calc(env(safe-area-inset-top, 0px) + 18px) 16px calc(env(safe-area-inset-bottom, 0px) + 28px); }
+  .lstage::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(118deg, transparent 0 46px, rgba(254,144,174,.12) 46px 48px); background-size: 54.363px 100%; animation: lanes-l 2.2s linear infinite;
     -webkit-mask-image: linear-gradient(to top, #000, transparent 75%); mask-image: linear-gradient(to top, #000, transparent 75%); }
   @keyframes lanes-l { to { background-position-x: -54.363px; } }
-  .lstage::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 12px; background: conic-gradient(#fff 25%, #000 0 50%, #fff 0 75%, #000 0) 0 0 / 12px 12px; opacity: .9; }
-  .lin { position: relative; z-index: 1; max-width: 460px; margin: 0 auto; display: grid; gap: 16px; }
-  .lhead { text-align: center; }
-  .lhead img { width: 84px; height: 84px; display: block; margin: 0 auto 12px; filter: drop-shadow(0 10px 24px rgba(254,144,174,.35)); }
-  .lhead .kick { display: inline-block; margin: 0 0 8px; background: var(--pink); color: #000; font: 700 .85rem/1 "Barlow Condensed", sans-serif; letter-spacing: .14em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; }
-  .lhead h2 { margin: 0; font: italic 800 clamp(2.8rem, 13vw, 4rem)/.9 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--pink); letter-spacing: -.01em; }
-  .lhead p { margin: 10px 0 0; color: rgba(255,255,255,.78); }
-  /* Runners jogging along a lane */
-  .llane { position: relative; height: 34px; border-bottom: 2px solid rgba(254,144,174,.45); overflow: hidden; }
-  .llane span { position: absolute; bottom: 2px; left: -40px; font-size: 1.5rem; line-height: 1; transform: scaleX(-1); animation: jog 9s linear infinite; }
-  .llane span:nth-child(2) { animation-duration: 11.5s; animation-delay: -4s; font-size: 1.35rem; }
-  .llane span:nth-child(3) { animation-duration: 13s; animation-delay: -8s; }
-  @keyframes jog { to { left: calc(100% + 40px); } }
+  .lstage::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 10px; background: conic-gradient(#fff 25%, #000 0 50%, #fff 0 75%, #000 0) 0 0 / 10px 10px; opacity: .9; }
+  /* Comets streaking across the sky */
+  .comets { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .comets i { position: absolute; right: -260px; width: 220px; height: 2px; border-radius: 2px; transform: rotate(-16deg); transform-origin: right center;
+    background: linear-gradient(90deg, #fff, rgba(254,144,174,.9) 12%, rgba(254,144,174,0)); filter: drop-shadow(0 0 6px rgba(254,144,174,.9)); opacity: 0; animation: comet 7s linear infinite; }
+  .comets i::before { content: ""; position: absolute; left: -3px; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: #fff; box-shadow: 0 0 12px 3px rgba(254,144,174,.9); }
+  .comets i:nth-child(1) { top: 9%; animation-delay: 0s; }
+  .comets i:nth-child(2) { top: 34%; width: 160px; animation-duration: 9s; animation-delay: -3s; }
+  .comets i:nth-child(3) { top: 62%; width: 260px; animation-duration: 11s; animation-delay: -6s; }
+  .comets i:nth-child(4) { top: 86%; width: 140px; animation-duration: 8s; animation-delay: -1.5s; }
+  @keyframes comet { 0% { opacity: 0; translate: 0 0; } 6% { opacity: 1; } 55% { opacity: 1; } 70%, 100% { opacity: 0; translate: calc(-100vw - 520px) 32vw; } }
+  .lin { position: relative; z-index: 1; max-width: 440px; margin: 0 auto; display: grid; gap: 14px; }
+  /* Brand row: logo beside the title, so the sign-in sits high on a phone */
+  .lhead { display: flex; align-items: center; gap: 14px; }
+  .lhead img { width: 62px; height: 62px; flex: none; display: block; filter: drop-shadow(0 8px 20px rgba(254,144,174,.4)); }
+  .lhead .kick { display: inline-block; margin: 0 0 6px; background: var(--pink); color: #000; font: 700 .74rem/1 "Barlow Condensed", sans-serif; letter-spacing: .14em; text-transform: uppercase; padding: 5px 8px; border-radius: 5px; }
+  .lhead h2 { margin: 0; font: italic 800 clamp(2.3rem, 11vw, 3.4rem)/.88 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--pink); letter-spacing: -.01em; }
+  .lsub { margin: -4px 0 0; color: rgba(255,255,255,.72); font-size: .92rem; line-height: 1.4; }
   /* Access notice: a gold card so it can't be missed */
   .lpay { background: linear-gradient(135deg, #ffd23f, #ffb000); color: #000; border-radius: 20px; padding: 12px 14px 12px; box-shadow: 0 22px 50px -24px rgba(255,190,0,.75); text-align: center; }
   .lpay .lp-k { display: inline-flex; align-items: center; gap: 7px; margin: 0; font: 800 .82rem/1 "Barlow Condensed", sans-serif; letter-spacing: .14em; text-transform: uppercase; }
@@ -519,18 +527,28 @@
   .lpay .lp-renew { margin: 9px 0 0; padding: 7px 10px; border-radius: 10px; background: #000; color: #ffc61a; font: 700 .86rem/1.25 "Barlow", sans-serif; }
   .lpay .lp-renew b { color: #fff; }
   /* Sign-in card */
-  .lcard { background: #fff; color: #000; border-radius: 22px; padding: 20px 18px 22px; box-shadow: 0 30px 60px -30px rgba(0,0,0,.9); }
-  .lcard h3 { margin: 0 0 14px; font: italic 800 1.7rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
-  .lcard h3 i { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: #000; font-style: normal; font-size: 1rem; }
-  .lcard input[type="password"] { width: 100%; font: inherit; font-size: 1.05rem; color: #000; background: var(--paper); border: 1.5px solid transparent; border-radius: 12px; padding: 14px; }
+  .lcard { background: #fff; color: #000; border-radius: 20px; padding: 16px 16px 16px; box-shadow: 0 30px 60px -30px rgba(0,0,0,.9); }
+  .lcard h3 { margin: 0 0 10px; font: italic 800 1.5rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+  .lcard h3 i { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: #000; font-style: normal; font-size: .9rem; }
+  .lcard .field { margin: 0; }
+  .lcard label.lbl { margin-bottom: 5px; font-size: .95rem; }
+  .lcard input[type="password"] { width: 100%; font: inherit; font-size: 1.05rem; color: #000; background: var(--paper); border: 1.5px solid transparent; border-radius: 12px; padding: 12px 14px; }
   .lcard input[type="password"]:focus { background: #fff; border-color: #000; outline: none; }
-  .lcard .btn { margin-top: 16px; }
-  .lfoot { text-align: center; margin: 4px 0 0; font: 700 .9rem/1.4 "Barlow Condensed", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.6); }
-  @media (min-width: 900px) { .lin { max-width: 980px; grid-template-columns: 1fr 1fr; gap: 22px 28px; align-items: center; } .lhead, .llane, .lfoot { grid-column: 1 / -1; } .lstage { padding-top: 44px; } }
-  @media (prefers-reduced-motion: reduce) { .lstage::before, .llane span { animation: none; } .llane span:nth-child(1) { left: 12%; } .llane span:nth-child(2) { left: 46%; } .llane span:nth-child(3) { left: 78%; } }
+  .lcard .btn { margin-top: 12px; padding: 14px 18px; }
+  .lcard .summary { margin-top: 10px; }
+  .lfoot { text-align: center; margin: 2px 0 0; font: 700 .85rem/1.4 "Barlow Condensed", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.55); }
+  /* Short phones (e.g. iPhone SE): tighten further so Log in stays above the browser bar */
+  @media (max-height: 720px) { .lstage { padding-top: calc(env(safe-area-inset-top, 0px) + 12px); } .lin { gap: 10px; } .lsub { display: none; } .lhead img { width: 52px; height: 52px; } .lhead h2 { font-size: 2.3rem; } }
+  @media (min-width: 900px) {
+    .lstage { display: grid; align-content: center; }
+    .lin { max-width: 940px; grid-template-columns: 1fr 1fr; gap: 20px 28px; align-items: center; }
+    .lhead { grid-column: 1 / -1; justify-content: center; } .lhead img { width: 76px; height: 76px; } .lhead h2 { font-size: 3.8rem; }
+    .lsub, .lfoot { grid-column: 1 / -1; text-align: center; } .lsub { margin-top: -8px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .lstage::before { animation: none; } .comets { display: none; } }
 </style>
 </head>
-<body>
+<body class="out">
 <header class="adminbar">
   <div class="in">
     <img src="logo.png" alt="UNBND Run Club">
@@ -540,14 +558,13 @@
 </header>
 
 <div class="lstage" id="loginView">
+  <div class="comets" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
   <div class="lin">
     <div class="lhead">
       <img src="logo.png" alt="UNBND Run Club">
-      <p class="kick">UNBND Run Club · Mumbai</p>
-      <h2>Admin portal</h2>
-      <p>Members, races, race day photos and more, all in one place.</p>
+      <div><p class="kick">UNBND Run Club · Mumbai</p><h2>Admin portal</h2></div>
     </div>
-    <div class="llane" aria-hidden="true"><span>🏃‍♀️</span><span>🏃</span><span>🏃‍♂️</span></div>
+    <p class="lsub">Members, races, race day photos and more, all in one place.</p>
     <section class="lpay" aria-live="off" aria-labelledby="lpK">
       <p class="lp-k" id="lpK"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Admin portal available until</p>
       <p class="lp-d" id="lpDate">&nbsp;</p>
@@ -564,7 +581,7 @@
       <div class="summary" id="loginErr" role="alert"></div>
       <button class="btn" type="submit">Log in</button>
     </form>
-    <p class="lfoot">Run hard · Be kind · Have fun 🏃‍♀️🏃‍♂️</p>
+    <p class="lfoot">Run hard · Be kind · Have fun</p>
   </div>
 </div>
 
@@ -876,14 +893,14 @@
     enter();
   });
   function enter() {
-    $("loginView").hidden = true; $("adminView").hidden = false; $("logout").hidden = false;
+    $("loginView").hidden = true; $("adminView").hidden = false; $("logout").hidden = false; document.body.classList.remove("out");
     $("pass").value = "";
     showSection("menuPanel");
   }
   function logout(msg) {
     passcode = ""; headers = []; rows = []; refs = []; regLoaded = false; homeData = null; mainAt = 0; alertAt = 0;
     try { sessionStorage.removeItem("unbnd_admin"); sessionStorage.removeItem("unbnd_admin_data"); } catch (x) {}
-    $("adminView").hidden = true; $("loginView").hidden = false; $("logout").hidden = true;
+    $("adminView").hidden = true; $("loginView").hidden = false; $("logout").hidden = true; document.body.classList.add("out");
     clearRegistrations();
     if (msg) $("loginErr").textContent = msg;
   }
