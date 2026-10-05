@@ -279,6 +279,17 @@
   .waacts .wasend svg { width: 20px; height: 20px; fill: #fff; flex: none; }
   .waacts .wasend:disabled, .waacts button:disabled { opacity: .45; cursor: default; }
   .wanote { color: var(--muted); font-size: .88rem; margin: 8px 0 0; }
+  .waacts { flex-direction: column; }
+  .waacts > button { flex: none !important; }
+  .waacts button { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 9px; border: 0; color: #fff; }
+  .waacts .wastat { background: #25d366; color: #05361a; }
+  .waacts .wastat svg { width: 20px; height: 20px; fill: #05361a; flex: none; }
+  .waacts .waig { background: linear-gradient(45deg, #f9a03f, #e1306c 45%, #833ab4 80%, #5b51d8); }
+  .waacts .waig svg { width: 20px; height: 20px; flex: none; }
+  .waprev { display: flex; align-items: center; gap: 14px; margin-top: 12px; padding: 10px; border-radius: 14px; background: var(--paper); }
+  .waprev img { width: 92px; aspect-ratio: 9 / 16; border-radius: 10px; object-fit: cover; background: #160b26; flex: none; cursor: zoom-in; box-shadow: 0 10px 24px -14px rgba(0,0,0,.6); }
+  .waprev p { margin: 0; font-size: .9rem; color: var(--muted); }
+  .waprev b { display: block; color: var(--black); font: 700 1.05rem/1.2 "Barlow Condensed", sans-serif; text-transform: uppercase; margin-bottom: 3px; }
   .msum { margin: 0 0 12px; }
   .srefresh { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; margin: 0 0 12px; padding: 16px 18px; border: 0; border-radius: 14px; background: var(--black); color: var(--pink); font: italic 800 1.3rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .02em; cursor: pointer; }
   .srefresh svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
@@ -645,20 +656,22 @@
     <p class="note-exp">Choose a race, change anything you like in the message, then send it on WhatsApp to the club group or to one person.</p>
     <div class="wacard">
       <h3><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></i>Upcoming race</h3>
-      <p class="hint">Tells people about the next run, with a link to its page on the website. You can edit anything in the box before sending.</p>
+      <p class="hint">Tells people about the next run, with a link to its page on the website. You can edit anything in the message box before sending.</p>
       <select id="waUpRace" aria-label="Upcoming race"></select>
       <textarea id="waUpText" aria-label="Message about the upcoming race"></textarea>
-      <div class="waacts"><button class="wasend" id="waUpSend" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>Send on WhatsApp</button></div>
+      <div class="waprev"><img id="waUpImg" alt="Poster preview" data-big=""><p><b>Poster for Status and Story</b>Made from the race details, sized for WhatsApp Status and Instagram Story.</p></div>
+      <div class="waacts"><button class="wasend" id="waUpSend" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>Send as message</button><button class="wastat" id="waUpStatus" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>Post to WhatsApp Status</button><button class="waig" id="waUpIg" type="button"><svg class="ig" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.2" y="2.2" width="19.6" height="19.6" rx="5.6" fill="none" stroke="#fff" stroke-width="2.2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="#fff" stroke-width="2.2"/><circle cx="17.6" cy="6.4" r="1.4" fill="#fff"/></svg>Post to Instagram Story</button></div>
     </div>
     <div class="wacard">
       <h3><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></i>Previous race: feedback and photos</h3>
-      <p class="hint">Thanks the runners and asks for feedback and race day photos, with a link to the Race day box on the races page. You can edit anything in the box before sending.</p>
+      <p class="hint">Thanks the runners and asks for feedback and race day photos, with a link to the Race day box on the races page. You can edit anything in the message box before sending.</p>
       <select id="waPrevRace" aria-label="Previous race"></select>
       <textarea id="waPrevText" aria-label="Message about the previous race"></textarea>
       <p class="wanote" id="waPrevNote" hidden></p>
-      <div class="waacts"><button class="wasend" id="waPrevSend" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>Send on WhatsApp</button></div>
+      <div class="waprev"><img id="waPrevImg" alt="Poster preview" data-big=""><p><b>Poster for Status and Story</b>Made from the race details, sized for WhatsApp Status and Instagram Story.</p></div>
+      <div class="waacts"><button class="wasend" id="waPrevSend" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>Send as message</button><button class="wastat" id="waPrevStatus" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>Post to WhatsApp Status</button><button class="waig" id="waPrevIg" type="button"><svg class="ig" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.2" y="2.2" width="19.6" height="19.6" rx="5.6" fill="none" stroke="#fff" stroke-width="2.2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="#fff" stroke-width="2.2"/><circle cx="17.6" cy="6.4" r="1.4" fill="#fff"/></svg>Post to Instagram Story</button></div>
     </div>
-    <p class="wanote">Send on WhatsApp opens WhatsApp with the message ready. Choose the group, or any one person, to send it to.</p>
+    <p class="wanote">Send as message opens WhatsApp with the text ready: choose the group, or any one person. The two poster buttons open your phone's share menu: pick WhatsApp, then My Status, or Instagram, then Story. On a computer the poster downloads instead.</p>
   </section>
 
   <section class="panel" id="homePanel" hidden>
@@ -1747,6 +1760,208 @@
   }
   $("paGo").addEventListener("click", () => { if (!alertRace) return; pendingRace = alertRace.id; showSection("homePanel"); applyPendingRace(); });
 
+  // ---------- Race posters for WhatsApp Status and Instagram Story (1080 x 1920): Marine Drive at night ----------
+  const POSTER = (function () {
+    const W = 1080, H = 1920, PINK = "#fe90ae", HOT = "#ff5f8f", GOLD = "#ffcf6e";
+    const C = '"Barlow Condensed", "Arial Narrow", sans-serif', B = '"Barlow", system-ui, sans-serif';
+    function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+    const rr = (x, a, y, w, h, r) => { x.beginPath(); x.moveTo(a + r, y); x.arcTo(a + w, y, a + w, y + h, r); x.arcTo(a + w, y + h, a, y + h, r); x.arcTo(a, y + h, a, y, r); x.arcTo(a, y, a + w, y, r); x.closePath(); };
+
+    // ---------- The scene ----------
+    function sky(x, moonX) {
+      const g = x.createLinearGradient(0, 0, 0, 1250);
+      g.addColorStop(0, "#05040f"); g.addColorStop(0.38, "#140a2e"); g.addColorStop(0.7, "#3d1043"); g.addColorStop(0.9, "#a3305f"); g.addColorStop(1, "#ff8fa8");
+      x.fillStyle = g; x.fillRect(0, 0, W, 1250);
+      const r = rng(7);
+      for (let i = 0; i < 170; i++) { const sx = r() * W, sy = r() * 900, s = r() * 1.8 + 0.4; x.globalAlpha = 0.25 + r() * 0.65; x.fillStyle = "#fff"; x.beginPath(); x.arc(sx, sy, s, 0, 7); x.fill(); }
+      x.globalAlpha = 1;
+      // the moon over the Arabian Sea
+      const mx = moonX || 860, my = 985, mg = x.createRadialGradient(mx, my, 10, mx, my, 220);
+      mg.addColorStop(0, "rgba(255,235,240,.55)"); mg.addColorStop(1, "rgba(255,160,190,0)");
+      x.fillStyle = mg; x.fillRect(mx - 220, my - 220, 440, 440);
+      x.fillStyle = "#fff4f6"; x.beginPath(); x.arc(mx, my, 52, 0, 7); x.fill();
+      x.fillStyle = "rgba(230,200,210,.5)"; [[-14, -10, 9], [16, 12, 7], [6, -22, 5]].forEach(([a, b, s]) => { x.beginPath(); x.arc(mx + a, my + b, s, 0, 7); x.fill(); });
+    }
+    function comets(x) {
+      [[980, 140, 320], [760, 470, 220], [1040, 640, 260]].forEach(([cx, cy, len]) => {
+        const ang = Math.PI * 0.86, ex = cx + Math.cos(ang) * -len, ey = cy + Math.sin(ang) * -len;
+        const g = x.createLinearGradient(cx, cy, ex, ey); g.addColorStop(0, "rgba(255,255,255,.95)"); g.addColorStop(0.15, "rgba(254,144,174,.8)"); g.addColorStop(1, "rgba(254,144,174,0)");
+        x.strokeStyle = g; x.lineWidth = 3; x.lineCap = "round"; x.beginPath(); x.moveTo(cx, cy); x.lineTo(ex, ey); x.stroke();
+        x.shadowColor = PINK; x.shadowBlur = 18; x.fillStyle = "#fff"; x.beginPath(); x.arc(cx, cy, 5, 0, 7); x.fill(); x.shadowBlur = 0;
+      });
+    }
+    // South Mumbai skyline: towers at Nariman Point, then the Art Deco row along Marine Drive
+    function skyline(x) {
+      const r = rng(42), base = 1235;
+      // far layer
+      x.fillStyle = "#2a1240";
+      let px = -20;
+      while (px < W + 20) { const w = 40 + r() * 70, h = 60 + r() * 150 * (px < 420 ? 1.9 : 1); x.fillRect(px, base - h, w - 4, h); px += w; }
+      // near layer with lit windows
+      px = -10;
+      const rows = [];
+      while (px < W + 20) {
+        const tall = px < 380 && r() > 0.35, w = tall ? 60 + r() * 50 : 70 + r() * 90, h = tall ? 230 + r() * 230 : 70 + r() * 90;
+        rows.push([px, w, h, tall]); px += w + 6;
+      }
+      rows.forEach(([bx, w, h, tall]) => {
+        const top = base - h;
+        x.fillStyle = "#170a26";
+        x.beginPath(); x.moveTo(bx, base); x.lineTo(bx, top + 14);
+        if (!tall) { x.lineTo(bx + w * 0.18, top + 14); x.lineTo(bx + w * 0.18, top); x.lineTo(bx + w * 0.82, top); x.lineTo(bx + w * 0.82, top + 14); } // Art Deco step
+        x.lineTo(bx + w, top + 14); x.lineTo(bx + w, base); x.closePath(); x.fill();
+        if (tall) { x.fillRect(bx + w / 2 - 2, top - 40, 4, 40); x.fillStyle = "#ff5f8f"; x.beginPath(); x.arc(bx + w / 2, top - 42, 4, 0, 7); x.fill(); }
+        for (let wy = top + 24; wy < base - 12; wy += 18) for (let wx = bx + 8; wx < bx + w - 10; wx += 15) {
+          if (r() > 0.62) { x.fillStyle = r() > 0.5 ? "rgba(255,214,140,.9)" : "rgba(255,170,200,.75)"; x.fillRect(wx, wy, 6, 8); }
+        }
+      });
+    }
+    // Point on the Queen's Necklace (the curve of Marine Drive), t from 0 (near, bottom left) to 1 (far, right)
+    const P0 = [-60, 1395], P1 = [300, 1252], P2 = [1160, 1240];
+    const curve = (t) => [(1 - t) * (1 - t) * P0[0] + 2 * (1 - t) * t * P1[0] + t * t * P2[0], (1 - t) * (1 - t) * P0[1] + 2 * (1 - t) * t * P1[1] + t * t * P2[1]];
+    function sea(x, moonX) {
+      const g = x.createLinearGradient(0, 1235, 0, H);
+      g.addColorStop(0, "#5a1c4a"); g.addColorStop(0.18, "#1d0f33"); g.addColorStop(1, "#04030b");
+      x.fillStyle = g; x.fillRect(0, 1235, W, H - 1235);
+      const r = rng(9);
+      for (let i = 0; i < 90; i++) { const y = 1245 + Math.pow(r(), 1.6) * 600, w = 20 + r() * 120, sx = r() * W; x.globalAlpha = 0.08 + r() * 0.22; x.fillStyle = r() > 0.5 ? PINK : "#fff"; x.fillRect(sx, y, w, 2); }
+      x.globalAlpha = 1;
+      // moonlight path on the water
+      for (let i = 0; i < 26; i++) { const y = 1250 + i * 18, w = 30 + i * 6; x.globalAlpha = 0.3 - i * 0.01; x.fillStyle = "#ffe3ea"; x.fillRect((moonX || 860) - w / 2 + Math.sin(i) * 14, y, w, 3); }
+      x.globalAlpha = 1;
+    }
+    function necklace(x) {
+      // the promenade and road
+      x.lineCap = "round";
+      x.strokeStyle = "#0c0716"; x.lineWidth = 70; x.beginPath(); x.moveTo(...curve(0)); x.quadraticCurveTo(P1[0], P1[1], P2[0], P2[1]); x.stroke();
+      x.strokeStyle = "rgba(255,190,120,.25)"; x.lineWidth = 3; x.beginPath(); x.moveTo(P0[0], P0[1] - 22); x.quadraticCurveTo(P1[0], P1[1] - 18, P2[0], P2[1] - 4); x.stroke();
+      // lamps: pearls of light, closer together as they recede
+      for (let i = 0; i <= 46; i++) {
+        const t = Math.pow(i / 46, 0.62), [lx, ly0] = curve(t), size = 9 - t * 6.5, ly = ly0 - 26 * (1 - t) - 6;
+        const rg = x.createLinearGradient(lx, ly, lx, ly + 220 * (1 - t) + 40);
+        rg.addColorStop(0, "rgba(255,207,110,.55)"); rg.addColorStop(1, "rgba(255,207,110,0)");
+        x.fillStyle = rg; x.fillRect(lx - size * 0.6, ly + 30 * (1 - t) + 6, size * 1.2, 220 * (1 - t) + 40);   // reflection in the sea
+        x.shadowColor = GOLD; x.shadowBlur = 26 * (1 - t) + 6; x.fillStyle = "#fff2cf"; x.beginPath(); x.arc(lx, ly, size, 0, 7); x.fill(); x.shadowBlur = 0;
+      }
+    }
+    function palm(x, px, py, s, flip) {
+      x.save(); x.translate(px, py); x.scale(flip ? -s : s, s);
+      x.fillStyle = "#06040c"; x.strokeStyle = "#06040c";
+      x.lineWidth = 20; x.lineCap = "round"; x.beginPath(); x.moveTo(0, 0); x.quadraticCurveTo(40, -220, 10, -430); x.stroke();
+      for (const [a, l] of [[-2.7, 220], [-2.2, 240], [-1.6, 200], [-0.9, 240], [-0.35, 220], [0.25, 180], [-3.2, 170]]) {
+        x.beginPath(); x.moveTo(10, -430);
+        const ex = 10 + Math.cos(a) * l, ey = -430 + Math.sin(a) * l * 0.55 + 70;
+        x.quadraticCurveTo(10 + Math.cos(a) * l * 0.5, -430 + Math.sin(a) * l * 0.5 - 30, ex, ey);
+        x.quadraticCurveTo(10 + Math.cos(a) * l * 0.55, -430 + Math.sin(a) * l * 0.5 - 2, 10, -426); x.fill();
+      }
+      x.restore();
+    }
+    function checkers(x) {
+      for (let i = 0; i < W / 20; i++) for (let j = 0; j < 2; j++) { x.fillStyle = (i + j) % 2 ? "#fff" : "#000"; x.fillRect(i * 20, H - 40 + j * 20, 20, 20); }
+    }
+
+    // ---------- Type ----------
+    function fitLines(x, words, maxW, maxSize, maxLines) {
+      for (let size = maxSize; size > 60; size -= 4) {
+        x.font = "italic 800 " + size + "px " + C;
+        const lines = []; let line = "";
+        words.forEach((w) => { const t = line ? line + " " + w : w; if (x.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t; });
+        lines.push(line);
+        if (lines.length <= maxLines && lines.every((l) => x.measureText(l).width <= maxW)) return { size, lines };
+      }
+      return { size: 60, lines: [words.join(" ")] };
+    }
+    function brand(x, logo, kicker) {
+      if (logo) { x.save(); x.shadowColor = PINK; x.shadowBlur = 30; x.beginPath(); x.arc(150, 170, 74, 0, 7); x.closePath(); x.clip(); x.drawImage(logo, 76, 96, 148, 148); x.restore(); x.lineWidth = 4; x.strokeStyle = PINK; x.beginPath(); x.arc(150, 170, 76, 0, 7); x.stroke(); }
+      x.fillStyle = "#fff"; x.font = "800 52px " + C; x.textBaseline = "alphabetic"; x.fillText("UNBND RUN CLUB", 248, 160);
+      x.fillStyle = PINK; x.font = "700 32px " + C; x.fillText(kicker, 250, 206);
+    }
+    function chip(x, cx, y, text, fill, ink) {
+      x.font = "italic 800 54px " + C; const w = x.measureText(text).width + 56;
+      rr(x, cx, y, w, 84, 42); x.fillStyle = fill; x.fill(); x.fillStyle = ink; x.fillText(text, cx + 28, y + 61); return w;
+    }
+    function glowTitle(x, lines, size, y0) {
+      x.save(); x.font = "italic 800 " + size + "px " + C; x.textBaseline = "alphabetic";
+      lines.forEach((l, i) => {
+        const y = y0 + i * size * 0.88;
+        x.fillStyle = "rgba(254,144,174,.25)"; x.fillText(l, 86 - 16, y); x.fillText(l, 86 - 8, y);   // speed trail
+        x.shadowColor = HOT; x.shadowBlur = 40; x.fillStyle = PINK; x.fillText(l, 86, y); x.shadowBlur = 0;
+      });
+      x.restore();
+      return y0 + (lines.length - 1) * size * 0.88;
+    }
+    function panel(x, y, h) {
+      x.save(); rr(x, 60, y, W - 120, h, 36); x.fillStyle = "rgba(8,5,18,.78)"; x.fill(); x.lineWidth = 3; x.strokeStyle = "rgba(254,144,174,.7)"; x.stroke(); x.restore();
+    }
+    function label(x, text, lx, ly) { x.fillStyle = PINK; x.font = "700 30px " + C; x.fillText(text.toUpperCase(), lx, ly); }
+    function wrapText(x, text, maxW) { const words = String(text).split(/\s+/), out = []; let line = ""; words.forEach((w) => { const t = line ? line + " " + w : w; if (x.measureText(t).width > maxW && line) { out.push(line); line = w; } else line = t; }); out.push(line); return out; }
+    function site(x, y) {
+      x.textAlign = "center"; x.fillStyle = "rgba(255,255,255,.75)"; x.font = "700 30px " + C; x.fillText("FULL DETAILS & LIVE COUNTDOWN", W / 2, y);
+      x.fillStyle = "#fff"; x.font = "800 50px " + C; x.fillText("unbndrunclub.github.io", W / 2, y + 58); x.textAlign = "left";
+    }
+    function scene(x, moonX) { sky(x, moonX); comets(x); skyline(x); sea(x, moonX); necklace(x); palm(x, 40, 1390, 0.95, false); palm(x, 1065, 1330, 0.75, true); }
+
+    // ---------- Posters ----------
+    const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const t12 = (t) => { const m = /^(\d{2}):(\d{2})$/.exec(t || ""); if (!m) return t || ""; const H = +m[1]; return (H % 12 || 12) + ":" + m[2] + " " + (H < 12 ? "AM" : "PM"); };
+    const dateChip = (r) => { const [y, m, d] = r.date.split("-").map(Number); return ((r.day || "").slice(0, 3) + " " + d + " " + MONTHS[m - 1]).toUpperCase(); };
+
+    const upcoming = function (x, r, logo) {
+      scene(x, 700);
+      brand(x, logo, "MUMBAI · NEXT RUN");
+      const t = fitLines(x, r.name.toUpperCase().split(/\s+/), W - 172, 230, 3);
+      const last = glowTitle(x, t.lines, t.size, 300 + t.size * 0.82);
+      let cx = 86; const cy = last + 60;
+      cx += chip(x, cx, cy, dateChip(r), PINK, "#000") + 18;
+      chip(x, cx, cy, t12(r.time), "#fff", "#000");
+      // distance medal, beside the date and time
+      if (r.distance) {
+        const mx = 905, my = cy + 42;
+        x.save(); x.shadowColor = GOLD; x.shadowBlur = 40; x.fillStyle = "#ffcf3f"; x.beginPath(); x.arc(mx, my, 96, 0, 7); x.fill(); x.restore();
+        x.lineWidth = 6; x.strokeStyle = "#000"; x.beginPath(); x.arc(mx, my, 82, 0, 7); x.stroke();
+        x.fillStyle = "#000"; x.textAlign = "center"; x.font = "italic 800 92px " + C; x.fillText(r.distance, mx, my + 22); x.font = "800 30px " + C; x.fillText("KM", mx, my + 56); x.textAlign = "left";
+      }
+      // info panel: start point, then reporting time and who it's for
+      const py = 1440;
+      x.font = "800 56px " + C; const where = wrapText(x, ((r.start || "") + (r.landmark ? " (near " + r.landmark + ")" : "")).toUpperCase(), W - 230).slice(0, 2);
+      const ph = 236 + where.length * 58; panel(x, py, ph);
+      label(x, "Start point", 104, py + 60);
+      x.fillStyle = "#fff"; x.font = "800 56px " + C; where.forEach((l, i) => x.fillText(l, 104, py + 116 + i * 58));
+      const ry = py + 116 + where.length * 58 + 22;
+      x.fillStyle = "rgba(254,144,174,.35)"; x.fillRect(104, ry - 34, W - 208, 2);
+      label(x, "Reporting", 104, ry + 22); x.fillStyle = "#fff"; x.font = "800 44px " + C; x.fillText(t12(r.time), 104, ry + 70);
+      label(x, "Entry", 470, ry + 22); x.fillStyle = "#fff"; x.font = "600 36px " + B; x.fillText("Free for active members", 470, ry + 66);
+      site(x, Math.max(py + ph + 70, 1790));
+      checkers(x);
+    };
+
+    const thanks = function (x, r, logo) {
+      scene(x, 860);
+      brand(x, logo, "MUMBAI · RACE DAY");
+      const [y, m, d] = r.date.split("-").map(Number);
+      glowTitle(x, ["THANK YOU,", "MUMBAI!"], 200, 470);
+      x.fillStyle = "#fff"; x.font = "italic 800 60px " + C; x.fillText(r.name.toUpperCase(), 90, 720);
+      x.fillStyle = "rgba(255,255,255,.8)"; x.font = "700 40px " + C; x.fillText(((r.day || "") + " · " + d + " " + MONTHS[m - 1] + " " + y).toUpperCase(), 90, 778);
+      const py = 1330; panel(x, py, 400);
+      x.fillStyle = "#fff"; x.font = "italic 800 64px " + C; x.textAlign = "center"; x.fillText("TELL US HOW IT WENT", W / 2, py + 92);
+      // two tiles: feedback and photos
+      [["FEEDBACK", 0], ["PHOTOS", 1]].forEach(([t, i]) => {
+        const tx = 120 + i * 430, ty = py + 130; rr(x, tx, ty, 410, 170, 26); x.fillStyle = i ? "#ffcf3f" : PINK; x.fill();
+        x.fillStyle = "#000"; x.font = "italic 800 58px " + C; x.fillText(t, tx + 238, ty + 106);
+        x.save(); x.translate(tx + 62, ty + 85); x.lineWidth = 8; x.strokeStyle = "#000"; x.lineJoin = "round"; x.lineCap = "round";
+        if (!i) { rr(x, -38, -34, 76, 54, 14); x.stroke(); x.beginPath(); x.moveTo(-14, 20); x.lineTo(-24, 40); x.lineTo(4, 20); x.stroke(); }   // speech bubble
+        else { rr(x, -40, -24, 80, 56, 12); x.stroke(); x.beginPath(); x.moveTo(-16, -24); x.lineTo(-8, -38); x.lineTo(8, -38); x.lineTo(16, -24); x.stroke(); x.beginPath(); x.arc(0, 4, 15, 0, 7); x.stroke(); }   // camera
+        x.restore();
+      });
+      x.fillStyle = "rgba(255,255,255,.8)"; x.font = "600 32px " + B; x.fillText("Open for 3 days after the race", W / 2, py + 360);
+      x.textAlign = "left";
+      x.textAlign = "center"; x.fillStyle = "rgba(255,255,255,.75)"; x.font = "700 30px " + C; x.fillText("RACE DAY BOX ON THE RACES PAGE", W / 2, py + 458);
+      x.fillStyle = "#fff"; x.font = "800 50px " + C; x.fillText("unbndrunclub.github.io", W / 2, py + 516); x.textAlign = "left";
+      checkers(x);
+    };
+    return { upcoming: upcoming, thanks: thanks };
+  })();
+
   // ---------- Generate WhatsApp messages ----------
   const SITE = "https://unbndrunclub.github.io/";
   const raceDate = (r) => (r.day ? r.day + ", " : "") + niceDate(r.date);
@@ -1766,8 +1981,8 @@
       "Both are in the Race day box on the races page (open for 3 days after the race):", SITE + "races.html#raceday", "", "See you at the next one! " + RUNNERS].join("\n");
   }
   const WA_CARDS = [
-    { sel: "waUpRace", text: "waUpText", send: "waUpSend", make: upcomingMsg },
-    { sel: "waPrevRace", text: "waPrevText", send: "waPrevSend", make: previousMsg, note: "waPrevNote" },
+    { sel: "waUpRace", text: "waUpText", send: "waUpSend", make: upcomingMsg, k: "Up", poster: "upcoming", file: "next-race" },
+    { sel: "waPrevRace", text: "waPrevText", send: "waPrevSend", make: previousMsg, note: "waPrevNote", k: "Prev", poster: "thanks", file: "thank-you" },
   ];
   let waLists = {};
   const waFit = (t) => { t.style.height = "auto"; t.style.height = (t.scrollHeight + 4) + "px"; };   // the box grows to show the whole message
@@ -1775,6 +1990,7 @@
     const r = (waLists[c.sel] || []).find((x) => x.id === $(c.sel).value);
     $(c.text).value = r ? c.make(r) : ""; waFit($(c.text));
     $(c.send).disabled = !r;
+    makePosterFor(c, r);
     if (c.note) {
       const old = r && Date.now() > raceEndMs(r) + 3 * 864e5 + 6e4 * 330;   // the Race day box on the website closes 3 days after the race
       $(c.note).hidden = !old;
@@ -1804,7 +2020,44 @@
       const t = $(c.text).value.trim(); if (!t) return;
       window.open("https://wa.me/?text=" + encodeURIComponent(t), "_blank", "noopener");
     });
+    $("wa" + c.k + "Status").addEventListener("click", () => sharePoster(c, "status"));
+    $("wa" + c.k + "Ig").addEventListener("click", () => sharePoster(c, "ig"));
+    $("wa" + c.k + "Img").addEventListener("click", () => { if (!c.url) return; $("photoViewImg").src = c.url; $("photoViewId").textContent = "Poster preview"; $("photoView").hidden = false; });
   });
+
+  // The poster is made as soon as a race is picked, so sharing can start straight from the tap
+  const posterLogo = new Promise((res) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = "logo.png"; });
+  async function makePoster(kind, r) {
+    try { await Promise.all(['italic 800 100px "Barlow Condensed"', '800 50px "Barlow Condensed"', '700 30px "Barlow Condensed"', '600 30px "Barlow"'].map((f) => document.fonts.load(f))); } catch (e) {}
+    const logo = await posterLogo, cv = document.createElement("canvas"); cv.width = 1080; cv.height = 1920;
+    POSTER[kind](cv.getContext("2d"), r, logo);
+    return new Promise((res) => { try { cv.toBlob((b) => res(b), "image/png"); } catch (e) { res(null); } });
+  }
+  async function makePosterFor(c, r) {
+    const btns = [$("wa" + c.k + "Status"), $("wa" + c.k + "Ig")];
+    btns.forEach((b) => (b.disabled = !r));
+    if (!r) { c.blob = null; c.for = ""; $("wa" + c.k + "Img").removeAttribute("src"); return; }
+    if (c.for === r.id && c.blob) return;
+    const want = r.id; c.for = want; c.blob = null;
+    const blob = await makePoster(c.poster, r);
+    if (c.for !== want) return;   // a different race was picked meanwhile
+    c.blob = blob;
+    if (c.url) URL.revokeObjectURL(c.url);
+    c.url = blob ? URL.createObjectURL(blob) : "";
+    $("wa" + c.k + "Img").src = c.url;
+  }
+  async function sharePoster(c, where) {
+    const r = (waLists[c.sel] || []).find((x) => x.id === $(c.sel).value); if (!r) return;
+    if (!c.blob || c.for !== r.id) { c.for = ""; await makePosterFor(c, r); }
+    if (!c.blob) { toast("Couldn't make the poster. Please try again."); return; }
+    const name = "UNBND-" + r.id + "-" + c.file + ".png", file = new File([c.blob], name, { type: "image/png" });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file] }); return; } catch (e) { if (e.name === "AbortError") return; }
+    }
+    // No share menu here (most computers): save the poster instead
+    const a = document.createElement("a"); a.href = c.url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    toast(where === "ig" ? "Poster saved. Add it to your Instagram Story from your photos." : "Poster saved. Add it to your WhatsApp Status from your photos.");
+  }
 
   // ---------- Stay logged in while this tab is open ----------
   (() => {
