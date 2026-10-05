@@ -488,6 +488,44 @@
   .busy-box b { display: block; font: italic 800 1.5rem/1.1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin-top: 14px; }
   .spinner { width: 44px; height: 44px; margin: 0 auto; border-radius: 50%; border: 5px solid var(--paper); border-top-color: var(--pink); animation: spin .8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
+  /* ---------- Login: admin portal ---------- */
+  .lstage { position: relative; overflow: hidden; min-height: calc(100vh - 66px); min-height: calc(100svh - 66px); background: radial-gradient(120% 70% at 50% 0%, #2a0f19 0%, #000 60%); color: #fff; padding: 26px 16px 40px; }
+  .lstage::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(118deg, transparent 0 46px, rgba(254,144,174,.13) 46px 48px); background-size: 54.363px 100%; animation: lanes-l 2.2s linear infinite;
+    -webkit-mask-image: linear-gradient(to top, #000, transparent 75%); mask-image: linear-gradient(to top, #000, transparent 75%); }
+  @keyframes lanes-l { to { background-position-x: -54.363px; } }
+  .lstage::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 12px; background: conic-gradient(#fff 25%, #000 0 50%, #fff 0 75%, #000 0) 0 0 / 12px 12px; opacity: .9; }
+  .lin { position: relative; z-index: 1; max-width: 460px; margin: 0 auto; display: grid; gap: 16px; }
+  .lhead { text-align: center; }
+  .lhead img { width: 84px; height: 84px; display: block; margin: 0 auto 12px; filter: drop-shadow(0 10px 24px rgba(254,144,174,.35)); }
+  .lhead .kick { display: inline-block; margin: 0 0 8px; background: var(--pink); color: #000; font: 700 .85rem/1 "Barlow Condensed", sans-serif; letter-spacing: .14em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; }
+  .lhead h2 { margin: 0; font: italic 800 clamp(2.8rem, 13vw, 4rem)/.9 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--pink); letter-spacing: -.01em; }
+  .lhead p { margin: 10px 0 0; color: rgba(255,255,255,.78); }
+  /* Runners jogging along a lane */
+  .llane { position: relative; height: 34px; border-bottom: 2px solid rgba(254,144,174,.45); overflow: hidden; }
+  .llane span { position: absolute; bottom: 2px; left: -40px; font-size: 1.5rem; line-height: 1; transform: scaleX(-1); animation: jog 9s linear infinite; }
+  .llane span:nth-child(2) { animation-duration: 11.5s; animation-delay: -4s; font-size: 1.35rem; }
+  .llane span:nth-child(3) { animation-duration: 13s; animation-delay: -8s; }
+  @keyframes jog { to { left: calc(100% + 40px); } }
+  /* Access notice: a gold card so it can't be missed */
+  .lpay { background: linear-gradient(135deg, #ffd23f, #ffb000); color: #000; border-radius: 20px; padding: 16px 16px 14px; box-shadow: 0 22px 50px -24px rgba(255,190,0,.75); text-align: center; }
+  .lpay .lp-k { display: inline-flex; align-items: center; gap: 7px; margin: 0; font: 800 .82rem/1 "Barlow Condensed", sans-serif; letter-spacing: .14em; text-transform: uppercase; }
+  .lpay .lp-k svg { width: 17px; height: 17px; fill: none; stroke: #000; stroke-width: 2.4; stroke-linecap: round; }
+  .lpay .lp-d { margin: 8px 0 2px; font: italic 800 clamp(1.9rem, 8.6vw, 2.4rem)/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .lpay .lp-t { margin: 0; font-weight: 700; font-size: 1rem; }
+  .lpay .lp-cd { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 14px; }
+  .lpay .lp-cd div { background: #000; border-radius: 12px; padding: 9px 4px 7px; }
+  .lpay .lp-cd b { display: block; font: italic 800 2rem/1 "Barlow Condensed", sans-serif; color: #ffc61a; font-variant-numeric: tabular-nums; }
+  .lpay .lp-cd span { font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.75); }
+  /* Sign-in card */
+  .lcard { background: #fff; color: #000; border-radius: 22px; padding: 20px 18px 22px; box-shadow: 0 30px 60px -30px rgba(0,0,0,.9); }
+  .lcard h3 { margin: 0 0 14px; font: italic 800 1.7rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+  .lcard h3 i { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: #000; font-style: normal; font-size: 1rem; }
+  .lcard input[type="password"] { width: 100%; font: inherit; font-size: 1.05rem; color: #000; background: var(--paper); border: 1.5px solid transparent; border-radius: 12px; padding: 14px; }
+  .lcard input[type="password"]:focus { background: #fff; border-color: #000; outline: none; }
+  .lcard .btn { margin-top: 16px; }
+  .lfoot { text-align: center; margin: 4px 0 0; font: 700 .9rem/1.4 "Barlow Condensed", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+  @media (min-width: 900px) { .lin { max-width: 980px; grid-template-columns: 1fr 1fr; gap: 22px 28px; align-items: center; } .lhead, .llane, .lfoot { grid-column: 1 / -1; } .lstage { padding-top: 44px; } }
+  @media (prefers-reduced-motion: reduce) { .lstage::before, .llane span { animation: none; } .llane span:nth-child(1) { left: 12%; } .llane span:nth-child(2) { left: 46%; } .llane span:nth-child(3) { left: 78%; } }
 </style>
 </head>
 <body>
@@ -499,16 +537,32 @@
   </div>
 </header>
 
-<div class="wrap" id="loginView">
-  <form class="card login" id="loginForm" novalidate>
-    <h2 class="card-title">Admin login</h2>
-    <div class="field">
-      <label class="lbl" for="pass">Passcode</label>
-      <input id="pass" type="password" autocomplete="current-password">
+<div class="lstage" id="loginView">
+  <div class="lin">
+    <div class="lhead">
+      <img src="logo.png" alt="UNBND Run Club">
+      <p class="kick">UNBND Run Club · Mumbai</p>
+      <h2>Admin portal</h2>
+      <p>Members, races, race day photos and more, all in one place.</p>
     </div>
-    <div class="summary" id="loginErr" role="alert"></div>
-    <button class="btn" type="submit">Log in</button>
-  </form>
+    <div class="llane" aria-hidden="true"><span>🏃‍♀️</span><span>🏃</span><span>🏃‍♂️</span></div>
+    <section class="lpay" aria-live="off" aria-labelledby="lpK">
+      <p class="lp-k" id="lpK"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Admin portal available until</p>
+      <p class="lp-d" id="lpDate">&nbsp;</p>
+      <p class="lp-t">11:59:59 PM IST</p>
+      <div class="lp-cd" id="lpCd"><div><b>--</b><span>Days</span></div><div><b>--</b><span>Hrs</span></div><div><b>--</b><span>Mins</span></div><div><b>--</b><span>Secs</span></div></div>
+    </section>
+    <form class="lcard" id="loginForm" novalidate>
+      <h3><i aria-hidden="true">🔐</i>Admin login</h3>
+      <div class="field">
+        <label class="lbl" for="pass">Passcode</label>
+        <input id="pass" type="password" autocomplete="current-password">
+      </div>
+      <div class="summary" id="loginErr" role="alert"></div>
+      <button class="btn" type="submit">Log in</button>
+    </form>
+    <p class="lfoot">Run hard · Be kind · Have fun 🏃‍♀️🏃‍♂️</p>
+  </div>
 </div>
 
 <div class="wrap" id="adminView" hidden>
@@ -786,6 +840,27 @@
     $("toast").textContent = msg; $("toast").hidden = false;
     clearTimeout(toast.t); toast.t = setTimeout(() => ($("toast").hidden = true), 2800);
   }
+
+  // ---------- Login page: admin portal access date (the upcoming 16th, 11:59:59 PM India time) ----------
+  (function () {
+    const MONTHS_L = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const IST_MS = 330 * 60000;
+    function nextDeadline(now) {
+      const t = new Date(now + IST_MS);   // the date and time in India
+      let y = t.getUTCFullYear(), m = t.getUTCMonth();
+      let end = Date.UTC(y, m, 16, 23, 59, 59) - IST_MS;
+      if (now > end) { m += 1; if (m > 11) { m = 0; y += 1; } end = Date.UTC(y, m, 16, 23, 59, 59) - IST_MS; }
+      return { end: end, label: "16 " + MONTHS_L[m] + " " + y };
+    }
+    function tick() {
+      if ($("loginView").hidden) return;
+      const now = Date.now(), d = nextDeadline(now), ms = Math.max(0, d.end + 999 - now);
+      if ($("lpDate").textContent !== d.label) $("lpDate").textContent = d.label;
+      const v = [Math.floor(ms / 864e5), Math.floor(ms / 36e5) % 24, Math.floor(ms / 6e4) % 60, Math.floor(ms / 1e3) % 60];
+      $("lpCd").querySelectorAll("b").forEach((b, i) => { const x = String(v[i]).padStart(2, "0"); if (b.textContent !== x) b.textContent = x; });
+    }
+    tick(); setInterval(tick, 1000);
+  })();
 
   // ---------- Login ----------
   $("loginForm").addEventListener("submit", async (e) => {
