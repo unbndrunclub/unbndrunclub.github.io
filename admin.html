@@ -255,6 +255,41 @@
   .menu button b { display: block; font: italic 800 1.7rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
   .menu button span { display: block; color: var(--muted); margin-top: 6px; }
   .menu button:focus-visible { outline: 3px solid var(--pink); outline-offset: 2px; }
+  /* Main page: race-photo reminder, status tiles and the registrations-per-day chart */
+  .palert { display: flex; align-items: center; gap: 6px 10px; flex-wrap: wrap; background: var(--pink); color: #000; border-radius: 12px; padding: 7px 8px 7px 10px; margin-bottom: 12px; font-weight: 600; font-size: .92rem; line-height: 1.3; }
+  .palert .tag { background: #000; color: var(--pink); font: italic 800 .9rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .02em; padding: 5px 8px; border-radius: 6px; }
+  .palert .what { flex: 1; min-width: 190px; }
+  .palert button { border: 0; background: #000; color: var(--pink); border-radius: 9px; padding: 8px 12px; font: italic 800 .95rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; cursor: pointer; }
+  .palert button:focus-visible { outline: 3px solid #000; outline-offset: 2px; }
+  .msum { margin-top: 16px; }
+  .mkpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  @media (min-width: 720px) { .mkpis { grid-template-columns: repeat(6, 1fr); } }
+  .mkpis .kpi { position: relative; padding: 12px 14px 11px; border-radius: 14px; border: 1px solid rgba(0,0,0,.07); }
+  .mkpis .kpi.hi { border-color: #000; }
+  .mkpis .kpi b { font-size: 2.1rem; }
+  .mkpis .kpi span { display: block; margin-top: 3px; font-size: .82rem; line-height: 1.2; }
+  .mkpis .kpi.green { background: #eaf8ef; } .mkpis .kpi.blue { background: #e6f1fd; } .mkpis .kpi.yellow { background: #fff8dc; } .mkpis .kpi.red { background: #fdecee; }
+  .mkpis .kpi .rrupee { position: absolute; top: 10px; right: 10px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--black); color: var(--pink); font: 800 .8rem/1 "Barlow", sans-serif; }
+  .mchart { margin-top: 10px; }
+  .mchart .mhead { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .mchart h3 { margin-bottom: 2px; }
+  .mchart .msub { margin: 0 0 8px 14px; color: var(--muted); font-size: .88rem; }
+  .mchart .mref { flex: none; border: 1.5px solid var(--line); background: var(--white); border-radius: 999px; padding: 5px 11px; font: 700 .85rem/1 "Barlow Condensed", sans-serif; cursor: pointer; color: var(--black); }
+  .mchart .mref:focus-visible { outline: 3px solid var(--pink); outline-offset: 2px; }
+  .mchart-body { position: relative; }
+  .mchart-body svg { display: block; max-width: 100%; touch-action: pan-y; }
+  .mchart-body svg text { font-family: "Barlow", system-ui, sans-serif; fill: #1a1a1a; }
+  .mchart-body svg .ax { font-size: 11px; fill: #686873; }
+  .mchart-body svg .val { font-size: 11px; font-weight: 600; }
+  .mchart-body svg .call { font-size: 12px; font-weight: 700; }
+  .mchart-body .mhit { fill: transparent; }
+  .mchart-body .mhit:hover { fill: rgba(0,0,0,.045); }
+  .mchart-tip { position: absolute; z-index: 3; transform: translate(-50%, -100%); background: var(--black); color: var(--white); border-radius: 8px; padding: 6px 9px; font-size: .82rem; line-height: 1.3; white-space: nowrap; pointer-events: none; box-shadow: 0 8px 20px -8px rgba(0,0,0,.5); }
+  .mchart-tip b { display: block; font-size: 1.05rem; color: var(--pink); }
+  @media (prefers-reduced-motion: no-preference) {
+    .mchart-body.grow .mbar { transform-box: fill-box; transform-origin: 50% 100%; animation: mgrow .6s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--i) * 18ms); }
+    @keyframes mgrow { from { transform: scaleY(0); } }
+  }
   .panel-loading { background: var(--white); border-radius: 14px; padding: 18px; color: var(--muted); }
   /* Notes editing + paid column */
   .ncell { display: flex; gap: 8px; align-items: flex-start; justify-content: space-between; }
@@ -459,6 +494,11 @@
 
 
   <section class="panel" id="menuPanel">
+    <div class="palert" id="photoAlert" role="status" hidden>
+      <span class="tag">Action needed</span>
+      <span class="what" id="paText"></span>
+      <button type="button" id="paGo">Upload photos</button>
+    </div>
     <div class="mhero">
       <p class="mk"><span id="mhGreet">Welcome</span> · UNBND Run Club</p>
       <h2>Every runner who joins<br>makes the club stronger.</h2>
@@ -476,8 +516,15 @@
         <circle r="3.6" fill="#ff5f8f" data-lane="#lapC" data-dur="9.1" data-off="2"/>
     </svg>
     </div>
+    <section class="msum" aria-label="Registration summary">
+      <div class="kpis mkpis" id="mKpis"><div class="panel-loading" style="grid-column:1/-1">Loading…</div></div>
+      <div class="dcard mchart" id="mChart">
+        <div class="mhead"><div><h3>Registrations received per day</h3><p class="msub" id="mChartSub">&nbsp;</p></div><button class="mref" id="mRefresh" type="button">Refresh</button></div>
+        <div class="mchart-body" id="mChartBody"></div>
+      </div>
+    </section>
     <div class="menu">
-      <button type="button" data-go="dashPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></i><b>Dashboard</b><span>Member totals, sign-up trends and breakdowns.</span></button>
+      <button type="button" data-go="dashPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></i><b>More Summary Stats</b><span>Member totals, sign-up trends and breakdowns.</span></button>
       <button type="button" data-go="regPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.3-6 6.5-6s5.9 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16.5 14.2c2.6.2 4.5 2.3 5 5.3"/></svg></i><b>Manage Registrations</b><span>Activate or deactivate members, add notes, download Excel.</span></button>
       <button type="button" data-go="racePanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h11l-2 3.5L16 11H5"/><circle cx="17" cy="18" r="2.2"/><path d="M8 21c1.5-2 3.2-2.8 6.8-3"/></svg></i><b>Post or Manage Races</b><span>Post, view, edit or delete races.</span></button>
       <button type="button" data-go="homePanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="2"/><path d="M3 17l5-4.5 4 3.5 3-2.5 6 5"/></svg></i><b>Manage Homepage Gallery</b><span>Choose race day photos to show on the homepage.</span></button>
@@ -487,7 +534,7 @@
   </section>
 
   <section class="panel" id="dashPanel" hidden>
-    <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Dashboard</h2></div>
+    <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">More Summary Stats</h2></div>
     <div class="kpis" id="kpis"><div class="panel-loading">Loading…</div></div>
     <div class="dcard" id="trend" style="margin-top:12px"></div>
     <div class="dtoggle" role="group" aria-label="Breakdown for">
@@ -730,7 +777,7 @@
     showSection("menuPanel");
   }
   function logout(msg) {
-    passcode = ""; headers = []; rows = []; refs = []; regLoaded = false;
+    passcode = ""; headers = []; rows = []; refs = []; regLoaded = false; homeData = null; mainAt = 0;
     try { sessionStorage.removeItem("unbnd_admin"); sessionStorage.removeItem("unbnd_admin_data"); } catch (x) {}
     $("adminView").hidden = true; $("loginView").hidden = false; $("logout").hidden = true;
     clearRegistrations();
@@ -743,7 +790,7 @@
   function showSection(id) {
     ["menuPanel", "dashPanel", "regPanel", "racePanel", "homePanel", "fbPanel", "annPanel"].forEach((p) => ($(p).hidden = p !== id));
     window.scrollTo({ top: 0 });
-    if (id === "menuPanel") menuTick();
+    if (id === "menuPanel") { menuTick(); refreshMain(false); }
     if (id === "regPanel" && !regLoaded) loadRegistrations();
     if (id === "racePanel") openRaces();
     if (id === "homePanel") openHomeGallery();
@@ -803,7 +850,7 @@
   function setData(out) {
     headers = out.headers; rows = out.rows; refs = out.refs || [];
     try { sessionStorage.setItem("unbnd_admin_data", JSON.stringify({ headers: headers, rows: rows, refs: refs })); } catch (x) {}
-    render();
+    render(); renderSummary();
   }
   $("refresh").addEventListener("click", async () => {
     const out = await api({ action: "adminList" }, "Refreshing", READ);
@@ -1371,14 +1418,14 @@
   // ---------- Manage Homepage Gallery ----------
   let homeData = null;
   async function openHomeGallery(force) {
-    if (homeData && !force) return renderHome();
+    if (homeData && !force) { renderHome(); applyPendingRace(); return; }
     const out = await api({ action: "adminHomeList" }, "Loading photos", READ);
     if (!out.ok) { $("hList").innerHTML = '<div class="panel-loading">' + esc((out.errors || ["Couldn't load"])[0]) + "</div>"; return; }
     homeData = out;
     $("hRace").innerHTML = '<option value="">Choose a race</option>' + out.races.map((r) => '<option value="' + esc(r.id) + '">' + esc(r.id + " · " + r.name + " · " + isoToDmy(r.date)) + "</option>").join("");
-    renderHome();
+    renderHome(); applyPendingRace();
   }
-  $("hRefresh").addEventListener("click", () => openHomeGallery(true));
+  $("hRefresh").addEventListener("click", () => openHomeGallery(true).then(checkPhotoAlert));
   function renderHome() {
     const g = homeData.groups;
     $("hList").innerHTML = g.length ? g.map((r) =>
@@ -1397,7 +1444,7 @@
     const out = await api({ action: "adminHomeFeature", fileId: b.dataset.feat, featured: on }, on ? "Adding to homepage" : "Removing from homepage");
     if (!out.ok) { toast((out.errors || ["Couldn't update"])[0]); return; }
     homeData.groups.forEach((g) => g.photos.forEach((p) => { if (p.fileId === b.dataset.feat) p.featured = on; }));
-    renderHome();
+    renderHome(); checkPhotoAlert();
     toast(out.published === false ? "Saved, but the homepage wasn't updated. Please try again." : (on ? "Added. Live on the homepage in about a minute." : "Removed. Gone from the homepage in about a minute."));
   });
   $("hFiles").addEventListener("change", async () => {
@@ -1413,7 +1460,7 @@
       if (out.ok) done++; else { failed++; lastErr = (out.errors || [""])[0]; }
     }
     toast(done + " uploaded to the homepage" + (failed ? ", " + failed + " failed. " + lastErr : ""));
-    openHomeGallery(true);
+    await openHomeGallery(true); checkPhotoAlert();
   });
 
 
@@ -1568,7 +1615,142 @@
     annResult(out, "Cleared. Gone from the website in about a minute.");
   });
 
-  // ---------- Stay logged in while this tab is open (no data is fetched until a section is opened) ----------
+  // ---------- Main page: status tiles, registrations per day, and the race-photo reminder ----------
+  // Data is loaded when the main page opens (and at most once a minute after that); the Refresh button forces it.
+  let mainAt = 0, sumFailed = false, chartDrawn = false;
+  async function refreshMain(force) {
+    if (!passcode) return;
+    renderSummary();
+    if (!force && Date.now() - mainAt < 60000) return;
+    mainAt = Date.now();
+    checkPhotoAlert();
+    if (!regLoaded) await loadRegistrations();   // shows the copy saved in this tab first, then the latest
+    else { const out = await api({ action: "adminList" }, "", READ); if (out.ok) setData(out); else if (force) toast((out.errors || ["Refresh failed"])[0]); }
+    sumFailed = !headers.length;
+    renderSummary();
+  }
+  $("mRefresh").addEventListener("click", () => refreshMain(true));
+
+  const dNo = (iso) => Math.round(Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) / 864e5);
+  const dParts = (n) => { const d = new Date(n * 864e5); return { d: String(d.getUTCDate()).padStart(2, "0"), m: MONTHS[d.getUTCMonth()], y: d.getUTCFullYear(), w: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d.getUTCDay()] }; };
+  const dShort = (n) => { const p = dParts(n); return p.d + " " + p.m; };
+  const dLong = (n) => { const p = dParts(n); return p.d + " " + p.m + " " + p.y; };
+
+  function renderSummary() {
+    if (!headers.length) {
+      $("mKpis").innerHTML = '<div class="panel-loading" style="grid-column:1/-1">' + (sumFailed ? "Couldn't load the registrations. Tap Refresh to try again." : "Loading…") + "</div>";
+      $("mChartBody").innerHTML = ""; $("mChartSub").innerHTML = "&nbsp;";
+      return;
+    }
+    const st = iOf("Membership status"), pay = iOf("Payment screenshot"), c = { ap: 0, au: 0, pp: 0, pu: 0, de: 0 };
+    rows.forEach((r) => {
+      const paid = r[pay] === "Yes";
+      if (r[st] === "Active") paid ? c.ap++ : c.au++;
+      else if (r[st] === "Pending") paid ? c.pp++ : c.pu++;
+      else c.de++;
+    });
+    // Same colours as the Dashboard tiles and the Manage Registrations sections
+    $("mKpis").innerHTML = [["hi", "Total registrations", rows.length], ["green", "Active paid", c.ap, 1], ["green", "Active unpaid", c.au], ["blue", "Pending paid", c.pp, 1], ["yellow", "Pending unpaid", c.pu], ["red", "Deactivated", c.de]]
+      .map((k) => '<div class="kpi ' + k[0] + '">' + (k[3] ? '<i class="rrupee" title="Paid" aria-label="Paid">₹</i>' : "") + "<b>" + k[2] + "</b><span>" + k[1] + "</span></div>").join("");
+    drawChart();
+  }
+
+  // Registrations by the day they were received (India time), whatever their status. The last 30 days at most,
+  // starting from the earliest day that has data.
+  function regDays() {
+    const today = dNo(new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date())), ts = iOf("Timestamp"), by = {};
+    let first = Infinity;
+    rows.forEach((r) => {
+      const m = /^(\d{2})\/(\d{2})\/(\d{4})/.exec(r[ts] || ""); if (!m) return;
+      const n = dNo(m[3] + "-" + m[2] + "-" + m[1]); if (n > today) return;
+      by[n] = (by[n] || 0) + 1; if (n < first) first = n;
+    });
+    if (first === Infinity) return null;
+    const days = [];
+    for (let n = Math.max(first, today - 29); n <= today; n++) days.push({ n: n, v: by[n] || 0 });
+    return days;
+  }
+
+  function drawChart() {
+    const host = $("mChartBody"), days = regDays();
+    if (!days) { host.innerHTML = '<p class="hint" style="margin:6px 0 0">No registrations yet.</p>'; $("mChartSub").innerHTML = "&nbsp;"; return; }
+    const BAR = "#4c72b0", TOP = "#c44e52";
+    const W = Math.max(260, Math.floor(host.clientWidth) || 320), small = W < 460, H = small ? 260 : 300;
+    const n = days.length, max = Math.max.apply(null, days.map((d) => d.v)), total = days.reduce((a, d) => a + d.v, 0);
+    const step = [1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000].find((x) => Math.ceil(max / x) <= 5) || 2000;
+    const yMax = step * Math.max(1, Math.ceil(max / step));
+    const ml = 16 + 7 * String(yMax).length, mr = 10, mt = max ? 68 : 16, pw = W - ml - mr, slot = pw / n, rot = slot < 46, mb = rot ? 48 : 28, ph = H - mt - mb;
+    const bw = Math.min(24, Math.max(3, slot - 3)), X = (i) => ml + slot * i + slot / 2, Y = (v) => mt + ph - (v / yMax) * ph, f = (x) => Math.round(x * 10) / 10;
+    const peaks = max ? days.filter((d) => d.v === max) : [], peak = peaks[peaks.length - 1];
+    const first = dParts(days[0].n), last = dParts(days[n - 1].n);
+    $("mChartSub").textContent = (n === 1 ? dLong(days[0].n) : (first.y === last.y ? dShort(days[0].n) : dLong(days[0].n)) + " – " + dLong(days[n - 1].n)) + "  ·  " + total + " registration" + (total === 1 ? "" : "s") + " in this period";
+
+    let g = '<defs><marker id="mArr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="' + TOP + '"/></marker></defs>';
+    for (let t = 0; t <= yMax; t += step) g += '<line x1="' + ml + '" x2="' + (W - mr) + '" y1="' + f(Y(t)) + '" y2="' + f(Y(t)) + '" stroke="' + (t ? "#e6e6ea" : "#8a8a93") + '"/><text class="ax" x="' + (ml - 6) + '" y="' + f(Y(t) + 4) + '" text-anchor="end">' + t + "</text>";
+    days.forEach((d, i) => { g += '<rect class="mhit" data-i="' + i + '" x="' + f(ml + slot * i) + '" y="' + (mt - 20) + '" width="' + f(slot) + '" height="' + (ph + 20) + '"/>'; });
+    days.forEach((d, i) => {
+      const x = X(i) - bw / 2, y = Y(d.v), h = Y(0) - y, r = Math.min(4, bw / 2, h);
+      if (h > 0) g += '<path class="mbar" style="--i:' + i + '" pointer-events="none" fill="' + (max && d.v === max ? TOP : BAR) + '" d="M' + f(x) + " " + f(y + h) + "V" + f(y + r) + "A" + r + " " + r + " 0 0 1 " + f(x + r) + " " + f(y) + "H" + f(x + bw - r) + "A" + r + " " + r + " 0 0 1 " + f(x + bw) + " " + f(y + r) + "V" + f(y + h) + 'Z"/>';
+      if (slot >= 22 || i === n - 1 || d === peak) g += '<text class="val" pointer-events="none" x="' + f(X(i)) + '" y="' + f(y - 5) + '" text-anchor="middle">' + d.v + "</text>";
+    });
+    const k = rot ? Math.ceil(15 / slot) : 1;
+    days.forEach((d, i) => {
+      if ((n - 1 - i) % k) return;
+      const x = X(i), y = mt + ph + (rot ? 14 : 18);
+      g += '<text class="ax" pointer-events="none" ' + (rot ? 'transform="rotate(-45 ' + f(x + 3) + " " + f(y - 4) + ')" x="' + f(x + 3) + '" y="' + f(y - 4) + '" text-anchor="end"' : 'x="' + f(x) + '" y="' + y + '" text-anchor="middle"') + ">" + dShort(d.n) + "</text>";
+    });
+    if (peak) {
+      const bx = X(days.indexOf(peak)), by = Y(max);
+      const l1 = small ? "Highest in a day: " + max : "Highest registrations in a day so far: " + max;
+      const l2 = "(" + dLong(peak.n) + (peaks.length > 1 ? " and " + (peaks.length - 1) + " other day" + (peaks.length > 2 ? "s" : "") : "") + ")";
+      const tw = Math.max(l1.length, l2.length) * 6.6, tx = Math.min(Math.max(bx, tw / 2 + 6), W - tw / 2 - 6), ax = Math.min(Math.max(bx, tx - tw / 2 + 14), tx + tw / 2 - 14);
+      g += '<text class="call" pointer-events="none" x="' + f(tx) + '" y="16" text-anchor="middle">' + l1 + '</text><text class="call" pointer-events="none" x="' + f(tx) + '" y="32" text-anchor="middle">' + l2 + "</text>" +
+        '<path pointer-events="none" d="M' + f(ax) + " 40L" + f(bx) + " " + f(by - 18) + '" stroke="' + TOP + '" stroke-width="2" fill="none" marker-end="url(#mArr)"/>';
+    }
+    host.innerHTML = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Bar chart of registrations received per day, ' + dLong(days[0].n) + " to " + dLong(days[n - 1].n) + (peak ? ". Highest: " + max + " on " + dLong(peak.n) : "") + '.">' + g + "</svg>" +
+      '<div class="mchart-tip" hidden></div><table class="sr"><caption>Registrations received per day</caption><thead><tr><th>Date</th><th>Registrations</th></tr></thead><tbody>' +
+      days.map((d) => "<tr><td>" + dLong(d.n) + "</td><td>" + d.v + "</td></tr>").join("") + "</tbody></table>";
+    host.classList.toggle("grow", !chartDrawn); chartDrawn = true;
+
+    // Point or tap a day to see its count
+    const tip = host.querySelector(".mchart-tip");
+    const showTip = (e) => {
+      const hit = e.target.closest && e.target.closest("[data-i]"); if (!hit) return;
+      const i = +hit.dataset.i, d = days[i], p = dParts(d.n);
+      tip.innerHTML = p.w + ", " + dLong(d.n) + "<b>" + d.v + " registration" + (d.v === 1 ? "" : "s") + "</b>";
+      tip.hidden = false;
+      tip.style.left = Math.min(Math.max(X(i), 64), W - 64) + "px"; tip.style.top = Math.max(Y(d.v) - 8, 58) + "px";
+      clearTimeout(showTip.t); if (e.pointerType !== "mouse") showTip.t = setTimeout(() => (tip.hidden = true), 3000);
+    };
+    host.onpointermove = host.onpointerdown = showTip;
+    host.onpointerleave = (e) => { if (e.pointerType === "mouse") tip.hidden = true; };
+  }
+  if (window.ResizeObserver) { let lastW = 0; new ResizeObserver(() => { const w = Math.floor($("mChartBody").clientWidth); if (w && w !== lastW) { lastW = w; if (headers.length) drawChart(); } }).observe($("mChartBody")); }
+
+  // ---------- Reminder: photos of the race that has just finished ----------
+  // Looks at the latest race that is over (up to 2 weeks back) and shows a strip until it has at least one photo on the homepage.
+  let pendingRace = "", alertRace = null;
+  async function checkPhotoAlert() {
+    if (!passcode) return;
+    const f = await siteFile("data/races.json"); if (!f || !f.races) return;   // can't tell: leave the strip as it is
+    const now = Date.now();
+    const endOf = (r) => new Date(r.date + "T" + (r.time || "00:00") + ":00+05:30").getTime() + (((+r.hours || 0) * 60 + (+r.minutes || 0)) || 120) * 60000;
+    const done = f.races.filter((r) => /^\d{4}-\d{2}-\d{2}$/.test(r.date || "") && endOf(r) <= now).sort((a, b) => endOf(b) - endOf(a))[0];
+    let missing = false;
+    if (done && now - endOf(done) <= 14 * 864e5) {
+      if (homeData) { const g = homeData.groups.find((x) => x.id === done.id); missing = !g || !g.photos.some((p) => p.featured); }
+      else { const gf = await siteFile("data/home-gallery.json"); if (!gf) return; const g = (gf.races || []).find((x) => x.id === done.id); missing = !g || !(g.photos || []).length; }
+    }
+    alertRace = missing ? done : null;
+    $("photoAlert").hidden = !missing;
+    if (missing) $("paText").textContent = done.id + " · " + done.name + " · " + (done.day ? done.day.slice(0, 3) + ", " : "") + niceDate(done.date) + ": photos not uploaded yet.";
+  }
+  function applyPendingRace() {
+    if (pendingRace && [...$("hRace").options].some((o) => o.value === pendingRace)) { $("hRace").value = pendingRace; pendingRace = ""; }
+  }
+  $("paGo").addEventListener("click", () => { if (!alertRace) return; pendingRace = alertRace.id; showSection("homePanel"); applyPendingRace(); });
+
+  // ---------- Stay logged in while this tab is open ----------
   (() => {
     let saved = ""; try { saved = sessionStorage.getItem("unbnd_admin") || ""; } catch (x) {}
     if (!saved) return;
