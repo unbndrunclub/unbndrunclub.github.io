@@ -883,15 +883,20 @@
   }
 
   // ---------- Login page: admin portal access date (the upcoming 16th, 11:59:59 PM India time) ----------
+  // PAID_UNTIL: access already paid up to the 16th of this month (month 1 to 12). Until then the box shows that date;
+  // after it, the box goes back to showing the upcoming 16th.
   (function () {
+    const PAID_UNTIL = { year: 2026, month: 11 };
     const MONTHS_L = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const IST_MS = 330 * 60000;
+    const at16 = (y, m) => ({ end: Date.UTC(y, m, 16, 23, 59, 59) - IST_MS, label: "16 " + MONTHS_L[m] + " " + y });
     function nextDeadline(now) {
       const t = new Date(now + IST_MS);   // the date and time in India
       let y = t.getUTCFullYear(), m = t.getUTCMonth();
-      let end = Date.UTC(y, m, 16, 23, 59, 59) - IST_MS;
-      if (now > end) { m += 1; if (m > 11) { m = 0; y += 1; } end = Date.UTC(y, m, 16, 23, 59, 59) - IST_MS; }
-      return { end: end, label: "16 " + MONTHS_L[m] + " " + y };
+      let d = at16(y, m);
+      if (now > d.end) { m += 1; if (m > 11) { m = 0; y += 1; } d = at16(y, m); }
+      const paid = at16(PAID_UNTIL.year, PAID_UNTIL.month - 1);
+      return paid.end > d.end ? paid : d;
     }
     function tick() {
       if ($("loginView").hidden) return;
