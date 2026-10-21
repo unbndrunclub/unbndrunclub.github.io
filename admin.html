@@ -865,6 +865,11 @@
   const READ = { retries: 1, timeout: 20000 };
   const RAW = "https://raw.githubusercontent.com/unbndrunclub/unbndrunclub.github.io/main/";
   const rawOf = (p) => !p ? "" : /^https?:/.test(p) ? p : RAW + p;
+  // Race card check-in: the public half of the key that stamps each card's QR code. Safe to publish:
+  // it can only check stamps, not make them. The private half is the CARD_KEY secret in the Cloudflare Worker.
+  // If the private key is ever exposed, make a new pair, put the new private key in CARD_KEY and the new
+  // public key here. Cards made with the old key then fail the check, and members make new ones.
+  const CARD_PUBLIC_KEY = { kty: "EC", crv: "P-256", x: "7Icp7JcP5E9HekSUFe4wyP2TCuUB99MGENchk3NWF1A", y: "QkdJfyB26iQlPUXqJlfng4edx1ylhXUOlrRgt4aXvKM" };
   // Races and the announcement load from the website files; right after a change, from the backend
   // (the website takes about a minute to catch up).
   let lastChange = 0;
