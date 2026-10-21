@@ -563,6 +563,46 @@
     .lsub, .lfoot { grid-column: 1 / -1; text-align: center; } .lsub { margin-top: -8px; }
   }
   @media (prefers-reduced-motion: reduce) { .lstage::before { animation: none; } .comets { display: none; } }
+  /* ---------- Race Day Check-in ---------- */
+  .ci-box { background: var(--white); border-radius: 20px; padding: 16px; box-shadow: 0 18px 40px -30px rgba(0,0,0,.4); margin-bottom: 12px; }
+  .ci-lbl { display: block; font: 700 .85rem/1 "Barlow Condensed", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+  .ci-races { display: flex; gap: 8px; flex-wrap: wrap; }
+  .ci-races button { border: 1.5px solid var(--line); background: var(--white); border-radius: 14px; padding: 10px 12px; text-align: left; cursor: pointer; font: inherit; color: var(--black); }
+  .ci-races button b { display: block; font: italic 800 1.25rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .ci-races button small { display: block; color: var(--muted); margin-top: 3px; }
+  .ci-races button[aria-checked="true"] { background: var(--black); border-color: var(--black); color: var(--white); }
+  .ci-races button[aria-checked="true"] small { color: var(--pink); }
+  .ci-more { margin-top: 10px; background: none; border: 0; padding: 0; color: var(--black); font: 600 .9rem "Barlow", sans-serif; text-decoration: underline; cursor: pointer; }
+  .ci-count { margin: 12px 0 0; font: 700 1.05rem/1.3 "Barlow Condensed", sans-serif; letter-spacing: .04em; text-transform: uppercase; }
+  .ci-count b { font-size: 1.6rem; font-style: italic; margin-right: 4px; }
+  .ci-count span { color: var(--muted); }
+  .ci-cam { position: relative; overflow: hidden; aspect-ratio: 1; max-height: 62vh; margin: 0 auto; border-radius: 18px; background: #000; display: grid; place-items: center; }
+  .ci-cam video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .ci-cam .frame { position: absolute; inset: 15%; border-radius: 18px; box-shadow: 0 0 0 999px rgba(0,0,0,.35); border: 3px solid var(--pink); pointer-events: none; }
+  .ci-cam p { position: relative; margin: 0; padding: 20px; color: rgba(255,255,255,.8); text-align: center; }
+  .ci-box .btn { margin-top: 12px; }
+  .ci-row { display: flex; gap: 8px; }
+  .ci-row input { flex: 1; min-width: 0; font: inherit; font-size: 1.15rem; border: 1.5px solid transparent; border-radius: 12px; padding: 13px 14px; background: var(--paper); }
+  .ci-row input:focus { background: var(--white); border-color: var(--black); outline: none; }
+  .ci-row .btn { width: auto; margin: 0; padding: 13px 18px; font-size: 1.15rem; }
+  .ci-found { margin-top: 12px; padding: 14px; border-radius: 14px; background: var(--paper); }
+  .ci-found b { display: block; font: italic 800 1.6rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .ci-found p { margin: 6px 0 0; }
+  .ci-found .ci-row { margin-top: 12px; }
+  .ci-found.bad { background: #ffe3e6; color: #8a0013; }
+  .ci-list { list-style: none; margin: 0; padding: 0; }
+  .ci-list li { display: flex; gap: 10px; align-items: baseline; padding: 9px 0; border-top: 1px solid var(--line); }
+  .ci-list li:first-child { border-top: 0; }
+  .ci-list time { font-weight: 700; min-width: 72px; }
+  .ci-list small { margin-left: auto; color: var(--muted); text-transform: uppercase; font: 700 .75rem "Barlow Condensed", sans-serif; letter-spacing: .1em; }
+  .ci-result { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 24px; text-align: center; color: var(--white); cursor: pointer; }
+  .ci-result.ok { background: #0f9d58; } .ci-result.bad { background: #d0021b; } .ci-result.dup { background: #f59e0b; color: #000; }
+  .ci-result .in { display: grid; gap: 10px; justify-items: center; max-width: 560px; }
+  .ci-result .ico { width: 110px; height: 110px; border-radius: 50%; background: rgba(255,255,255,.22); display: grid; place-items: center; font: 800 4.2rem/1 "Barlow", sans-serif; }
+  .ci-result .t { font: italic 800 clamp(2.6rem, 11vw, 4.6rem)/.95 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .ci-result .n { font: 800 clamp(2rem, 9vw, 3.4rem)/1.05 "Barlow", sans-serif; }
+  .ci-result .s { font: 600 1.25rem/1.35 "Barlow", sans-serif; opacity: .92; }
+  .ci-result small { margin-top: 18px; opacity: .8; font-weight: 600; }
 </style>
 </head>
 <body class="out">
@@ -629,6 +669,7 @@
     </svg>
     </div>
     <div class="menu">
+      <button type="button" data-go="checkinPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg></i><b>Race Day Check-in</b><span>Scan race cards at the start line and count who's running.</span></button>
       <button type="button" data-go="dashPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></i><b>See Summary Stats</b><span>Member totals, sign-up trends and breakdowns.</span></button>
       <button type="button" data-go="regPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.3-6 6.5-6s5.9 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16.5 14.2c2.6.2 4.5 2.3 5 5.3"/></svg></i><b>Manage Registrations</b><span>Activate or deactivate members, add notes, download Excel.</span></button>
       <button type="button" data-go="waPanel"><i class="duo"><span class="wa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></span><span class="igl"><svg class="ig" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.2" y="2.2" width="19.6" height="19.6" rx="5.6" fill="none" stroke="#fff" stroke-width="2.2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="#fff" stroke-width="2.2"/><circle cx="17.6" cy="6.4" r="1.4" fill="#fff"/></svg></span></i><b>Generate Content to Post</b><span>Updates about upcoming races to send on WhatsApp, and posters announcing them for WhatsApp Status and Instagram Stories.</span></button>
@@ -638,6 +679,34 @@
       <button type="button" data-go="annPanel"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4h3l7 5V5L6 10H3z"/><path d="M17 8.5a5 5 0 0 1 0 7M19.5 6a8.5 8.5 0 0 1 0 12"/></svg></i><b>Post an Announcement</b><span>Show or clear a notice ribbon at the top of the website.</span></button>
     </div>
     <p class="tmnote">WhatsApp and Instagram, and their logos, are trademarks of Meta Platforms, Inc. and its affiliates. They are used here only to show where content will be shared. UNBND Run Club is not affiliated with or endorsed by Meta.</p>
+  </section>
+
+  <section class="panel" id="checkinPanel" hidden>
+    <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Race Day Check-in</h2></div>
+    <div class="ci-box">
+      <span class="ci-lbl" id="ciRaceLbl">Race</span>
+      <div class="ci-races" id="ciRaces" role="radiogroup" aria-labelledby="ciRaceLbl"><p class="hint">Loading races…</p></div>
+      <button class="ci-more" id="ciMore" type="button" hidden>Show all races</button>
+      <p class="ci-count" id="ciCount" aria-live="polite"></p>
+    </div>
+    <div class="ci-box">
+      <div class="ci-cam" id="ciCam"><video id="ciVideo" playsinline muted autoplay hidden></video><span class="frame" id="ciFrame" hidden></span><p id="ciCamText">Tap Start scanning to use the camera. Hold each race card inside the pink square.</p></div>
+      <button class="btn pink" id="ciStart" type="button">Start scanning</button>
+    </div>
+    <form class="ci-box" id="ciType" novalidate>
+      <label class="ci-lbl" for="ciId">No card? Type the Club ID</label>
+      <div class="ci-row"><input id="ciId" type="text" inputmode="numeric" placeholder="10 or UB0010" autocomplete="off" maxlength="6"><button class="btn" type="submit">Look up</button></div>
+      <div id="ciFound"></div>
+    </form>
+    <div class="ci-box">
+      <span class="ci-lbl">Checked in on this phone</span>
+      <ol class="ci-list" id="ciList"></ol>
+      <p class="hint" id="ciEmpty">No check-ins yet for this race.</p>
+    </div>
+    <div class="ci-box">
+      <label class="ci-lbl" for="ciWho">Your first name (optional)</label>
+      <div class="ci-row"><input id="ciWho" type="text" autocomplete="given-name" maxlength="30" placeholder="So the club knows who checked people in"></div>
+    </div>
   </section>
 
   <section class="panel" id="dashPanel" hidden>
@@ -821,6 +890,7 @@
   <div class="lightbox"><button class="xbtn" type="button" data-close="photoView" aria-label="Close">✕</button><img id="photoViewImg" alt=""><p id="photoViewId"></p></div>
 </div>
 
+<div class="ci-result" id="ciResult" hidden role="alert"><div class="in"><span class="ico" id="ciResIco"></span><span class="t" id="ciResT"></span><span class="n" id="ciResN"></span><span class="s" id="ciResS"></span><small>Tap to keep scanning</small></div></div>
 <div class="busy" id="busy" hidden role="status" aria-live="polite">
   <div class="busy-box"><div class="spinner" aria-hidden="true"></div><b id="busyText">Please wait</b></div>
 </div>
@@ -929,6 +999,7 @@
     showSection("menuPanel");
   }
   function logout(msg) {
+    ciStop();
     passcode = ""; headers = []; rows = []; refs = []; regLoaded = false; homeData = null; mainAt = 0; alertAt = 0;
     try { sessionStorage.removeItem("unbnd_admin"); sessionStorage.removeItem("unbnd_admin_data"); } catch (x) {}
     $("adminView").hidden = true; $("loginView").hidden = false; $("logout").hidden = true; document.body.classList.add("out");
@@ -940,7 +1011,8 @@
   // ---------- Tabs ----------
   let menuTick = () => {};   // refreshes the greeting and date on the main page (set below)
   function showSection(id) {
-    ["menuPanel", "dashPanel", "regPanel", "racePanel", "waPanel", "homePanel", "fbPanel", "annPanel"].forEach((p) => ($(p).hidden = p !== id));
+    ["menuPanel", "checkinPanel", "dashPanel", "regPanel", "racePanel", "waPanel", "homePanel", "fbPanel", "annPanel"].forEach((p) => ($(p).hidden = p !== id));
+    if (id !== "checkinPanel") ciStop();
     window.scrollTo({ top: 0 });
     if (id === "menuPanel") { menuTick(); checkAlertSoon(); }
     if (id === "regPanel" && !regLoaded) loadRegistrations();
@@ -950,6 +1022,7 @@
     if (id === "dashPanel") openDashboard();
     if (id === "annPanel") openAnnouncement();
     if (id === "fbPanel") openFeedback();
+    if (id === "checkinPanel") openCheckin();
   }
   document.querySelectorAll("[data-go]").forEach((b) => b.addEventListener("click", () => showSection(b.dataset.go)));
 
@@ -2076,6 +2149,225 @@
     const a = document.createElement("a"); a.href = c.url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
     toast("Poster saved. Add it to your WhatsApp Status or Instagram Story from your photos.");
   }
+
+
+  // ---------- Race Day Check-in ----------
+  // Cards carry a sealed QR code: UB1|<Club ID>|<name>|<race ID>|<race date>|<stamp>. The phone checks the stamp
+  // with CARD_PUBLIC_KEY itself, so scanning needs no signal. Check-ins are kept on this phone (and synced later).
+  const CI_KEY = "unbnd_ci", CI_RACE = "unbnd_ci_race", CI_RACES = "unbnd_ci_races";
+  const IST_TIME = new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", hour: "numeric", minute: "2-digit", hour12: true });
+  const istToday = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date());
+  const ciShift = (iso, n) => { const [y, m, d] = iso.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10); };
+  let ci = null, ciRaces = [], ciRaceId = "", ciAllRaces = false, ciKey = null, ciStream = null, ciDetector = null, ciTimer = 0, ciPaused = false, ciLast = { text: "", at: 0 }, ciAudio = null, ciHideT = 0, ciJsQR = null;
+  function ciLoad() {
+    if (ci) return ci;
+    try { ci = JSON.parse(localStorage.getItem(CI_KEY) || "null"); } catch (e) { ci = null; }
+    if (!ci || typeof ci !== "object") ci = {};
+    if (!ci.deviceId) ci.deviceId = Array.from(crypto.getRandomValues(new Uint8Array(6)), (b) => b.toString(16).padStart(2, "0")).join("");
+    ci.log = ci.log || {}; ci.queue = ci.queue || []; ci.who = ci.who || "";
+    ciSave(); return ci;
+  }
+  function ciSave() { try { localStorage.setItem(CI_KEY, JSON.stringify(ci)); } catch (e) {} }
+  const ciTime = (iso) => IST_TIME.format(new Date(iso)).replace(/\s?([ap])\.?m\.?/i, (m, a) => " " + a.toUpperCase() + "M");
+  // Name as printed on race cards: first name, or "Dr" plus first name
+  function ciFirstName(full) {
+    const parts = String(full || "").trim().replace(/\s+/g, " ").toLowerCase().replace(/(^|[\s\-'.])([a-z])/g, (m, a, c) => a + c.toUpperCase()).split(" ").filter(String);
+    if (parts.length > 1 && /^dr\.?$/i.test(parts[0])) return "Dr " + parts[1];
+    const m = /^(dr\.)(.+)$/i.exec(parts[0] || ""); if (m) return "Dr " + m[2].charAt(0).toUpperCase() + m[2].slice(1);
+    return parts[0] || "";
+  }
+  // Members by Club ID, from the registrations loaded in this tab
+  function ciMembers() {
+    const map = {}, iId = headers.indexOf("Club ID"), iSt = headers.indexOf("Membership status"), iName = headers.indexOf("Full name");
+    if (iId < 0) return null;
+    rows.forEach((r) => { const id = String(r[iId] || "").trim().toUpperCase(); if (id) map[id] = { status: r[iSt], name: ciFirstName(r[iName]) }; });
+    return map;
+  }
+
+  async function openCheckin() {
+    ciLoad();
+    $("ciWho").value = ci.who;
+    let list = await siteFile("data/races.json");
+    if (list && list.races) { try { localStorage.setItem(CI_RACES, JSON.stringify(list.races)); } catch (e) {} list = list.races; }
+    else { try { list = JSON.parse(localStorage.getItem(CI_RACES) || "null"); } catch (e) { list = null; } }
+    ciRaces = (list || []).slice().sort((a, b) => (a.date + a.time < b.date + b.time ? -1 : 1));
+    try { ciRaceId = localStorage.getItem(CI_RACE) || ""; } catch (e) {}
+    ciRenderRaces();
+    if (!regLoaded) loadRegistrations();   // member list: deactivated check and typed Club IDs
+  }
+  function ciRenderRaces() {
+    const today = istToday(), near = ciRaces.filter((r) => r.date >= ciShift(today, -1) && r.date <= ciShift(today, 1));
+    near.sort((a, b) => (a.date === today ? -1 : 0) - (b.date === today ? -1 : 0) || (a.date + a.time < b.date + b.time ? -1 : 1));   // today's first
+    const shown = ciAllRaces ? ciRaces.filter((r) => r.date >= ciShift(today, -7)) : near;
+    if (!shown.some((r) => r.id === ciRaceId)) ciRaceId = shown.length ? shown[0].id : "";
+    $("ciRaces").innerHTML = shown.length ? shown.map((r) => {
+      const when = r.date === today ? "Today" : r.date === ciShift(today, -1) ? "Yesterday" : r.date === ciShift(today, 1) ? "Tomorrow" : niceDate(r.date);
+      return '<button type="button" role="radio" aria-checked="' + (r.id === ciRaceId) + '" data-ci="' + esc(r.id) + '"><b>' + esc(r.name) + "</b><small>" + esc(r.id) + " · " + when + " · " + esc(to12(r.time).text) + "</small></button>";
+    }).join("") : '<p class="hint" style="margin:0">' + (ciRaces.length ? "No race today, yesterday or tomorrow." : "Couldn't load the races. Check your connection and open Check-in again.") + "</p>";
+    $("ciMore").hidden = !ciRaces.length; $("ciMore").textContent = ciAllRaces ? "Show only races near today" : "Show all races";
+    try { localStorage.setItem(CI_RACE, ciRaceId); } catch (e) {}
+    ciRenderList();
+  }
+  $("ciRaces").addEventListener("click", (e) => { const b = e.target.closest("[data-ci]"); if (!b) return; ciRaceId = b.dataset.ci; ciRenderRaces(); $("ciFound").innerHTML = ""; });
+  $("ciMore").addEventListener("click", () => { ciAllRaces = !ciAllRaces; ciRenderRaces(); });
+  $("ciWho").addEventListener("input", () => { ciLoad(); ci.who = $("ciWho").value.trim().slice(0, 30); ciSave(); });
+  function ciRenderList() {
+    ciLoad();
+    const log = ci.log[ciRaceId] || {}, items = Object.keys(log).map((id) => Object.assign({ id: id }, log[id])).sort((a, b) => (a.at < b.at ? 1 : -1));
+    const waiting = ci.queue.length;
+    $("ciCount").innerHTML = ciRaceId ? "<b>" + items.length + "</b> checked in" + (waiting ? " <span>· " + waiting + " waiting to sync</span>" : "") : "";
+    $("ciList").innerHTML = items.slice(0, 30).map((x) => "<li><time>" + esc(ciTime(x.at)) + "</time><span><b>" + esc(x.id) + "</b> " + esc(x.name || "") + "</span><small>" + (x.method === "qr" ? "Card" : "Typed") + "</small></li>").join("");
+    $("ciEmpty").hidden = items.length > 0;
+  }
+
+  // The stamp: ECDSA P-256 / SHA-256 over the first five fields. Only one spelling of a stamp counts.
+  async function ciStampOk(f) {
+    const s = f[5];
+    if (!/^[A-Za-z0-9_-]{86}$/.test(s)) return false;
+    let sig;
+    try { sig = Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0)); } catch (e) { return false; }
+    let back = ""; sig.forEach((b) => (back += String.fromCharCode(b)));
+    if (btoa(back).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "") !== s) return false;
+    if (!ciKey) ciKey = await crypto.subtle.importKey("jwk", CARD_PUBLIC_KEY, { name: "ECDSA", namedCurve: "P-256" }, false, ["verify"]);
+    return crypto.subtle.verify({ name: "ECDSA", hash: "SHA-256" }, ciKey, sig, new TextEncoder().encode(f.slice(0, 5).join("|")));
+  }
+  // Checks one scanned code and shows the result. Returns "ok", "bad" or "dup".
+  async function ciHandleScan(text) {
+    ciLoad();
+    const race = ciRaces.find((r) => r.id === ciRaceId);
+    if (!race) { ciShow("bad", "Choose the race", "", "Pick today's race at the top first."); return "bad"; }
+    const f = String(text || "").split("|");
+    if (f.length !== 6 || f[0] !== "UB1") { ciShow("bad", "Not valid", "", "This isn't an UNBND race card QR code."); return "bad"; }
+    let good = false;
+    try { good = await ciStampOk(f); } catch (e) { good = false; }
+    if (!good) { ciShow("bad", "Not valid", "", "This card has been changed, or wasn't made by the club."); return "bad"; }
+    const clubId = f[1], name = f[2];
+    if (f[3] !== race.id) { ciShow("bad", "Not valid", name + " · " + clubId, "This card is for a different race (" + f[3] + "). They need a card for " + race.id + "."); return "bad"; }
+    return ciAdmit(clubId, name, "qr");
+  }
+  function ciAdmit(clubId, name, method) {
+    const race = ciRaces.find((r) => r.id === ciRaceId);
+    const m = ciMembers(), who = m && m[clubId];
+    if (who && who.status !== "Active") { ciShow("bad", "Not valid", name + " · " + clubId, "This membership is " + String(who.status || "not active").toLowerCase() + "."); return "bad"; }
+    const log = ci.log[race.id] = ci.log[race.id] || {};
+    if (log[clubId]) { ciShow("dup", "Already checked in", log[clubId].name + " · " + clubId, "Checked in at " + ciTime(log[clubId].at) + (log[clubId].by ? " by " + log[clubId].by : "") + "."); return "dup"; }
+    const at = new Date().toISOString();
+    log[clubId] = { at: at, name: name, method: method, by: ci.who };
+    ci.queue.push({ raceId: race.id, clubId: clubId, name: name, method: method, at: at, deviceId: ci.deviceId, organiser: ci.who });
+    ciSave(); ciRenderList();
+    ciShow("ok", "Active member", name, clubId + " · " + ciTime(at));
+    return "ok";
+  }
+
+  // Result screen: full colour, vibration on Android, a short tone; back to scanning after 2.5 seconds or a tap
+  function ciTone(kind) {
+    try {
+      if (!ciAudio) return;
+      const a = ciAudio, now = a.currentTime, seq = kind === "ok" ? [[880, 0, .09], [1320, .11, .16]] : kind === "dup" ? [[620, 0, .12], [620, .2, .12]] : [[200, 0, .42]];
+      seq.forEach(([fq, t, d]) => {
+        const o = a.createOscillator(), g = a.createGain();
+        o.type = kind === "bad" ? "square" : "sine"; o.frequency.value = fq;
+        g.gain.setValueAtTime(.0001, now + t); g.gain.exponentialRampToValueAtTime(.3, now + t + .01); g.gain.exponentialRampToValueAtTime(.0001, now + t + d);
+        o.connect(g); g.connect(a.destination); o.start(now + t); o.stop(now + t + d + .03);
+      });
+    } catch (e) {}
+  }
+  function ciShow(kind, title, name, sub) {
+    const el = $("ciResult");
+    el.className = "ci-result " + kind;
+    $("ciResIco").textContent = kind === "ok" ? "✓" : kind === "dup" ? "!" : "✕";
+    $("ciResT").textContent = title; $("ciResN").textContent = name; $("ciResN").hidden = !name; $("ciResS").textContent = sub;
+    el.hidden = false; ciPaused = true;
+    try { if (navigator.vibrate) navigator.vibrate(kind === "ok" ? 70 : kind === "dup" ? [90, 60, 90] : [320]); } catch (e) {}
+    ciTone(kind);
+    clearTimeout(ciHideT); ciHideT = setTimeout(ciHide, kind === "ok" ? 2500 : 3500);
+  }
+  function ciHide() { clearTimeout(ciHideT); $("ciResult").hidden = true; ciPaused = false; }
+  $("ciResult").addEventListener("click", ciHide);
+  function ciSound() { try { ciAudio = ciAudio || new (window.AudioContext || window.webkitAudioContext)(); if (ciAudio.state === "suspended") ciAudio.resume(); } catch (e) {} }
+
+  // Typed Club ID: show the member's first name so the organiser can ask the runner to confirm it
+  $("ciType").addEventListener("submit", async (e) => {
+    e.preventDefault(); ciSound(); ciLoad();
+    const raw = $("ciId").value.trim().toUpperCase().replace(/\s/g, ""), digits = raw.replace(/^UB/, "");
+    const out = $("ciFound");
+    if (!/^\d{1,4}$/.test(digits)) { out.innerHTML = '<div class="ci-found bad"><p>Type the Club ID, for example 10 or UB0010.</p></div>'; return; }
+    if (!ciRaceId) { out.innerHTML = '<div class="ci-found bad"><p>Pick the race at the top first.</p></div>'; return; }
+    const clubId = "UB" + digits.padStart(4, "0");
+    let m = ciMembers();
+    if ((!m || !m[clubId]) && navigator.onLine !== false) {   // not in the list on this phone: one live lookup
+      out.innerHTML = '<div class="ci-found"><p>Looking up ' + clubId + "…</p></div>";
+      const res = await api({ action: "adminList" }, "", READ);
+      if (res.ok) { setData(res); regLoaded = true; m = ciMembers(); }
+    }
+    const who = m && m[clubId];
+    if (!who) { out.innerHTML = '<div class="ci-found bad"><b>' + clubId + "</b><p>" + (m ? "No member has this Club ID." : "The member list isn't on this phone yet. Connect to the internet and try again.") + "</p></div>"; return; }
+    if (who.status !== "Active") { out.innerHTML = '<div class="ci-found bad"><b>' + clubId + " · " + esc(who.name) + "</b><p>This membership is " + esc(String(who.status).toLowerCase()) + ".</p></div>"; return; }
+    out.innerHTML = '<div class="ci-found"><b>' + clubId + " · " + esc(who.name) + '</b><p>Ask the runner their first name. Check them in only if it matches.</p>' +
+      '<div class="ci-row"><button class="btn pink" type="button" id="ciTypedOk">Check in ' + esc(who.name) + '</button><button class="btn" type="button" id="ciTypedNo">Cancel</button></div></div>';
+    $("ciTypedOk").addEventListener("click", () => { out.innerHTML = ""; $("ciId").value = ""; ciAdmit(clubId, who.name, "typed"); });
+    $("ciTypedNo").addEventListener("click", () => { out.innerHTML = ""; $("ciId").focus(); });
+  });
+
+  // Camera: the phone's own QR reader where there is one (Android Chrome); jsQR everywhere else (iPhone)
+  function ciLoadJsQR() {
+    return ciJsQR || (ciJsQR = new Promise((res, rej) => {
+      if (window.jsQR) return res();
+      const sc = document.createElement("script"); sc.src = "vendor/jsQR-1.4.0.min.js";
+      sc.onload = () => res(); sc.onerror = () => { ciJsQR = null; sc.remove(); rej(new Error("QR reader didn't load")); };
+      document.head.appendChild(sc);
+    }));
+  }
+  const ciCanvas = document.createElement("canvas"), ciCtx = ciCanvas.getContext("2d", { willReadFrequently: true });
+  async function ciDecode(video) {
+    if (ciDetector) {
+      try { const found = await ciDetector.detect(video); return found.length ? found[0].rawValue : ""; } catch (e) { ciDetector = null; }
+    }
+    if (!window.jsQR) { try { await ciLoadJsQR(); } catch (e) { return ""; } }
+    const vw = video.videoWidth, vh = video.videoHeight; if (!vw || !vh) return "";
+    const side = Math.min(vw, vh) * 0.85, n = 640;   // the middle of the picture, where the pink square is
+    ciCanvas.width = ciCanvas.height = n;
+    ciCtx.drawImage(video, (vw - side) / 2, (vh - side) / 2, side, side, 0, 0, n, n);
+    const img = ciCtx.getImageData(0, 0, n, n), r = jsQR(img.data, n, n, { inversionAttempts: "dontInvert" });
+    return r ? r.data : "";
+  }
+  function ciLoop() {
+    ciTimer = setTimeout(async () => {
+      const v = $("ciVideo");
+      if (!ciStream) return;
+      if (!ciPaused && !document.hidden && v.readyState >= 2) {
+        const text = await ciDecode(v);
+        if (text && !(text === ciLast.text && Date.now() - ciLast.at < 4000)) { ciLast = { text: text, at: Date.now() }; await ciHandleScan(text); }
+      }
+      ciLoop();
+    }, 140);
+  }
+  async function ciStart() {
+    ciSound();
+    if (ciStream) { ciStop(); return; }
+    if (!ciRaceId) { toast("Pick the race first."); return; }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { $("ciCamText").textContent = "This browser can't use the camera here. Use Chrome on Android or Safari on iPhone, or type Club IDs below."; return; }
+    try {
+      ciStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
+    } catch (e) {
+      $("ciCamText").textContent = e && e.name === "NotAllowedError" ? "Camera permission was refused. Allow the camera for this site in your browser settings, then tap Start scanning again." : "Couldn't start the camera. Close other apps using it and try again, or type Club IDs below.";
+      return;
+    }
+    if ("BarcodeDetector" in window) { try { const fm = await BarcodeDetector.getSupportedFormats(); if (fm.indexOf("qr_code") > -1) ciDetector = new BarcodeDetector({ formats: ["qr_code"] }); } catch (e) { ciDetector = null; } }
+    if (!ciDetector) ciLoadJsQR().catch(() => toast("The QR reader didn't load. Check your connection."));
+    const v = $("ciVideo"); v.srcObject = ciStream; v.hidden = false; $("ciFrame").hidden = false; $("ciCamText").hidden = true;
+    try { await v.play(); } catch (e) {}
+    $("ciStart").textContent = "Stop scanning";
+    ciLoop();
+  }
+  function ciStop() {
+    clearTimeout(ciTimer);
+    if (ciStream) { ciStream.getTracks().forEach((t) => t.stop()); ciStream = null; }
+    const v = $("ciVideo"); if (v) { v.srcObject = null; v.hidden = true; }
+    if ($("ciFrame")) { $("ciFrame").hidden = true; $("ciCamText").hidden = false; $("ciStart").textContent = "Start scanning"; }
+  }
+  $("ciStart").addEventListener("click", ciStart);
+  document.addEventListener("visibilitychange", () => { if (document.hidden && ciStream) ciStop(); });   // phones stop the camera in the background anyway
 
   // ---------- Stay logged in while this tab is open ----------
   (() => {
