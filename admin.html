@@ -603,6 +603,7 @@
   .ci-off .btn { margin-top: 0; }
   body.ci-only #checkinPanel .backbtn { display: none; }
   .ci-list .oth { color: var(--muted); }
+  #ciWhoBox.nudge { box-shadow: 0 0 0 3px var(--pink), 0 18px 40px -30px rgba(0,0,0,.4); }
   .ci-result { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 24px; text-align: center; color: var(--white); cursor: pointer; }
   .ci-result.ok { background: #0f9d58; } .ci-result.bad { background: #d0021b; } .ci-result.dup { background: #f59e0b; color: #000; }
   .ci-result .in { display: grid; gap: 10px; justify-items: center; max-width: 560px; }
@@ -695,6 +696,11 @@
 
   <section class="panel" id="checkinPanel" hidden>
     <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Race Day Check-in</h2></div>
+    <div class="ci-box" id="ciWhoBox">
+      <label class="ci-lbl" for="ciWho">Your first name</label>
+      <div class="ci-row"><input id="ciWho" type="text" autocomplete="given-name" maxlength="30" placeholder="e.g. Parikshit"></div>
+      <p class="hint">Shown in the Check-ins sheet next to everyone you check in.</p>
+    </div>
     <div class="ci-box">
       <span class="ci-lbl" id="ciRaceLbl">Race</span>
       <div class="ci-races" id="ciRaces" role="radiogroup" aria-labelledby="ciRaceLbl"><p class="hint">Loading races…</p></div>
@@ -715,10 +721,6 @@
       <span class="ci-lbl">Checked in on this phone</span>
       <ol class="ci-list" id="ciList"></ol>
       <p class="hint" id="ciEmpty">No check-ins yet for this race.</p>
-    </div>
-    <div class="ci-box">
-      <label class="ci-lbl" for="ciWho">Your first name (optional)</label>
-      <div class="ci-row"><input id="ciWho" type="text" autocomplete="given-name" maxlength="30" placeholder="So the club knows who checked people in"></div>
     </div>
   </section>
 
@@ -2312,7 +2314,21 @@
     ciRenderRaces(); $("ciFound").innerHTML = ""; if (passcode) ciSync();
   });
   $("ciMore").addEventListener("click", () => { ciAllRaces = !ciAllRaces; ciRenderRaces(); });
-  $("ciWho").addEventListener("input", () => { ciLoad(); ci.who = $("ciWho").value.trim().slice(0, 30); ciSave(); });
+  // The organiser's name goes with each check-in. Check-ins from this phone still waiting to sync without a name take it too.
+  $("ciWho").addEventListener("input", () => {
+    ciLoad(); ci.who = $("ciWho").value.trim().slice(0, 30);
+    if (ci.who) {
+      ci.queue.forEach((q) => { if (!q.organiser && q.deviceId === ci.deviceId) { q.organiser = ci.who; const l = ci.log[q.raceId] && ci.log[q.raceId][q.clubId]; if (l && !l.other && !l.by) l.by = ci.who; } });
+      $("ciWhoBox").classList.remove("nudge");
+    }
+    ciSave();
+  });
+  let ciNudged = false;
+  function ciNudgeWho() {   // a reminder, once; never stops anyone being checked in
+    if (ciNudged || (ci && ci.who)) return;
+    ciNudged = true; $("ciWhoBox").classList.add("nudge");
+    toast("Add your first name at the top, so the sheet shows who checked people in.");
+  }
   function ciRenderList() {
     ciLoad();
     const log = ci.log[ciRaceId] || {}, items = Object.keys(log).map((id) => Object.assign({ id: id }, log[id])).sort((a, b) => (a.at < b.at ? 1 : -1));
@@ -2393,7 +2409,7 @@
 
   // Typed Club ID: show the member's first name so the organiser can ask the runner to confirm it
   $("ciType").addEventListener("submit", async (e) => {
-    e.preventDefault(); ciSound(); ciLoad();
+    e.preventDefault(); ciSound(); ciLoad(); ciNudgeWho();
     const raw = $("ciId").value.trim().toUpperCase().replace(/\s/g, ""), digits = raw.replace(/^UB/, "");
     const out = $("ciFound");
     if (!/^\d{1,4}$/.test(digits)) { out.innerHTML = '<div class="ci-found bad"><p>Type the Club ID, for example 10 or UB0010.</p></div>'; return; }
@@ -2449,7 +2465,7 @@
     }, 140);
   }
   async function ciStart() {
-    ciSound();
+    ciSound(); ciLoad(); if (!ciStream) ciNudgeWho();
     if (ciStream) { ciStop(); return; }
     if (!ciRaceId) { toast("Pick the race first."); return; }
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { $("ciCamText").textContent = "This browser can't use the camera here. Use Chrome on Android or Safari on iPhone, or type Club IDs below."; return; }
