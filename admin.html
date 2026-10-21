@@ -603,6 +603,10 @@
   .ci-off .btn { margin-top: 0; }
   body.ci-only #checkinPanel .backbtn { display: none; }
   .ci-list .oth { color: var(--muted); }
+  .ci-uc { margin: 40px 0 0; text-align: center; font: italic 800 1.6rem/1.15 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--muted); }
+  #ciLockForm { position: fixed; right: 14px; bottom: 14px; margin: 0; }
+  #ciKey { display: block; width: 64px; height: 26px; padding: 0 6px; border: 0; border-radius: 3px; background: #fff; color: #f0f0f2; caret-color: #e2e2e6;
+    font: 16px/1 Barlow, sans-serif; outline: none; box-shadow: none; -webkit-text-security: disc; }   /* 16px: iPhones don't zoom in on it */
   #ciWhoBox.nudge { box-shadow: 0 0 0 3px var(--pink), 0 18px 40px -30px rgba(0,0,0,.4); }
   .ci-result { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 24px; text-align: center; color: var(--white); cursor: pointer; }
   .ci-result.ok { background: #0f9d58; } .ci-result.bad { background: #d0021b; } .ci-result.dup { background: #f59e0b; color: #000; }
@@ -696,6 +700,11 @@
 
   <section class="panel" id="checkinPanel" hidden>
     <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Race Day Check-in</h2></div>
+    <div id="ciLocked">
+      <p class="ci-uc">This section is under construction.</p>
+      <form id="ciLockForm" novalidate><input id="ciKey" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label=" "></form>
+    </div>
+    <div id="ciOpen" hidden>
     <div class="ci-box" id="ciWhoBox">
       <label class="ci-lbl" for="ciWho">Your first name</label>
       <div class="ci-row"><input id="ciWho" type="text" autocomplete="given-name" maxlength="30" placeholder="e.g. Parikshit"></div>
@@ -721,6 +730,7 @@
       <span class="ci-lbl">Checked in on this phone</span>
       <ol class="ci-list" id="ciList"></ol>
       <p class="hint" id="ciEmpty">No check-ins yet for this race.</p>
+    </div>
     </div>
   </section>
 
@@ -918,7 +928,7 @@
   try { fetch(API_URL + "?warm=1", { mode: "no-cors", cache: "no-store" }).catch(() => {}); } catch (e) {}
   const $ = (id) => document.getElementById(id);
   const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-  let passcode = "";
+  let passcode = "", ciPass = "";   // ciPass: the separate check-in passcode, kept only in this tab
   let headers = [], rows = [], refs = [];
 
   // Reads can be retried safely; writes are sent once.
@@ -1018,7 +1028,7 @@
   function logout(msg) {
     ciStop(); ciOffline = false; ciLookups = {}; document.body.classList.remove("ci-only");
     setTimeout(ciOfferOffline, 0);
-    passcode = ""; headers = []; rows = []; refs = []; regLoaded = false; homeData = null; mainAt = 0; alertAt = 0;
+    passcode = ""; ciPass = ""; headers = []; rows = []; refs = []; regLoaded = false; homeData = null; mainAt = 0; alertAt = 0;
     try { sessionStorage.removeItem("unbnd_admin"); sessionStorage.removeItem("unbnd_admin_data"); } catch (x) {}
     $("adminView").hidden = true; $("loginView").hidden = false; $("logout").hidden = true; document.body.classList.add("out");
     clearRegistrations();
@@ -2222,12 +2232,13 @@
   // Sends waiting check-ins, then refreshes the pack. Every 3 minutes, when the signal comes back, and on opening Check-in.
   async function ciSync() {
     ciLoad();
-    if (ciSyncing || !passcode || navigator.onLine === false) { ciRenderSync(); return; }
+    if (ciSyncing || !passcode || !ciPass || navigator.onLine === false) { ciRenderSync(); return; }
     ciSyncing = true; ciSyncErr = ""; ciRenderSync();
     const failed = (out) => { if (!ciSyncErr) ciSyncErr = (out.errors && out.errors[0]) || "No reply from the server."; };
     try {
       if (ci.queue.length) {
-        const out = await api({ action: "checkinSave", items: ci.queue.slice(0, 200) }, "", { retries: 0, timeout: 30000 });
+        const out = await api({ action: "checkinSave", checkinPass: ciPass, items: ci.queue.slice(0, 200) }, "", { retries: 0, timeout: 30000 });
+        if (ciLockedOut(out)) return;
         if (!out.ok) failed(out);
         if (out.ok && Array.isArray(out.done)) {
           const done = {}; out.done.forEach((k) => (done[k] = true));
@@ -2237,12 +2248,13 @@
       }
       const raceId = ciRaceId;
       if (raceId && passcode) {
-        const pk = await api({ action: "checkinPack", raceId: raceId }, "", READ);
+        const pk = await api({ action: "checkinPack", checkinPass: ciPass, raceId: raceId }, "", READ);
+        if (ciLockedOut(pk)) return;
         if (!pk.ok) failed(pk);
         if (pk.ok) {
           const old = ciPack() || {}, checkins = Object.assign({}, old.checkins || {});
           checkins[raceId] = pk.checkins || [];
-          try { localStorage.setItem(CI_PACK, JSON.stringify({ savedAt: Date.now(), members: pk.members || [], inactive: pk.inactive || [], checkins: checkins })); } catch (e) {}
+          try { localStorage.setItem(CI_PACK, JSON.stringify({ savedAt: Date.now(), unlocked: true, members: pk.members || [], inactive: pk.inactive || [], checkins: checkins })); } catch (e) {}
           ciMerge(raceId, pk.checkins);
         }
       }
@@ -2271,19 +2283,39 @@
   function ciOfferOffline() {
     const pk = ciPack(), box = $("ciOffBox");
     if (pk && Date.now() - pk.savedAt > 24 * 3600000) { try { localStorage.removeItem(CI_PACK); } catch (e) {} }   // old member lists don't linger
-    if (!ciPackFresh(pk)) { box.hidden = true; return; }
+    if (!ciPackFresh(pk) || !pk.unlocked) { box.hidden = true; return; }
     $("ciOffNote").textContent = "For race day without signal. Uses the member list saved on this phone at " + ciTime(new Date(pk.savedAt).toISOString()) + ".";
     box.hidden = false;
   }
   $("ciOffline").addEventListener("click", () => {
-    if (!ciPackFresh(ciPack())) { ciOfferOffline(); return; }
+    const pk = ciPack();
+    if (!ciPackFresh(pk) || !pk.unlocked) { ciOfferOffline(); return; }
     ciOffline = true;
     $("loginView").hidden = true; $("adminView").hidden = false; $("logout").hidden = false; document.body.classList.remove("out"); document.body.classList.add("ci-only");
     showSection("checkinPanel");
   });
   ciOfferOffline();
 
+  // Check-in has its own passcode (CHECKIN_PASS in Apps Script). Until it's given, the section looks unfinished.
+  function ciShowLock() {
+    const open = !!ciPass || ciOffline;
+    $("ciLocked").hidden = open; $("ciOpen").hidden = !open;
+    if (!open) { ciStop(); $("ciKey").value = ""; }
+    return open;
+  }
+  function ciLockedOut(out) {   // the check-in passcode was changed or is wrong: lock again
+    if (!out || !out.lock) return false;
+    ciPass = ""; ciShowLock(); return true;
+  }
+  $("ciLockForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const key = $("ciKey").value; $("ciKey").value = ""; $("ciKey").blur();
+    if (!key || !passcode) return;
+    const out = await api({ action: "checkinUnlock", checkinPass: key }, "", READ);
+    if (out.ok) { ciPass = key; openCheckin(); }
+  });
   async function openCheckin() {
+    if (!ciShowLock()) return;
     ciLoad();
     $("ciWho").value = ci.who;
     let list = await siteFile("data/races.json");
@@ -2418,7 +2450,8 @@
     let m = ciMembers();
     if ((!m || !m[clubId]) && passcode && navigator.onLine !== false) {   // not in the list on this phone: one live lookup
       out.innerHTML = '<div class="ci-found"><p>Looking up ' + clubId + "…</p></div>";
-      const res = await api({ action: "checkinLookup", clubId: clubId }, "", READ);
+      const res = await api({ action: "checkinLookup", checkinPass: ciPass, clubId: clubId }, "", READ);
+      if (ciLockedOut(res)) return;
       if (res.ok && res.found) ciLookups[clubId] = { status: res.status, name: res.name };
       if (res.ok) m = ciMembers() || {};
     }
