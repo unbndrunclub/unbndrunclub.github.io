@@ -1,9 +1,8 @@
-// UNBND race card images, drawn on the phone (1080 x 1920).
-// story(): "I'm running" image for Instagram stories. It never has the QR code.
-// ticket(): the race card itself, with the QR code and the terms. This is the one people save.
+// UNBND race card image, drawn on the phone (1080 x 1920).
+// ticket(): the race card itself, with the QR code, a do-not-share warning and the terms. Members save it and show it at the start line.
 // Every picture is drawn with canvas paths, so the image stays saveable in every browser.
 (function () {
-  const W = 1080, H = 1920, PINK = "#fe90ae", INK = "#0b0b0d";
+  const W = 1080, H = 1920, PINK = "#fe90ae", INK = "#0b0b0d", RED = "#d0021b";
   const C = '"Barlow Condensed", "Arial Narrow", sans-serif', B = 'Barlow, Arial, sans-serif';
   const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
@@ -209,16 +208,11 @@
     x.beginPath(); x.moveTo(0, bottom - 10); x.lineTo(W, bottom - 10); x.stroke(); x.setLineDash([]);
   }
   const SCENES = { marine: sceneMarine, worli: sceneWorli, hills: sceneHills, city: sceneCity };
-  const PLACE_LABEL = { marine: "Marine Drive", worli: "Worli Sea Face", hills: "Kharghar Hills", city: "Mumbai" };
 
   function when(r) {
     const [y, m, d] = r.date.split("-").map(Number), [hh, mm] = String(r.time || "00:00").split(":").map(Number);
     const day = r.day || DAYS[new Date(y, m - 1, d).getDay()];
     return { day, date: d + " " + MONTHS[m - 1] + " " + y, short: d + " " + MONTHS[m - 1], time: (hh % 12 || 12) + ":" + String(mm).padStart(2, "0") + " " + (hh < 12 ? "AM" : "PM") };
-  }
-  function pin(x, px, py, s, col) {
-    x.fillStyle = col; x.beginPath(); x.arc(px, py, s * .5, Math.PI, 0); x.lineTo(px, py + s * .95); x.closePath(); x.fill();
-    x.fillStyle = INK; x.beginPath(); x.arc(px, py, s * .2, 0, Math.PI * 2); x.fill();
   }
   function chip(x, text, cx, cy, bg, fg, align) {
     x.font = "700 36px " + C; const t = spaced(text), w = x.measureText(t).width + 52;
@@ -227,59 +221,13 @@
     x.fillStyle = fg; x.textAlign = "left"; x.textBaseline = "middle"; x.fillText(t, left + 26, cy + 2); x.textBaseline = "alphabetic";
   }
 
-  // ---- Instagram story: no QR code ----
-  async function story(r, name) {
-    await fonts();
-    const c = document.createElement("canvas"); c.width = W; c.height = H;
-    const x = c.getContext("2d"), theme = themeOf(r.start), kind = skyOf(r.time), w = when(r);
-    x.fillStyle = "#000"; x.fillRect(0, 0, W, H);
-    // words first (measured), then the scene fills the space below them
-    let size = 150; x.font = "italic 800 " + size + "px " + C;
-    let title = wrap(x, r.name.toUpperCase(), W - 160);
-    while (title.length > 3 && size > 96) { size -= 8; x.font = "italic 800 " + size + "px " + C; title = wrap(x, r.name.toUpperCase(), W - 160); }
-    const lines = Math.min(3, title.length), sceneTop = Math.max(1010, 470 + size * .95 + (lines - 1) * size * .9 + 200), foot = 1660;
-    SCENES[theme](x, sceneTop - 40, foot, kind);
-    const fade = x.createLinearGradient(0, sceneTop - 60, 0, sceneTop + 260); fade.addColorStop(0, "#000"); fade.addColorStop(1, "rgba(0,0,0,0)");
-    x.fillStyle = fade; x.fillRect(0, sceneTop - 60, W, 320);
-    x.fillStyle = "#000"; x.fillRect(0, 0, W, sceneTop - 59); x.fillRect(0, foot, W, H - foot);
-    x.save(); x.strokeStyle = "rgba(254,144,174,.14)"; x.lineWidth = 4;   // track lanes behind the words
-    for (let i = -1100; i < W; i += 70) { x.beginPath(); x.moveTo(i, sceneTop); x.lineTo(i + sceneTop * .53, 0); x.stroke(); }
-    x.restore();
-    const logo = await loadImg("logo.png");
-    if (logo) x.drawImage(logo, 80, 90, 150, 150);
-    chip(x, "RACE DAY", W - 80, 165, PINK, "#000", "right");
-    const nm = String(name || "").toUpperCase();
-    x.textAlign = "left"; x.fillStyle = "rgba(255,255,255,.8)"; fit(x, spaced(nm), "700 #px " + B, 40, W - 160, 26); x.fillText(spaced(nm), 80, 360);
-    x.fillStyle = "#fff"; x.font = "italic 800 92px " + C; x.fillText("I'M RUNNING", 80, 460);
-    x.font = "italic 800 " + size + "px " + C;
-    x.fillStyle = PINK; let y = 460 + size * .95;
-    title.slice(0, 3).forEach((l) => { x.fillText(l, 80, y); y += size * .9; });
-    y += 20;
-    x.fillStyle = "#fff"; x.font = "700 46px " + B; x.fillText(w.day + ", " + w.date, 80, y);
-    x.fillStyle = PINK; x.fillText("  ·  " + w.time, 80 + x.measureText(w.day + ", " + w.date).width, y);
-    y += 66; pin(x, 100, y - 30, 40, PINK);
-    x.fillStyle = "rgba(255,255,255,.85)"; x.font = "500 42px " + B;
-    x.fillText(wrap(x, r.start || PLACE_LABEL[theme], W - 330)[0], 140, y);
-    if (r.distance) {   // distance badge
-      const bx = W - 170, by = y - 30;
-      x.fillStyle = PINK; x.beginPath(); x.arc(bx, by, 92, 0, Math.PI * 2); x.fill();
-      x.strokeStyle = "#000"; x.lineWidth = 5; x.beginPath(); x.arc(bx, by, 78, 0, Math.PI * 2); x.stroke();
-      x.fillStyle = "#000"; x.textAlign = "center"; x.font = "italic 800 84px " + C; x.fillText(r.distance + "K", bx, by + 28); x.textAlign = "left";
-    }
-    // the club tag under the road
-    x.textAlign = "center"; x.fillStyle = PINK; x.font = "italic 800 72px " + C; x.fillText("@UNBNDRUNCLUB", W / 2, foot + 100);
-    x.fillStyle = "rgba(255,255,255,.6)"; x.font = "700 30px " + B; x.fillText(spaced("RUN UNBOUND · MUMBAI"), W / 2, foot + 150);
-    x.textAlign = "left";
-    return c;
-  }
-
   // ---- The race card itself: the ticket, with the QR code ----
   // qr: a qrcode-generator object (or null when the code couldn't be made)
   async function ticket(r, clubId, name, qr) {
     await fonts();
     const c = document.createElement("canvas"); c.width = W; c.height = H;
     const x = c.getContext("2d"), theme = themeOf(r.start), kind = skyOf(r.time), w = when(r);
-    const L = 40, T = 40, R = W - 40, Bm = H - 40, split = 800, rad = 44;
+    const L = 40, T = 40, R = W - 40, Bm = H - 40, split = 720, rad = 44;
     x.fillStyle = "#000"; x.fillRect(0, 0, W, H);
     x.save(); x.strokeStyle = "rgba(254,144,174,.25)"; x.lineWidth = 4;
     for (let i = -H; i < W + H; i += 70) { x.beginPath(); x.moveTo(i, H); x.lineTo(i + H * .53, 0); x.stroke(); }
@@ -313,29 +261,33 @@
     x.font = "italic 800 " + size + "px " + C; x.fillStyle = "#fff";
     title.forEach((l, i) => x.fillText(l, L + 44, titleY + i * size * .9));
     x.font = "700 40px " + B; x.fillStyle = PINK; x.fillText(w.day + ", " + w.date + "  ·  " + w.time, L + 44, dateY);
-    // bottom: who, the code, the terms
+    // bottom: who, the code, the warning and the terms
     const lx = L + 60, rw = R - L - 120;
-    let by = split + 76;
+    let by = split + 72;
     x.fillStyle = "#77707a"; x.font = "700 26px " + B; x.fillText(spaced("REGISTERED RUNNER"), lx, by);
     const nm = String(name || "").toUpperCase();
-    fit(x, nm, "italic 800 #px " + C, 92, rw, 52); x.fillStyle = INK; x.fillText(nm, lx, by + 84);
-    by += 130;
+    fit(x, nm, "italic 800 #px " + C, 88, rw, 50); x.fillStyle = INK; x.fillText(nm, lx, by + 80);
+    by += 122;
     const cells = [["CLUB ID", clubId], ["DISTANCE", r.distance ? r.distance + " KM" : "–"], ["START", w.time]];
     const cw = rw / 3;
     cells.forEach(([k, v], i) => {
       const cx = lx + i * cw;
-      if (i) { x.fillStyle = "#e3dde0"; x.fillRect(cx - 18, by - 6, 3, 92); }
+      if (i) { x.fillStyle = "#e3dde0"; x.fillRect(cx - 18, by - 6, 3, 88); }
       x.fillStyle = "#77707a"; x.font = "700 24px " + B; x.fillText(spaced(k), cx, by + 22);
-      x.fillStyle = i === 0 ? "#000" : INK; fit(x, v, "italic 800 #px " + C, 64, cw - 36, 40); x.fillText(v, cx, by + 82);
+      x.fillStyle = INK; fit(x, v, "italic 800 #px " + C, 60, cw - 36, 40); x.fillText(v, cx, by + 78);
     });
-    by += 120;
-    // terms first, measured, so the code gets whatever room is left
-    const tw = rw - 40, who = String(name || "the registered member");
-    x.font = "500 25px " + B;
-    const t1 = wrap(x, "NON-TRANSFERABLE. Only " + who + " (Club ID " + clubId + "), the registered member, may use this race card.", tw);
+    by += 112;
+    // measured from the bottom up, so the QR code gets whatever room is left
+    const tw = rw - 8, who = String(name || "the registered member");
+    x.font = "500 24px " + B;
+    const t1 = wrap(x, "NON-TRANSFERABLE. Only " + who + " (Club ID " + clubId + "), the registered member, may use this race card.", tw - 30);
     const t2 = wrap(x, "You may be asked by the organisers to show a valid government photo ID to confirm your identity.", tw);
-    const termsH = 40 + (t1.length + t2.length) * 34 + 12, termsTop = Bm - 34 - termsH;
-    const qTop = by, qSize = Math.min(480, termsTop - 120 - by);
+    const termsH = 30 + (t1.length + t2.length) * 31 + 14, termsTop = Bm - 30 - termsH;
+    x.font = "600 25px " + B;
+    const wl = wrap(x, "This QR code is unique to you and is your entry to this race. Keep it to yourself and show it only at the start line.", rw - 24);
+    const warnH = 92 + wl.length * 33, warnTop = termsTop - 16 - warnH;
+    const validY = warnTop - 26;
+    const qTop = by, qSize = Math.min(460, validY - 52 - by);
     if (qr) {   // black on white with a 4-module quiet zone
       const n = qr.getModuleCount(), cell = Math.floor(qSize / (n + 8)), qs = cell * (n + 8), qx = (W - qs) / 2, qy = qTop + (qSize - qs) / 2;
       x.strokeStyle = INK; x.lineWidth = 6; x.beginPath(); x.roundRect(qx - 10, qy - 10, qs + 20, qs + 20, 28); x.stroke();
@@ -343,25 +295,31 @@
       for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) if (qr.isDark(i, j)) x.fillRect(qx + (j + 4) * cell, qy + (i + 4) * cell, cell, cell);
     } else {
       x.fillStyle = "#f4f0f2"; x.beginPath(); x.roundRect((W - qSize) / 2, qTop, qSize, qSize, 28); x.fill();
-      x.fillStyle = "#77707a"; x.textAlign = "center"; x.font = "600 34px " + B;
-      wrap(x, "Show this race card and your Club ID at the start line.", qSize - 80).forEach((l, i) => x.fillText(l, W / 2, qTop + qSize / 2 - 20 + i * 46));
+      x.fillStyle = "#77707a"; x.textAlign = "center"; x.font = "600 32px " + B;
+      wrap(x, "Show this race card and your Club ID at the start line.", qSize - 80).forEach((l, i) => x.fillText(l, W / 2, qTop + qSize / 2 - 20 + i * 44));
       x.textAlign = "left";
     }
-    by = termsTop - 66;
-    x.textAlign = "center"; x.fillStyle = INK; x.font = "700 34px " + B;
-    x.fillText("Valid for " + r.id + " on " + w.date + " only", W / 2, by);
-    x.fillStyle = "#77707a"; x.font = "500 28px " + B; x.fillText("Show this code at the start line", W / 2, by + 42);
+    x.textAlign = "center"; x.fillStyle = INK; x.font = "700 32px " + B;
+    x.fillText("Valid for " + r.id + " on " + w.date + " only", W / 2, validY);
     x.textAlign = "left";
-    x.fillStyle = "#fde8ee"; x.beginPath(); x.roundRect(lx - 16, termsTop, rw + 32, termsH, 20); x.fill();
-    let ty = termsTop + 44;
+    // the warning, in red: never post it
+    x.fillStyle = RED; x.beginPath(); x.roundRect(lx - 16, warnTop, rw + 32, warnH, 20); x.fill();
+    const ix = lx + 4, iy = warnTop + 26;   // warning triangle
+    x.fillStyle = "#fff"; x.beginPath(); x.moveTo(ix + 22, iy); x.lineTo(ix + 44, iy + 38); x.lineTo(ix, iy + 38); x.closePath(); x.fill();
+    x.fillStyle = RED; x.fillRect(ix + 20, iy + 11, 4, 15); x.fillRect(ix + 20, iy + 29, 4, 4);
+    x.fillStyle = "#fff"; fit(x, "DO NOT POST OR SHARE THIS RACE CARD", "800 #px " + B, 33, rw - 70, 24); x.fillText("DO NOT POST OR SHARE THIS RACE CARD", ix + 60, iy + 33);
+    x.font = "600 25px " + B; wl.forEach((l, i) => x.fillText(l, lx, warnTop + 104 + i * 33));
+    // the terms
+    x.fillStyle = "#f4f0f2"; x.beginPath(); x.roundRect(lx - 16, termsTop, rw + 32, termsH, 20); x.fill();
+    let ty = termsTop + 38;
     t1.forEach((l, i) => {
-      if (i === 0 && l.startsWith("NON-TRANSFERABLE.")) { x.font = "800 25px " + B; x.fillStyle = "#000"; x.fillText("NON-TRANSFERABLE.", lx, ty); const off = x.measureText("NON-TRANSFERABLE. ").width; x.font = "500 25px " + B; x.fillStyle = "#2b2730"; x.fillText(l.slice(18), lx + off, ty); }
-      else { x.font = "500 25px " + B; x.fillStyle = "#2b2730"; x.fillText(l, lx, ty); }
-      ty += 34;
+      if (i === 0 && l.startsWith("NON-TRANSFERABLE.")) { x.font = "800 24px " + B; x.fillStyle = "#000"; x.fillText("NON-TRANSFERABLE.", lx, ty); const off = x.measureText("NON-TRANSFERABLE. ").width; x.font = "500 24px " + B; x.fillStyle = "#2b2730"; x.fillText(l.slice(18), lx + off, ty); }
+      else { x.font = "500 24px " + B; x.fillStyle = "#2b2730"; x.fillText(l, lx, ty); }
+      ty += 31;
     });
-    ty += 8; x.font = "500 25px " + B; x.fillStyle = "#2b2730";
-    t2.forEach((l) => { x.fillText(l, lx, ty); ty += 34; });
+    ty += 6; x.font = "500 24px " + B; x.fillStyle = "#2b2730";
+    t2.forEach((l) => { x.fillText(l, lx, ty); ty += 31; });
     return c;
   }
-  window.UNBNDCard = { story, ticket, themeOf, skyOf };
+  window.UNBNDCard = { ticket, themeOf, skyOf };
 })();

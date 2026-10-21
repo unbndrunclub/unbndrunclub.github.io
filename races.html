@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Race schedule | UNBND Run Club</title>
-<meta name="description" content="Upcoming UNBND Run Club races. Free for all members with an active Club ID.">
+<meta name="description" content="Upcoming UNBND Run Club races, for active club members.">
 <link rel="icon" href="logo.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -153,7 +153,15 @@
   .facts div { background: var(--paper); border-radius: 12px; padding: 10px 12px; }
   .facts small { display: block; color: var(--muted); font-size: .8rem; }
   .facts b { font: 700 1.05rem/1.25 "Barlow", sans-serif; }
-  .free { background: #eaf8ef; color: #0b5e36; border-radius: 12px; padding: 12px 14px; font-weight: 600; margin: 14px 0 0; }
+  /* Entry stamp on each race: FREE for active members, or the entry fee */
+  .stamp { position: absolute; z-index: 2; right: 14px; top: 14px; width: 128px; height: 128px; border-radius: 50%; display: grid; place-content: center; text-align: center; gap: 4px;
+    background: #fff; color: #0a8a4a; border: 4px solid currentColor; box-shadow: inset 0 0 0 4px #fff, inset 0 0 0 6px currentColor, 0 10px 24px -10px rgba(0,0,0,.6); transform: rotate(-10deg); }
+  .stamp b { font: italic 800 2.5rem/.85 "Barlow Condensed", sans-serif; letter-spacing: .02em; text-transform: uppercase; }
+  .stamp span { font: 800 .62rem/1.15 Barlow, sans-serif; letter-spacing: .08em; text-transform: uppercase; padding: 0 14px; }
+  .stamp.paid { color: #000; } .stamp.paid b { font-size: 2.1rem; }
+  .rc .stamp { width: 104px; height: 104px; right: 10px; top: 10px; } .rc .stamp b { font-size: 2rem; } .rc .stamp.paid b { font-size: 1.7rem; } .rc .stamp span { font-size: .54rem; padding: 0 10px; }
+  .entry { margin: 14px 0 0; border-radius: 12px; padding: 12px 14px; font-weight: 700; background: #e7f6ee; color: #075c33; }
+  .entry.paid { background: var(--paper); color: var(--black); }
   .rich ul { margin: 4px 0 0; padding-left: 20px; } .rich p { margin: 4px 0; }
   .countdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 4px 0 16px; max-width: 460px; }
   .countdown div { background: var(--black); color: var(--white); border-radius: 14px; padding: 12px 6px 10px; text-align: center; }
@@ -204,7 +212,6 @@
     background-image: radial-gradient(110% 150% at 100% 0%, rgba(254,144,174,.24), transparent 60%),
       repeating-linear-gradient(118deg, transparent 0 46px, rgba(254,144,174,.28) 46px 48px);
   }
-  .feat .cover.nophoto::before, .rc .cover.nophoto::before { content: ""; position: absolute; right: 16px; top: 14px; width: 64px; height: 64px; background: url(logo.png) center / contain no-repeat; }
   .feat .cover.nophoto { min-height: 210px; }
   .rc .cover.nophoto { height: 110px; }
   .kicker { display: inline-block; background: var(--pink); color: var(--black); font: 700 .9rem/1 "Barlow Condensed", sans-serif; padding: 6px 10px; border-radius: 6px; }
@@ -217,7 +224,7 @@
   .rgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
   .rc { background: var(--white); border-radius: 18px; overflow: hidden; }
   .rc .cover { height: 150px; background: #000 center / cover no-repeat; position: relative; }
-  .rc .cover b { position: absolute; left: 12px; top: 12px; background: var(--black); color: var(--pink); font: 700 .95rem/1 "Barlow Condensed", sans-serif; padding: 6px 10px; border-radius: 8px; }
+  .rc .cover > b { position: absolute; left: 12px; top: 12px; background: var(--black); color: var(--pink); font: 700 .95rem/1 "Barlow Condensed", sans-serif; padding: 6px 10px; border-radius: 8px; }
   .rc .body { padding: 14px 16px 18px; }
   .rc h4 { font: italic 800 1.7rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 0 0 10px; }
   .rc details { margin-top: 12px; } .rc summary { cursor: pointer; font-weight: 700; }
@@ -276,12 +283,14 @@
   .idin { display: flex; border-radius: 12px; overflow: hidden; background: var(--paper); }
   .idin b { background: var(--black); color: var(--pink); font: italic 800 1.2rem/1 "Barlow Condensed", sans-serif; padding: 0 12px; display: grid; place-items: center; }
   .idin input { border-radius: 0 !important; }
-  /* Race card result: the card to keep and the story to share */
-  .rc-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
-  .rc-pair figure { margin: 0; }
-  .rc-pair img { display: block; width: 100%; aspect-ratio: 9 / 16; object-fit: cover; border-radius: 14px; background: #111; box-shadow: 0 12px 28px -14px rgba(0,0,0,.6); }
-  .rc-pair figcaption { margin-top: 8px; font: 800 1.05rem/1.1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
-  .rc-pair figcaption small { display: block; margin-top: 3px; font: 500 .85rem/1.3 Barlow, sans-serif; text-transform: none; color: var(--muted); }
+  /* Race card result: one card, to keep to yourself */
+  .rc-one { display: grid; grid-template-columns: minmax(0, 42%) 1fr; gap: 14px; align-items: center; margin-top: 14px; }
+  .rc-one img { display: block; width: 100%; aspect-ratio: 9 / 16; object-fit: cover; border-radius: 12px; background: #111; box-shadow: 0 12px 28px -14px rgba(0,0,0,.6); }
+  .rc-one b { display: block; font: italic 800 1.35rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .rc-one p { margin: 6px 0 0; font-size: .95rem; line-height: 1.4; color: var(--muted); }
+  .rc-warn { display: flex; gap: 10px; align-items: flex-start; margin: 14px 0 0; padding: 12px 14px; border-radius: 12px; background: #fdecee; color: #a30015; border: 1.5px solid #d0021b; font-weight: 600; line-height: 1.4; }
+  .rc-warn strong { display: block; color: #d0021b; font: 800 1.05rem/1.2 Barlow, sans-serif; text-transform: uppercase; }
+  .rc-warn svg { flex: none; width: 24px; height: 24px; margin-top: 2px; }
   .rc-actions { display: grid; grid-template-columns: 1fr; gap: 8px; }
   .rc-actions button { padding: 14px; font-size: 1.15rem; }
   .actions button[disabled] { opacity: .55; cursor: progress; }
@@ -367,6 +376,7 @@
     <button class="xbtn" type="button" id="cardClose" aria-label="Close">✕</button>
     <h3 id="cardTitle">Your race card</h3>
     <p class="hint" id="cardRace" style="margin:0 0 6px"></p>
+    <p class="hint" style="margin:0 0 10px">Race cards are for <b>active members</b> only. Enter your Club ID and registered mobile number.</p>
     <form id="cardForm" novalidate>
       <div class="field" data-f="kId"><label class="lbl" for="kId">Club ID</label><div class="idin"><b>UB</b><input id="kId" type="text" inputmode="numeric" maxlength="4" placeholder="0001" autocomplete="off"></div><p class="err"></p></div>
       <div class="field" data-f="kPhone"><label class="lbl" for="kPhone">Registered mobile number</label><input id="kPhone" type="tel" inputmode="numeric" maxlength="10" placeholder="10 digits" autocomplete="tel-national"><p class="err"></p></div>
@@ -374,23 +384,22 @@
       <button class="btn" id="kBtn" type="submit">Create my race card</button>
     </form>
     <div id="cardDone" hidden>
-      <div class="rc-pair">
-        <figure><img id="rcCardImg" alt="Your race card"><figcaption>Race card<small>Your entry, with your QR code. Show it at the start line.</small></figcaption></figure>
-        <figure><img id="rcStoryImg" alt="Your story image"><figcaption>Story<small>No QR code, so it's safe to post.</small></figcaption></figure>
+      <div class="rc-one">
+        <img id="rcCardImg" alt="Your race card">
+        <div><b>Your race card is ready</b><p>Save it to your phone and show it at the start line. Organisers scan its QR code to check you in.</p></div>
       </div>
+      <p class="rc-warn" role="note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 23 21.5H1z" fill="#d0021b"/><path d="M12 9v6" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="18.2" r="1.4" fill="#fff"/></svg><span><strong>Don't post or share your race card</strong>Its QR code is unique to you and is your entry to this race. Keep it off social media and WhatsApp.</span></p>
       <p class="hint" id="cardQrNote" hidden></p>
       <div class="actions rc-actions">
         <button class="primary" type="button" id="cardSave" disabled>Download race card</button>
-        <button type="button" id="cardShare" disabled>Share to story</button>
       </div>
       <p class="hint" id="cardSaved" hidden></p>
-      <p class="hint">Your race card is only for you. Share the story instead, and tag <b>@unbndrunclub</b>.</p>
     </div>
   </div>
 </div>
 
 <div class="saveview" id="saveView" hidden role="dialog" aria-modal="true" aria-label="Save your race card">
-  <p><b>Touch and hold</b> your <span id="saveWhat">race card</span>, then tap <b>Save to Photos</b>.</p>
+  <p><b>Touch and hold</b> your race card, then tap <b>Save to Photos</b>.</p>
   <img id="saveImg" alt="Your race card">
   <button type="button" id="saveDone">Done</button>
 </div>
@@ -547,6 +556,12 @@
   const SITE = location.origin + location.pathname.replace(/[^/]*$/, "");
   let lastList = [];
 
+  // Entry: free for active members unless the race has an entry fee
+  const fee = (r) => (/^\d+$/.test(String(r.fee || "")) ? Number(r.fee) : 0);
+  const entryLine = (r) => fee(r) ? "Entry ₹" + fee(r) + " for active club members." : "Free for all active club members.";
+  const stampHtml = (r) => fee(r) ? '<div class="stamp paid" aria-hidden="true"><b>₹' + fee(r) + "</b><span>Entry for active club members</span></div>"
+    : '<div class="stamp" aria-hidden="true"><b>Free</b><span>for all active club members</span></div>';
+  const entryHtml = (r) => '<p class="entry' + (fee(r) ? " paid" : "") + '">' + entryLine(r) + " Race cards are for active members only.</p>";
   function actions(r) {
     return '<div class="actions">' +
       '<button class="primary" type="button" data-card="' + esc(r.id) + '">Create my race card</button>' +
@@ -564,17 +579,16 @@
     lastList = list;
     const r = list[0];
     $("featured").innerHTML =
-      '<article class="feat" id="' + esc(r.id) + '"><div class="cover' + (r.photo ? "" : " nophoto") + '" style="' + (r.photo ? "background-image:url('" + esc(r.photo) + "')" : "") + '"><div class="t">' +
+      '<article class="feat" id="' + esc(r.id) + '"><div class="cover' + (r.photo ? "" : " nophoto") + '" style="' + (r.photo ? "background-image:url('" + esc(r.photo) + "')" : "") + '">' + stampHtml(r) + '<div class="t">' +
       '<span class="kicker">Next race · ' + esc(r.id) + "</span><h2>" + esc(r.name) + "</h2></div></div>" +
       '<div class="body"><div class="countdown" data-count="' + raceStart(r).toISOString() + '" data-end="' + raceEnd(r).toISOString() + '" aria-label="Time until reporting"></div>' +
-      factsHtml(r) + actions(r) + startBlock(r) + '<p class="free">Free for all members with an active Club ID.</p>' + extras(r) + "</div></article>";
+      factsHtml(r) + entryHtml(r) + actions(r) + startBlock(r) + extras(r) + "</div></article>";
     if (list.length > 1) {
       $("moreWrap").hidden = false;
       $("more").innerHTML = list.slice(1).map((x) =>
-        '<article class="rc" id="' + esc(x.id) + '"><div class="cover' + (x.photo ? "" : " nophoto") + '" style="' + (x.photo ? "background-image:url('" + esc(x.thumb || x.photo) + "')" : "") + '"><b>' + esc(x.id) + "</b></div>" +
-        '<div class="body"><h4>' + esc(x.name) + "</h4>" + factsHtml(x) + actions(x) +
-        "<details><summary>More details</summary>" + startBlock(x) + extras(x) + "</details>" +
-        '<p class="free">Free for all members with an active Club ID.</p></div></article>').join("");
+        '<article class="rc" id="' + esc(x.id) + '"><div class="cover' + (x.photo ? "" : " nophoto") + '" style="' + (x.photo ? "background-image:url('" + esc(x.thumb || x.photo) + "')" : "") + '"><b>' + esc(x.id) + "</b>" + stampHtml(x) + "</div>" +
+        '<div class="body"><h4>' + esc(x.name) + "</h4>" + factsHtml(x) + entryHtml(x) + actions(x) +
+        "<details><summary>More details</summary>" + startBlock(x) + extras(x) + "</details></div></article>").join("");
     }
     startTicking();
     loadWeather(list);
@@ -588,7 +602,7 @@
   const raceEnd = (r) => new Date(raceStart(r).getTime() + (((Number(r.hours) || 0) * 60 + (Number(r.minutes) || 0)) || 90) * 60000);
   const utcStamp = (d) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
   const where = (r) => r.start + (r.landmark ? " (" + r.landmark + ")" : "");
-  const calText = (r) => "UNBND Run Club race " + r.id + ". Free for members with an active Club ID." + (r.map ? "\nDirections: " + r.map : "") + "\nDetails: " + SITE + "races.html#" + r.id;
+  const calText = (r) => "UNBND Run Club race " + r.id + ". " + entryLine(r) + (r.map ? "\nDirections: " + r.map : "") + "\nDetails: " + SITE + "races.html#" + r.id;
   function googleCal(r) {
     // www.google.com opens in the browser (the Calendar app ignores event details from links)
     return "https://www.google.com/calendar/render?action=TEMPLATE&ctz=Asia/Kolkata&text=" + encodeURIComponent(r.name) +
@@ -621,7 +635,7 @@
   // ---- Share on WhatsApp ----
   function waLink(r) {
     const t = r.name + "\n" + r.day + ", " + niceDate(r.date) + " at " + time12(r.time) + "\nStart: " + where(r) +
-      "\nFree for UNBND members with an active Club ID.\n" + SITE + "races.html#" + r.id;
+      "\n" + entryLine(r) + "\n" + SITE + "races.html#" + r.id;
     return "https://wa.me/?text=" + encodeURIComponent(t);
   }
 
@@ -662,7 +676,7 @@
     });
   }
 
-  // ---- Race card: the card to keep (with the QR code) and a story image to share (without it) ----
+  // ---- Race card: one image with the member's QR code, saved to their phone ----
   let cardRace = null, cardImgs = null;
   const kf = (id, fn) => $(id).addEventListener("input", (e) => { const n = fn(e.target.value); if (n !== e.target.value) e.target.value = n; });
   kf("kId", (v) => v.replace(/\D/g, "").slice(0, 4));
@@ -699,16 +713,16 @@
     if (!out.ok) { $("kErr").innerHTML = "<ul>" + (out.errors || ["Something went wrong."]).map((m) => "<li>" + esc(m) + "</li>").join("") + "</ul>"; return; }
     const forRace = cardRace, qr = typeof out.qr === "string" && out.qr.split("|")[3] === forRace.id ? out.qr : "";
     $("cardForm").hidden = true; $("cardDone").hidden = false;
-    $("cardQrNote").hidden = $("cardSaved").hidden = true; $("cardShare").disabled = $("cardSave").disabled = true;
-    $("rcCardImg").removeAttribute("src"); $("rcStoryImg").removeAttribute("src");
+    $("cardQrNote").hidden = $("cardSaved").hidden = true; $("cardSave").disabled = true;
+    $("rcCardImg").removeAttribute("src");
     let made = null;
     try { made = await makeCard(forRace, out.clubId, out.name, qr); } catch (e) {}
     if (cardRace !== forRace) return;
     if (!made) { $("cardQrNote").textContent = "We couldn't draw your race card. Check your connection and try again."; $("cardQrNote").hidden = false; return; }
-    if (cardImgs) { URL.revokeObjectURL(cardImgs.card.url); URL.revokeObjectURL(cardImgs.story.url); }
+    if (cardImgs) URL.revokeObjectURL(cardImgs.card.url);
     cardImgs = made;
-    $("rcCardImg").src = made.card.url; $("rcStoryImg").src = made.story.url;
-    $("cardShare").disabled = $("cardSave").disabled = false;
+    $("rcCardImg").src = made.card.url;
+    $("cardSave").disabled = false;
     if (qr && !made.qr) {
       $("cardQrNote").textContent = "We couldn't add the QR code to your race card. Check your connection and create it again.";
       $("cardQrNote").hidden = false;
@@ -725,14 +739,12 @@
       const blob = await new Promise((res) => c.toBlob(res, "image/png"));
       return { blob: blob, url: URL.createObjectURL(blob), name: "UNBND-" + r.id + "-" + kind + ".png" };
     };
-    const card = await pack(await UNBNDCard.ticket(r, clubId, name, q), "race-card");
-    return { card: card, story: await pack(await UNBNDCard.story(r, name), "story"), qr: !!q };
+    return { card: await pack(await UNBNDCard.ticket(r, clubId, name, q), "race-card"), qr: !!q };
   }
   // Saving: iPhones save pictures to Photos with a long press (a download would land in Files instead)
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   const asDataUrl = (blob) => new Promise((res) => { const f = new FileReader(); f.onload = () => res(f.result); f.readAsDataURL(blob); });
-  async function showSaveView(img, what) {
-    $("saveWhat").textContent = what; $("saveImg").alt = "Your " + what;
+  async function showSaveView(img) {
     $("saveImg").src = await asDataUrl(img.blob);
     $("saveView").hidden = false; $("saveDone").focus();
   }
@@ -745,19 +757,10 @@
   }
   $("cardSave").addEventListener("click", () => {
     if (!cardImgs) return;
-    if (isIOS) return showSaveView(cardImgs.card, "race card");
+    if (isIOS) return showSaveView(cardImgs.card);
     download(cardImgs.card);
     $("cardSaved").textContent = "Saved. On your phone, you'll find it in Gallery or Photos, under Downloads.";
     $("cardSaved").hidden = false;
-  });
-  $("cardShare").addEventListener("click", async () => {
-    if (!cardImgs) return;
-    const file = new File([cardImgs.story.blob], cardImgs.story.name, { type: "image/png" });
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try { await navigator.share({ files: [file], text: "Running " + cardRace.name + " with @unbndrunclub" }); return; } catch (e) { if (e.name === "AbortError") return; }
-    }
-    if (isIOS) return showSaveView(cardImgs.story, "story image");
-    download(cardImgs.story);
   });
   loadRaces(renderRaces);
 

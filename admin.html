@@ -351,6 +351,8 @@
   .rcard textarea:focus { background: var(--white); border-color: var(--black); outline: none; }
   .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
   .free { background: #eaf8ef; color: #0b5e36; border-radius: 12px; padding: 12px 14px; font-weight: 600; margin-top: 16px; }
+  .free.paid { background: var(--paper); color: var(--black); }
+  .entry-pick { margin-left: 0; flex-wrap: wrap; }
   .daytag { font-weight: 600; color: var(--muted); font-size: .9rem; margin-top: 6px; }
   .ulist { display: grid; gap: 8px; margin-bottom: 16px; max-width: 720px; }
   .uitem { background: var(--white); border-radius: 12px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
@@ -870,7 +872,14 @@
         <div class="field"><label class="lbl" for="rMinAge">Minimum age <span class="optional">optional</span></label><input id="rMinAge" type="number" min="1" max="100" inputmode="numeric" placeholder="No limit"></div>
         <div class="field"><label class="lbl" for="rMaxAge">Maximum age <span class="optional">optional</span></label><input id="rMaxAge" type="number" min="1" max="100" inputmode="numeric" placeholder="No limit"></div>
       </div>
-      <p class="free">Free for all members with an active Club ID.</p>
+      <div class="field">
+        <span class="lbl" id="rEntryLbl">Entry</span>
+        <div class="ampm entry-pick" role="radiogroup" aria-labelledby="rEntryLbl">
+          <label><input type="radio" name="rEntry" value="free" checked><span>Free for active members</span></label>
+          <label><input type="radio" name="rEntry" value="paid"><span>Paid</span></label>
+        </div>
+        <div class="field" id="rFeeBox" hidden style="margin-top:10px"><label class="lbl" for="rFee">Entry fee in ₹</label><input id="rFee" type="number" min="1" max="999999" step="1" inputmode="numeric" placeholder="e.g. 299"></div>
+      </div>
       <div class="field">
         <label class="lbl" for="rActivities">Additional activities <span class="optional">optional</span></label>
         <textarea id="rActivities" maxlength="1000" placeholder="Start a line with - to make it a bullet point&#10;- Warm-up session&#10;- Group photo"></textarea>
@@ -1510,7 +1519,7 @@
       fact("Duration", dur) + fact("Distance", r.distance ? r.distance + " km" : "") + fact("Age", age) + fact("Race ID", r.id) +
       "</div><h4>Starting point</h4><p style='margin:0'>" + esc(r.start) + (r.landmark ? "<br><span style='color:var(--muted)'>" + esc(r.landmark) + "</span>" : "") + "</p>" +
       (r.map ? '<p style="margin:6px 0 0"><a href="' + esc(r.map) + '" target="_blank" rel="noopener" style="color:inherit;font-weight:700">Open in Google Maps</a></p>' : "") +
-      '<p class="free">Free for all members with an active Club ID.</p>' +
+      '<p class="free' + (raceFee(r) ? " paid" : "") + '">' + entryText(r) + "</p>" +
       (r.activities ? "<h4>Additional activities</h4>" + richText(r.activities) : "") +
       (r.goodies ? "<h4>Goodies and awards</h4>" + richText(r.goodies) : "") + "</div>";
     $("raceView").hidden = false;
@@ -1519,6 +1528,11 @@
   ["raceView", "photoView"].forEach((id) => $(id).addEventListener("click", (e) => { if (e.target.id === id) $(id).hidden = true; }));
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") { $("raceView").hidden = true; $("photoView").hidden = true; } });
 
+  // Entry: blank fee = free for active members
+  const raceFee = (r) => (/^\d+$/.test(String(r.fee || "")) ? Number(r.fee) : 0);
+  const entryText = (r) => raceFee(r) ? "Entry ₹" + raceFee(r) + " for active club members." : "Free for all active club members.";
+  const showFee = () => { $("rFeeBox").hidden = !document.querySelector('input[name="rEntry"][value="paid"]').checked; };
+  document.querySelectorAll('input[name="rEntry"]').forEach((i) => i.addEventListener("change", () => { showFee(); if (!$("rFeeBox").hidden) rf("rFee").focus(); }));
   function fillForm(r) {
     const v = r || {};
     rf("rName").value = v.name || ""; rf("rDate").value = isoToDmy(v.date);
@@ -1529,6 +1543,8 @@
     rf("rStart").value = v.start || ""; rf("rLandmark").value = v.landmark || ""; rf("rMap").value = v.map || "";
     rf("rMinAge").value = v.minAge || ""; rf("rMaxAge").value = v.maxAge || "";
     rf("rActivities").value = v.activities || ""; rf("rGoodies").value = v.goodies || "";
+    document.querySelector('input[name="rEntry"][value="' + (raceFee(v) ? "paid" : "free") + '"]').checked = true;
+    rf("rFee").value = raceFee(v) || ""; showFee();
     showDay();
     editingPhotoId = v.photoId || "";
     $("rfTitle").textContent = r ? "Edit " + r.id : "Post a Race";
@@ -1546,6 +1562,8 @@
     if (!iso) local.push("Enter the date as DD-MM-YYYY.");
     const time = to24(rf("rHour").value, rf("rMin").value, (document.querySelector('input[name="rAmpm"]:checked') || {}).value);
     if (!time) local.push("Choose the reporting time (hour and minutes).");
+    const paid = document.querySelector('input[name="rEntry"][value="paid"]').checked, feeVal = rf("rFee").value.trim();
+    if (paid && !/^[1-9]\d{0,5}$/.test(feeVal)) local.push("Enter the entry fee in rupees, or choose Free for active members.");
     if (local.length) { $("rErr").innerHTML = "<ul>" + local.map((m) => "<li>" + m + "</li>").join("") + "</ul>"; return; }
     const race = {
       id: editingRace, name: rf("rName").value.trim(), date: iso, time: time,
@@ -1553,7 +1571,7 @@
       start: rf("rStart").value.trim(), landmark: rf("rLandmark").value.trim(), map: rf("rMap").value.trim(),
       minAge: rf("rMinAge").value, maxAge: rf("rMaxAge").value,
       activities: rf("rActivities").value, goodies: rf("rGoodies").value,
-      photoId: editingPhotoId,
+      fee: paid ? feeVal : "", photoId: editingPhotoId,
     };
     const out = await api({ action: "adminRaceSave", race: race }, race.id ? "Updating " + race.id : "Posting race");
     if (!out.ok) {
@@ -2052,7 +2070,7 @@
       const ry = py + 116 + where.length * 58 + 22;
       x.fillStyle = "rgba(254,144,174,.35)"; x.fillRect(104, ry - 34, W - 208, 2);
       label(x, "Reporting", 104, ry + 22); x.fillStyle = "#fff"; x.font = "800 44px " + C; x.fillText(t12(r.time), 104, ry + 70);
-      label(x, "Entry", 470, ry + 22); x.fillStyle = "#fff"; x.font = "600 36px " + B; x.fillText("Free for active members", 470, ry + 66);
+      label(x, "Entry", 470, ry + 22); x.fillStyle = "#fff"; x.font = "600 36px " + B; x.fillText(raceFee(r) ? "₹" + raceFee(r) + " · active members" : "Free for active members", 470, ry + 66);
       site(x, py + ph + 34, "FULL DETAILS & LIVE COUNTDOWN AT");
       checkers(x);
     };
@@ -2094,7 +2112,7 @@
       r.start && "📍 Start: " + r.start + (r.landmark ? " (near " + r.landmark + ")" : ""), r.map && "🗺️ Location: " + r.map, age && "🎂 Age: " + age].filter(Boolean);
     const goodies = String(r.goodies || "").trim(), acts = String(r.activities || "").trim();
     return ["🏃 *UNBND Run Club: next run*", "", "*" + r.name + "*"].concat(details, goodies ? ["", goodies] : [], acts ? ["", "✨ After the race: " + acts] : [],
-      ["", "Free for all members with an active Club ID.", "Full details and a live countdown:", SITE + "races.html#" + r.id, "", "See you at the start line! " + RUNNERS]).join("\n");
+      ["", entryText(r), "Full details and a live countdown:", SITE + "races.html#" + r.id, "", "See you at the start line! " + RUNNERS]).join("\n");
   }
   function previousMsg(r) {
     return ["🏁 *" + r.name + "*", raceDate(r), "", "Thank you for running with us! We'd love to hear how it went:", "",
