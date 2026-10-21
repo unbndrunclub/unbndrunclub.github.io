@@ -15,869 +15,429 @@
 <link rel="icon" href="logo.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="UNBND">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <script src="config.js"></script>
 <script src="site.js" defer></script>
-<script>
-  // Sections slide in as you scroll (skipped for people who prefer reduced motion)
-  if (window.matchMedia && !matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) document.documentElement.classList.add("rv");
-</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --black: #000000;
+    --black: #0b0b0d;
     --pink: #fe90ae;
     --pink-2: #ff5f8f;
+    --pink-soft: #ffe3eb;
     --white: #ffffff;
     --paper: #f4f4f5;
-    --line: #e2e2e6;
-    --muted: #686873;
+    --line: #e4e4e8;
+    --muted: #5f5f69;
+    --green: #0a8a4a;
     --error: #d0021b;
-    --ink: #0b0b0d;
-    --top-h: 64px;
-    --safe-top: env(safe-area-inset-top, 0px);
-    --gut: 20px;
-    --wrap: 1200px;
-    --ease: cubic-bezier(.2, .8, .2, 1);
-    color-scheme: dark;
-    box-sizing: border-box;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-    scroll-padding-top: calc(var(--top-h) + 24px);
+    --C: "Barlow Condensed", "Arial Narrow", sans-serif;
   }
-  @media (min-width: 861px) { :root { --top-h: 76px; --gut: 32px; } }
-  @media (prefers-reduced-motion: no-preference) { :root { scroll-behavior: smooth; } }
-  html.locked body { overflow: hidden; }
-  [hidden] { display: none !important; }
-  *, *::before, *::after { box-sizing: inherit; }
-  body {
-    margin: 0; background: var(--black); color: var(--white); overflow-x: hidden;
-    font: 400 17px/1.6 "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
-  @supports (overflow: clip) { body { overflow-x: clip; } }
-  a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid var(--pink); outline-offset: 3px; }
-  .wrap { max-width: calc(var(--wrap) + 2 * var(--gut)); margin: 0 auto; padding: 0 var(--gut); }
-  .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 76px; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  html.locked { overflow: hidden; }
+  body { margin: 0; background: var(--white); color: var(--black); font: 400 17px/1.55 Barlow, system-ui, sans-serif; }
+  img { max-width: 100%; }
+  a { color: inherit; }
+  .wide { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
+  .skip { position: absolute; left: -999px; top: 8px; z-index: 100; background: var(--black); color: var(--white); padding: 10px 14px; border-radius: 10px; }
+  .skip:focus { left: 8px; }
+  :focus-visible { outline: 3px solid var(--pink-2); outline-offset: 3px; }
 
-  /* ---------- Buttons ---------- */
-  .btn {
-    position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-    border: 0; border-radius: 14px; padding: 17px 24px; cursor: pointer; text-align: center; text-decoration: none; white-space: nowrap;
-    font: italic 800 1.3rem/1 "Barlow Condensed", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: .02em;
-    background: var(--black); color: var(--pink); -webkit-tap-highlight-color: transparent;
-    transition: transform .15s, background-color .2s, color .2s, box-shadow .2s;
-  }
-  .btn:active { transform: scale(.97); }
-  .btn.pink { background: var(--pink); color: var(--black); box-shadow: 0 14px 34px -14px rgba(254,144,174,.85); }
-  .btn.pink:hover { box-shadow: 0 18px 40px -12px rgba(254,144,174,1); }
-  .btn.ghost { background: rgba(255,255,255,.04); color: var(--white); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.55); }
-  .btn.ghost:hover { background: var(--white); color: var(--black); }
-  .btn.ink { background: var(--black); color: var(--white); }
-  .btn.ink:hover { color: var(--pink); }
-  .btn .arr { display: inline-block; font-style: normal; transition: transform .2s; }
-  .btn:hover .arr { transform: translateX(4px); }
-  .btn .fee { font: 700 .95rem/1 "Barlow Condensed", sans-serif; font-style: normal; background: var(--black); color: var(--pink); padding: 6px 8px; border-radius: 8px; }
+  /* Buttons and small type */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; border: 0; border-radius: 14px; padding: 15px 22px; cursor: pointer; text-decoration: none;
+    font: italic 800 1.2rem/1 var(--C); text-transform: uppercase; letter-spacing: .02em; background: var(--black); color: var(--pink); }
+  .btn.pink { background: var(--pink); color: var(--black); }
+  .btn.line { background: var(--white); color: var(--black); box-shadow: inset 0 0 0 2px var(--black); }
+  .btn .tag { background: var(--black); color: var(--pink); border-radius: 8px; padding: 4px 7px; font-size: .95rem; font-style: normal; }
   .btn[disabled] { opacity: .6; cursor: progress; }
-  .ctas { display: flex; flex-wrap: wrap; gap: 12px; }
-  .tlink { display: inline-flex; align-items: center; gap: 8px; color: inherit; font-weight: 700; text-decoration: none; border-bottom: 2px solid var(--pink); padding-bottom: 2px; }
-  .tlink:hover { color: var(--pink-2); }
+  .kick { display: inline-flex; align-items: center; gap: 10px; margin: 0 0 10px; font: 700 .82rem/1 var(--C); letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+  .kick::before { content: ""; width: 28px; height: 3px; border-radius: 2px; background: var(--pink); }
+  .h2 { margin: 0; font: italic 800 clamp(2.3rem, 7vw, 3.8rem)/.92 var(--C); text-transform: uppercase; letter-spacing: -.005em; }
+  .h2 em { font-style: inherit; color: var(--pink-2); }
+  .sub { margin: 12px 0 0; color: var(--muted); max-width: 640px; }
+  section { padding: 64px 0; }
+  .paper { background: var(--paper); }
 
-  /* ---------- Header: logo, menu, scroll track ---------- */
-  .hdr {
-    position: sticky; top: 0; z-index: 60; color: var(--white); padding-top: var(--safe-top);
-    background: linear-gradient(rgba(0,0,0,.7), rgba(0,0,0,0)); transition: background-color .25s, box-shadow .25s;
-  }
-  .hdr.solid { background: rgba(0,0,0,.94); -webkit-backdrop-filter: blur(16px) saturate(1.4); backdrop-filter: blur(16px) saturate(1.4); box-shadow: 0 12px 30px -20px rgba(0,0,0,.8); }
-  .hdr-in { max-width: calc(var(--wrap) + 2 * var(--gut)); height: var(--top-h); margin: 0 auto; padding: 0 var(--gut); display: flex; align-items: center; gap: 10px; }
-  .brand { display: flex; align-items: center; gap: 12px; flex: none; color: var(--white); text-decoration: none; }
-  .brand img { width: 44px; height: 44px; display: block; transition: transform .35s cubic-bezier(.3,1.6,.5,1); }
-  .brand:hover img { transform: rotate(-10deg) scale(1.06); }
-  .brand span { display: none; font: 700 .78rem/1.15 "Barlow Condensed", sans-serif; letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,.7); border-left: 1px solid rgba(255,255,255,.2); padding-left: 12px; }
-  .brand span b { display: block; color: var(--white); font-size: .95rem; letter-spacing: .12em; }
-  @media (min-width: 1100px) { .brand span { display: block; } }
-  .menu-d { margin-left: auto; display: flex; gap: 2px; }
-  .menu-d a { position: relative; color: var(--white); text-decoration: none; font: 700 1.05rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .06em; padding: 12px 13px; }
-  .menu-d a::after { content: ""; position: absolute; left: 13px; right: 13px; bottom: 5px; height: 2px; border-radius: 2px; background: var(--pink); transform: scaleX(0); transform-origin: left; transition: transform .25s; }
-  .menu-d a:hover::after, .menu-d a:focus-visible::after { transform: scaleX(1); }
-  .join {
-    display: inline-flex; align-items: center; gap: 8px; margin-left: 10px; padding: 6px 6px 6px 16px; border-radius: 999px;
-    background: var(--pink); color: var(--black); text-decoration: none; font: italic 800 1.15rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase;
-    transition: transform .15s, box-shadow .2s; box-shadow: 0 8px 22px -10px rgba(254,144,174,.9);
-  }
-  .join small { font: 700 .9rem/1 "Barlow Condensed", sans-serif; background: var(--black); color: var(--pink); padding: 6px 8px; border-radius: 999px; font-style: normal; }
-  .join:hover { transform: translateY(-1px); box-shadow: 0 12px 26px -10px rgba(254,144,174,1); }
-  .burger { display: none; flex: none; width: 44px; height: 44px; border: 0; border-radius: 12px; background: rgba(255,255,255,.1); cursor: pointer; place-items: center; -webkit-tap-highlight-color: transparent; }
-  .burger span { grid-area: 1 / 1; display: block; width: 20px; height: 2px; border-radius: 2px; background: var(--white); transition: transform .3s cubic-bezier(.3,1.4,.5,1); }
-  .burger span:first-child { transform: translateY(-4px); }
-  .burger span:last-child { transform: translateY(4px); width: 14px; justify-self: end; margin-right: 12px; }
-  .burger[aria-expanded="true"] span:first-child { transform: rotate(45deg); }
-  .burger[aria-expanded="true"] span:last-child { transform: rotate(-45deg); width: 20px; justify-self: center; margin-right: 0; }
-  @media (max-width: 860px) {
-    .menu-d { display: none; }
-    .join { margin-left: auto; }
-    .burger { display: grid; }
-  }
-  @media (max-width: 340px) { .join small { display: none; } }
-
-  /* Scroll track: a runner jogs along the bottom of the header as you move down the page */
-  .track { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: rgba(255,255,255,.12); pointer-events: none; }
-  .track .fill { position: absolute; inset: 0; background: linear-gradient(90deg, var(--pink-2), var(--pink)); transform-origin: left; transform: scaleX(0); box-shadow: 0 0 10px rgba(254,144,174,.8); }
-  .track .runner { position: absolute; left: 0; bottom: 1px; width: 18px; height: 18px; color: var(--pink); will-change: transform; }
-  .track .runner svg { width: 100%; height: 100%; display: block; overflow: visible; }
-  .track .runner .pb { opacity: 0; }
-  .track.go .runner svg { animation: bob .36s ease-in-out infinite; }
-  .track.go .runner .pa { animation: pose .36s steps(1) infinite; }
-  .track.go .runner .pb { animation: pose .36s steps(1) infinite reverse; }
-  @keyframes pose { 0% { opacity: 1; } 50% { opacity: 0; } }
-  @keyframes bob { 50% { transform: translateY(-1.5px); } }
-  .track .flag { position: absolute; right: 0; bottom: 2px; width: 10px; height: 10px; background: conic-gradient(#fff 25%, #000 0 50%, #fff 0 75%, #000 0) 0 0 / 5px 5px; border-radius: 1px; }
-  .finish-chip { position: absolute; right: 10px; top: calc(100% + 8px); background: var(--pink); color: var(--black); font: italic 800 1rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; padding: 8px 12px; border-radius: 10px; box-shadow: 0 10px 24px -10px rgba(0,0,0,.6); pointer-events: none; }
-  .spark { position: absolute; width: 16px; height: 3px; margin-top: -1.5px; border-radius: 3px; transform-origin: 0 50%; pointer-events: none; }
-
-  /* Mobile menu */
-  .sheet {
-    position: fixed; inset: 0; z-index: 55; overflow-y: auto; background: var(--black); color: var(--white);
-    padding: calc(var(--top-h) + var(--safe-top) + 14px) 22px calc(env(safe-area-inset-bottom, 0px) + 28px);
-  }
-  .sheet::before { content: ""; position: absolute; inset: auto 0 0 0; height: 55%; pointer-events: none;
-    background: radial-gradient(80% 60% at 50% 100%, rgba(254,144,174,.22), transparent 70%); }
-  .sheet-in { position: relative; max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; min-height: 100%; }
-  .sheet-nav a { display: flex; align-items: baseline; gap: 14px; color: var(--white); text-decoration: none; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.1);
-    font: italic 800 clamp(2.5rem, 12vw, 3.4rem)/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
-  .sheet-nav a span { font: 700 .85rem/1 "Barlow Condensed", sans-serif; font-style: normal; letter-spacing: .12em; color: var(--pink); min-width: 20px; }
-  .sheet-nav a[aria-current="page"] { color: var(--pink); }
-  .sheet-quick { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .sheet-quick a { color: var(--white); text-decoration: none; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 14px; font: 700 1.05rem/1.15 "Barlow Condensed", sans-serif; text-transform: uppercase; }
-  .sheet-quick a small { display: block; color: var(--pink); font: 600 .8rem/1.2 "Barlow", sans-serif; text-transform: none; margin-top: 4px; }
-  .sheet .btn { width: 100%; }
-  .sheet-ig { margin: auto 0 0; color: rgba(255,255,255,.7); }
-  .sheet-ig a { color: var(--pink); font-weight: 700; text-decoration: none; }
-  @media (prefers-reduced-motion: no-preference) {
-    .sheet:not([hidden]) { animation: sheet-in .28s ease-out both; }
-    .sheet:not([hidden]) .sheet-in > *, .sheet:not([hidden]) .sheet-nav a { animation: dash-in .5s var(--ease) both; animation-delay: calc(var(--i, 0) * 55ms + 60ms); }
-  }
-  @keyframes sheet-in { from { opacity: 0; } }
-  @keyframes dash-in { from { opacity: 0; transform: translateX(40px) skewX(-10deg); } }
-
-  /* ---------- Hero: Marine Drive at night ---------- */
-  .stage {
-    position: relative; overflow: hidden; isolation: isolate; color: var(--white); background: var(--black);
-    margin-top: calc(-1 * (var(--top-h) + var(--safe-top)));
-    padding: calc(var(--top-h) + var(--safe-top) + 26px) 0 34px;
-  }
-  .sky { position: absolute; inset: 0; z-index: -3;
-    background:
-      radial-gradient(60% 34% at 30% 64%, rgba(254,144,174,.26), transparent 70%),
-      radial-gradient(42% 26% at 82% 60%, rgba(255,95,143,.2), transparent 70%),
-      linear-gradient(#000 0%, #050206 32%, #13070c 60%, #050203 82%, #000 100%); }
-  .stars { position: absolute; left: 0; right: 0; top: 0; height: 68%; width: 100%; z-index: -2; }
-  .stars circle { fill: #fff; }
-  .stars .tw { animation: twinkle 3.2s ease-in-out infinite; }
-  @keyframes twinkle { 50% { opacity: .15; } }
-  .moon { position: absolute; z-index: -2; top: calc(var(--top-h) + var(--safe-top) + 14px); right: 7%; width: 64px; aspect-ratio: 1; border-radius: 50%;
-    background: radial-gradient(circle at 36% 34%, #ffffff 0 26%, #fff0f4 48%, #ffd7e2 72%, #f9bfcf 100%);
-    box-shadow: 0 0 34px 6px rgba(254,144,174,.38), 0 0 110px 40px rgba(254,144,174,.14); }
-  .moon::after { content: ""; position: absolute; inset: 0; border-radius: 50%;
-    background: radial-gradient(circle at 64% 62%, rgba(249,191,207,.55) 0 9%, transparent 10%), radial-gradient(circle at 40% 70%, rgba(249,191,207,.45) 0 6%, transparent 7%), radial-gradient(circle at 70% 34%, rgba(249,191,207,.35) 0 5%, transparent 6%); }
-  .stage-in { position: relative; max-width: calc(var(--wrap) + 2 * var(--gut)); margin: 0 auto; padding: 0 var(--gut);
-    display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "copy" "art" "ticket"; }
-  .copy { grid-area: copy; position: relative; z-index: 2; }
-  .chip { display: inline-flex; align-items: center; gap: 9px; margin: 0 0 18px; padding: 8px 13px 8px 10px; border-radius: 999px;
-    background: rgba(254,144,174,.1); border: 1px solid rgba(254,144,174,.38); color: var(--pink);
-    font: 700 .85rem/1 "Barlow Condensed", sans-serif; letter-spacing: .16em; text-transform: uppercase; }
-  .chip svg { width: 14px; height: 14px; }
-  .stage h1 { margin: 0; font: italic 800 clamp(4.2rem, 22vw, 10.2rem)/.82 "Barlow Condensed", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: -.025em; }
-  .stage h1 .ln { display: block; white-space: nowrap; }
-  .stage h1 .l1 { color: var(--white); }
-  .stage h1 .l2 { color: var(--pink); text-shadow: 0 0 60px rgba(254,144,174,.35); }
-  .tag { margin: 22px 0 0; max-width: 33ch; font: 500 clamp(1.08rem, 4.3vw, 1.32rem)/1.45 "Barlow", sans-serif; color: rgba(255,255,255,.86); }
-  .stage .ctas { margin-top: 26px; }
-  @media (max-width: 560px) { .stage .ctas .btn, .finale .ctas .btn { flex: 1 1 auto; padding: 16px 14px; } }
-  .btn .sm { display: none; }
-  @media (max-width: 560px) { .stage .btn .lg { display: none; } .stage .btn .sm { display: inline; } }
-  .art { grid-area: art; position: relative; z-index: 0; height: 300px; margin: -92px calc(50% - 50vw) 0; pointer-events: none; }
-  .art svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: hidden; }
-  .geo { display: none; position: absolute; z-index: 1; left: max(var(--gut), calc(50vw - var(--wrap) / 2)); bottom: 22px; margin: 0;
-    font: 700 .78rem/1 "Barlow Condensed", sans-serif; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.5); }
-  .geo b { color: var(--pink); font-weight: 700; }
-  /* the necklace */
-  .md-back rect { fill: #040405; }
-  .md-front path, .md-front rect { fill: url(#mdBld); }
-  .md-rim { fill: none; stroke: rgba(254,144,174,.28); stroke-width: 1.2; }
-  .md-win path { fill: none; }
-  .md-win .ww { stroke: rgba(255,240,244,.62); }
-  .md-win .wp { stroke: rgba(254,144,174,.75); }
-  .md-win .wd { stroke: rgba(255,255,255,.18); }
-  .md-tw path { fill: none; stroke: rgba(255,230,238,.3); }
-  .md-sea { fill: url(#mdSea); }
-  .md-road { fill: none; stroke: rgba(255,255,255,.3); stroke-width: 1.6; }
-  .md-glowline { fill: none; stroke: rgba(254,144,174,.22); stroke-width: 9; }
-  .md-wall { fill: none; stroke: rgba(254,144,174,.4); stroke-width: 1.4; }
-  .md-lamps .g { fill: url(#mdLamp); }
-  .md-lamps .c { fill: #fff; }
-  .md-lamps .g.tw { animation: lamp 2.8s ease-in-out infinite; }
-  @keyframes lamp { 50% { opacity: .45; } }
-  .md-refl path { fill: none; stroke: rgba(255,214,226,.42); stroke-linecap: round; animation: shim 2.4s linear infinite; }
-  @keyframes shim { to { stroke-dashoffset: -28; } }
-  .md-air { fill: var(--pink); animation: blink 1.6s steps(1) infinite; }
-  @keyframes blink { 50% { opacity: .1; } }
-  .md-waves path { fill: none; stroke: rgba(254,144,174,.14); stroke-width: 1.2; }
-  .md-runner { fill: var(--pink); }
-  .md-trail { fill: rgba(254,144,174,.45); }
-
-  /* Next race ticket */
-  .ticket {
-    grid-area: ticket; position: relative; z-index: 2; display: block; margin-top: -40px; padding: 18px 18px 0; color: var(--white); text-decoration: none;
-    border-radius: 22px; background: linear-gradient(160deg, rgba(22,22,26,.88), rgba(8,8,10,.94)); border: 1px solid rgba(254,144,174,.42);
-    -webkit-backdrop-filter: blur(14px) saturate(1.3); backdrop-filter: blur(14px) saturate(1.3);
-    box-shadow: 0 40px 80px -40px rgba(0,0,0,1); transition: transform .25s var(--ease), border-color .25s;
-    -webkit-mask: radial-gradient(circle 11px at 0 calc(100% - 62px), #0000 97%, #000) left / 51% 100% no-repeat, radial-gradient(circle 11px at 100% calc(100% - 62px), #0000 97%, #000) right / 51% 100% no-repeat;
-            mask: radial-gradient(circle 11px at 0 calc(100% - 62px), #0000 97%, #000) left / 51% 100% no-repeat, radial-gradient(circle 11px at 100% calc(100% - 62px), #0000 97%, #000) right / 51% 100% no-repeat;
-  }
-  .ticket:hover { transform: translateY(-3px); border-color: var(--pink); }
-  .tk-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-  .tk-lbl { display: inline-flex; align-items: center; gap: 9px; font: 700 .82rem/1 "Barlow Condensed", sans-serif; letter-spacing: .18em; text-transform: uppercase; color: var(--pink); }
-  .live { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--pink); }
-  .live::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--pink); animation: ping 1.6s ease-out infinite; }
-  @keyframes ping { from { transform: scale(.4); opacity: 1; } to { transform: scale(1.6); opacity: 0; } }
-  .tk-id { font: 700 .78rem/1 "Barlow Condensed", sans-serif; letter-spacing: .14em; color: rgba(255,255,255,.62); border: 1px solid rgba(255,255,255,.2); border-radius: 6px; padding: 5px 7px; }
-  .tk-name { margin: 14px 0 8px; font: italic 800 clamp(1.8rem, 8vw, 2.3rem)/.95 "Barlow Condensed", sans-serif; text-transform: uppercase; }
-  .tk-meta { margin: 0; display: grid; gap: 4px; color: rgba(255,255,255,.8); font-size: .98rem; line-height: 1.35; }
-  .tk-meta span { display: flex; gap: 8px; align-items: center; }
-  .tk-meta svg { width: 15px; height: 15px; flex: none; color: var(--pink); }
-  .cap { text-transform: capitalize; }
-  .tk-cd { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 16px 0 18px; }
-  .tk-cd .box { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 9px 4px 7px; text-align: center; overflow: hidden; }
-  .tk-cd b { display: block; font: italic 800 2rem/1 "Barlow Condensed", sans-serif; color: var(--pink); font-variant-numeric: tabular-nums; }
-  .tk-cd b.flip { animation: flip .35s var(--ease); }
-  @keyframes flip { from { transform: translateY(-60%); opacity: 0; } }
-  .tk-cd span { font-size: .66rem; text-transform: uppercase; letter-spacing: .12em; color: rgba(255,255,255,.62); }
-  .tk-cd .today { grid-column: 1 / -1; min-height: 56px; display: grid; place-items: center; background: var(--pink); color: var(--black); border-radius: 12px; font: italic 800 1.35rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
-  .tk-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; height: 62px; margin: 0 -18px; padding: 0 18px; border-top: 2px dashed rgba(255,255,255,.2);
-    font: 700 1rem/1 "Barlow Condensed", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.75); }
-  .tk-foot b { font: italic 800 1.5rem/1 "Barlow Condensed", sans-serif; color: var(--white); letter-spacing: 0; }
-  .tk-go { color: var(--pink); display: inline-flex; gap: 8px; align-items: center; }
-  .tk-go .arr { display: inline-block; transition: transform .2s; }
-  .ticket:hover .tk-go .arr { transform: translateX(4px); }
-
-  @media (min-width: 900px) {
-    .stage { min-height: max(700px, 100vh); min-height: max(700px, 100svh); padding-bottom: 0; display: flex; flex-direction: column; }
-    .stage-in { flex: 1; width: 100%; grid-template-columns: minmax(0, 1fr) 390px; grid-template-rows: 1fr auto; grid-template-areas: "copy ticket" "art art"; column-gap: 56px; align-items: center; }
-    .stage.no-race .stage-in { grid-template-areas: "copy copy" "art art"; }
-    .copy { padding: 24px 0 0; }
-    .art { height: clamp(280px, 29vw, 440px); margin-top: -170px; }
-    .geo { display: block; }
-    .ticket { margin: 30px 0 0; align-self: center; }
-    .moon { width: 92px; top: calc(var(--top-h) + var(--safe-top) + 4vh); right: 9%; }
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .stage .chip, .stage .tag, .stage .ctas, .ticket { animation: rise .8s var(--ease) both; }
-    .stage .ln { animation: sprint .9s var(--ease) both; }
-    .stage .l2 { animation-delay: .12s; }
-    .stage .tag { animation-delay: .3s; } .stage .ctas { animation-delay: .42s; } .ticket { animation-delay: .6s; }
-    .art { animation: dawn 1.6s ease-out both; }
-  }
-  @keyframes sprint { from { opacity: 0; transform: translateX(-60px) skewX(-14deg); } to { opacity: 1; transform: none; } }
-  @keyframes rise { from { opacity: 0; transform: translateY(24px); } }
-  @keyframes dawn { from { opacity: 0; transform: translateY(30px); } }
-
-  /* Race tape: the next runs on a pink tape with chequered edges */
-  .tapes { position: relative; z-index: 5; margin-top: -6px; padding: 18px 0 22px; overflow: hidden; pointer-events: none; background: linear-gradient(var(--black) 50%, var(--paper) 50%); }
-  .tape { position: relative; left: -4%; width: 108%; display: flex; align-items: stretch; pointer-events: auto; }
-  .tape.tk { rotate: -1.6deg; background: var(--pink); color: var(--black); box-shadow: 0 16px 30px -16px rgba(0,0,0,.6); padding: 6px 0; }
-  .tape.tk::before, .tape.tk::after { content: ""; position: absolute; left: 0; right: 0; height: 6px; background: conic-gradient(#000 25%, #fff 0 50%, #000 0 75%, #fff 0) 0 0 / 6px 6px; animation: flag-h 1s linear infinite; }
-  .tape.tk::before { top: 0; } .tape.tk::after { bottom: 0; animation-direction: reverse; }
-  @keyframes flag-h { to { background-position-x: -12px; } }
-  .tk-view { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; padding-left: 4%; }
-  .tk-track { display: inline-flex; padding: 12px 0; animation: tk 40s linear infinite; will-change: transform; }
-  .tk-set { display: inline-flex; }
-  .tk-set .rep { display: contents; }
-  .tk-track span { font: italic 800 1.15rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; padding: 0 18px 0 0; }
-  .tk-track span::before { content: "\25C6"; color: var(--white); font-style: normal; font-size: .8em; margin-right: 18px; }
-  .ticker.paused .tk-track { animation-play-state: paused; }
-  .tk-btn { flex: none; border: 0; border-left: 1.5px solid rgba(0,0,0,.25); background: transparent; color: var(--black); width: 46px; margin-right: 4%; cursor: pointer; font-size: .95rem; }
-  .tk-btn:focus-visible { outline: 3px solid var(--black); outline-offset: -3px; }
-  @keyframes tk { to { transform: translateX(-50%); } }
-
-  /* ---------- Sections ---------- */
-  .sec { position: relative; padding: 84px 0; }
-  @media (min-width: 900px) { .sec { padding: 124px 0; } }
-  .light { background: var(--paper); color: var(--black); }
-  .white { background: var(--white); color: var(--black); }
-  .sh { margin: 0 0 34px; max-width: 760px; }
-  .kick { display: flex; align-items: center; gap: 12px; margin: 0 0 16px; font: 700 .88rem/1 "Barlow Condensed", sans-serif; letter-spacing: .18em; text-transform: uppercase; color: var(--pink); }
-  .kick::before { content: ""; width: 34px; height: 2px; background: currentColor; }
-  .light .kick, .white .kick { color: var(--black); }
-  .light .kick::before, .white .kick::before { background: var(--pink); height: 3px; }
-  .h2 { margin: 0; font: italic 800 clamp(2.9rem, 10vw, 5.6rem)/.88 "Barlow Condensed", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: -.015em; }
-  .h2 em { font-style: inherit; color: var(--pink); }
-  .light .h2 em, .white .h2 em { color: inherit; background: linear-gradient(transparent 62%, var(--pink) 62% 90%, transparent 90%); padding: 0 .04em; }
-  .sh p { margin: 16px 0 0; max-width: 54ch; font-size: 1.1rem; color: rgba(255,255,255,.72); }
-  .light .sh p, .white .sh p { color: #4a4a52; }
-
-  /* Upcoming races: a fixture list */
-  .fix-grid { display: grid; gap: 28px; grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "list" "more"; }
-  .fix-head { grid-area: head; margin: 0; } .fix-list { grid-area: list; } .fix-more { grid-area: more; }
-  @media (min-width: 960px) { .fix-grid { grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); grid-template-rows: auto 1fr; grid-template-areas: "head list" "more list"; column-gap: 64px; row-gap: 30px; align-items: start; } }
-  .fx .soon a { background: transparent; box-shadow: none; border: 2px dashed #c9c9cf; }
-  .fx .soon a:hover { border-color: var(--black); }
-  .fx-date.plus { background: var(--white); color: var(--black); border: 2px solid var(--black); font: italic 800 2.4rem/1 "Barlow Condensed", sans-serif; place-items: center; }
-  .fx { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
-  .fx a { display: grid; grid-template-columns: 78px minmax(0, 1fr) auto; gap: 18px; align-items: center; padding: 12px 18px 12px 12px; border-radius: 22px; background: var(--white); color: inherit; text-decoration: none;
-    box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 20px 44px -32px rgba(0,0,0,.5); transition: transform .25s var(--ease), box-shadow .25s; }
-  .fx a:hover { transform: translateY(-3px); box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 28px 54px -30px rgba(0,0,0,.55); }
-  .fx-date { display: grid; justify-items: center; align-content: center; height: 88px; border-radius: 16px; background: var(--black); color: var(--white); }
-  .fx-date small { font: 700 .72rem/1 "Barlow Condensed", sans-serif; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.7); }
-  .fx-date b { font: italic 800 2.5rem/.9 "Barlow Condensed", sans-serif; color: var(--pink); margin: 4px 0 3px; }
-  .fx-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
-  .fx-next { font: 700 .72rem/1 "Barlow Condensed", sans-serif; letter-spacing: .14em; text-transform: uppercase; background: var(--pink); color: var(--black); padding: 4px 7px; border-radius: 5px; }
-  .fx-when { font: 700 .78rem/1 "Barlow Condensed", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
-  .fx-name { display: block; font: italic 800 clamp(1.5rem, 6vw, 2.1rem)/.95 "Barlow Condensed", sans-serif; text-transform: uppercase; }
-  .fx-meta { display: block; margin-top: 7px; color: #44444c; font-size: .98rem; line-height: 1.35; }
-  .fx-go { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--paper); font-size: 1.2rem; transition: background .2s, transform .2s; }
-  .fx a:hover .fx-go { background: var(--pink); transform: translateX(3px); }
-  @media (max-width: 560px) { .fx a { grid-template-columns: 66px minmax(0, 1fr); gap: 14px; } .fx-go { display: none; } .fx-date { height: 80px; } .fx-date b { font-size: 2.2rem; } }
-  .fx-empty { background: var(--white); border-radius: 22px; padding: 26px 22px; color: #44444c; }
-  .fx-empty b { display: block; font: italic 800 1.7rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--black); margin-bottom: 8px; }
-  .fx-empty a { color: inherit; font-weight: 700; }
-    .fix-note { display: flex; gap: 10px; align-items: center; margin: 22px 0 0; color: #44444c; font-weight: 600; }
-  .fix-note svg { width: 20px; height: 20px; flex: none; }
-
-  /* Membership: the ₹999 bib */
-  .join-sec { overflow: hidden; }
-  .join-grid { display: grid; gap: 56px; align-items: center; }
-  @media (min-width: 960px) { .join-grid { grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 72px; } }
-  .perks { list-style: none; margin: 0 0 34px; padding: 0; display: grid; gap: 20px; }
-  @media (min-width: 600px) { .perks { grid-template-columns: 1fr 1fr; gap: 24px 30px; } }
-  .perks li { display: grid; grid-template-columns: 50px minmax(0, 1fr); gap: 14px; align-items: start; }
-  .perks .ic { width: 50px; height: 50px; border-radius: 15px; background: var(--black); color: var(--pink); display: grid; place-items: center; }
-  .perks .ic svg { width: 25px; height: 25px; }
-  .perks b { display: block; margin-top: 2px; font: italic 800 1.4rem/1.05 "Barlow Condensed", sans-serif; text-transform: uppercase; }
-  .perks span { display: block; margin-top: 3px; color: #4a4a52; font-size: .98rem; line-height: 1.45; }
-  .join-ctas { align-items: center; gap: 18px 26px; }
-  .join-art { position: relative; display: grid; place-items: center; min-height: 460px; }
-  .join-art::before { content: ""; position: absolute; width: min(560px, 120%); aspect-ratio: 1; border-radius: 50%;
-    background: radial-gradient(circle, rgba(254,144,174,.75), rgba(254,144,174,.38) 40%, rgba(254,144,174,.1) 58%, transparent 70%); }
-  .join-art::after { content: ""; position: absolute; width: min(520px, 112%); aspect-ratio: 1; border-radius: 50%;
-    background: repeating-radial-gradient(circle, transparent 0 26px, rgba(0,0,0,.09) 26px 27.5px);
-    -webkit-mask-image: radial-gradient(circle, #000 30%, transparent 70%); mask-image: radial-gradient(circle, #000 30%, transparent 70%); }
-  .bib { position: relative; z-index: 1; width: min(330px, 84vw); padding: 70px 26px 92px; border-radius: 24px; background: var(--black); color: var(--white);
-    box-shadow: 0 60px 90px -44px rgba(0,0,0,.65), 0 14px 26px -12px rgba(0,0,0,.4); rotate: -5deg; transition: transform .35s var(--ease); }
-  @media (prefers-reduced-motion: no-preference) { .bib { animation: float 6s ease-in-out infinite; } }
-  @keyframes float { 50% { translate: 0 -12px; } }
-  .bib-band { position: absolute; left: 0; right: 0; top: 0; height: 48px; border-radius: 24px 24px 0 0; background: var(--pink); color: var(--black); display: grid; place-items: center;
-    font: 800 .86rem/1 "Barlow Condensed", sans-serif; letter-spacing: .24em; text-transform: uppercase; }
-  .pin { position: absolute; width: 15px; height: 15px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ffffff, #d6d6dc 42%, #686873); box-shadow: 0 1px 2px rgba(0,0,0,.6); }
-  .pin.p1 { top: 62px; left: 15px; } .pin.p2 { top: 62px; right: 15px; } .pin.p3 { bottom: 15px; left: 15px; } .pin.p4 { bottom: 15px; right: 15px; }
-  .bib-num { margin-top: 6px; text-align: center; font: italic 800 clamp(7rem, 31vw, 9.4rem)/.8 "Barlow Condensed", sans-serif; letter-spacing: -.035em; color: var(--pink); }
-  .bib-num small { font-size: .36em; vertical-align: 1.05em; margin-right: 6px; color: var(--white); }
-  .bib-sub { margin: 18px 0 16px; text-align: center; font: 800 1.08rem/1 "Barlow Condensed", sans-serif; letter-spacing: .34em; text-transform: uppercase; }
-  .bib-row { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
-  .bib-row span { font: 700 .76rem/1 "Barlow Condensed", sans-serif; letter-spacing: .12em; text-transform: uppercase; border: 1px solid rgba(255,255,255,.26); border-radius: 999px; padding: 7px 10px; color: rgba(255,255,255,.86); }
-  .bib-tear { position: absolute; left: 24px; right: 24px; bottom: 36px; border-top: 2px dashed rgba(255,255,255,.22); padding-top: 13px; display: flex; justify-content: space-between; align-items: center;
-    font: italic 800 1.02rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--pink); }
-  .bib-tear i { width: 104px; height: 20px; opacity: .7; background: repeating-linear-gradient(90deg, #fff 0 2px, transparent 2px 4px, #fff 4px 5px, transparent 5px 8px, #fff 8px 11px, transparent 11px 13px); }
-
-  /* How it works: a Mumbai local route map */
-  .how { overflow: hidden; }
-  .how::before { content: ""; position: absolute; inset: 0; pointer-events: none;
-    background: radial-gradient(70% 50% at 100% 0%, rgba(254,144,174,.12), transparent 60%), radial-gradient(60% 50% at 0% 100%, rgba(254,144,174,.1), transparent 60%); }
-  .route { position: relative; list-style: none; margin: 10px 0 0; padding: 0 0 0 66px; display: grid; gap: 40px; }
-  .rline { position: absolute; border-radius: 6px; background: rgba(255,255,255,.12); }
-  .rline i { position: absolute; left: 0; top: 0; border-radius: 6px; background: linear-gradient(var(--pink), var(--pink-2)); box-shadow: 0 0 18px rgba(254,144,174,.55); }
-  .stop { position: relative; }
-  .dot { position: absolute; left: -54px; top: 4px; width: 26px; height: 26px; border-radius: 50%; background: var(--black); border: 4px solid rgba(255,255,255,.3); transition: border-color .3s, background-color .3s, transform .3s; }
-  .stop.on .dot { border-color: var(--pink); background: var(--white); transform: scale(1.12); }
-  .stop.end .dot { width: 34px; height: 34px; left: -58px; top: 0; border-color: rgba(255,255,255,.3); background: conic-gradient(#fff 25%, #000 0 50%, #fff 0 75%, #000 0) 0 0 / 10px 10px; }
-  .stop.end.on .dot { border-color: var(--pink); }
-  .board { display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px 8px 8px; border-radius: 10px; background: var(--white); color: var(--black);
-    font: italic 800 1.55rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; box-shadow: 0 10px 30px -18px rgba(254,144,174,.8); }
-  .board b { font: 700 .8rem/1 "Barlow Condensed", sans-serif; letter-spacing: .1em; background: var(--black); color: var(--pink); padding: 6px 7px; border-radius: 6px; }
-  .stop.end .board { background: var(--pink); }
-  .stop p { margin: 14px 0 10px; max-width: 34ch; color: rgba(255,255,255,.74); }
-  .stop a { color: var(--pink); font-weight: 700; text-decoration: none; border-bottom: 2px solid currentColor; padding-bottom: 1px; }
-  .stop small { display: block; margin-top: 4px; color: rgba(255,255,255,.5); font: 700 .78rem/1 "Barlow Condensed", sans-serif; letter-spacing: .14em; text-transform: uppercase; }
-  .train { position: absolute; left: 0; top: 0; z-index: 2; width: 44px; height: 44px; pointer-events: none; will-change: translate; filter: drop-shadow(0 8px 16px rgba(254,144,174,.5)); }
-  .train svg { width: 100%; height: 100%; display: block; }
+  /* ---------- Header ---------- */
+  .hdr { position: sticky; top: 0; z-index: 40; background: rgba(255,255,255,.94); -webkit-backdrop-filter: saturate(1.4) blur(10px); backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid var(--line); }
+  .hdr .wide { display: flex; align-items: center; gap: 14px; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; margin-right: auto; }
+  .brand img { width: 42px; height: 42px; border-radius: 10px; background: #000; display: block; }
+  .brand b { display: block; font: italic 800 1.65rem/.9 var(--C); letter-spacing: .01em; }
+  .brand small { display: block; font: 700 .62rem/1 var(--C); letter-spacing: .24em; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
+  .nav { display: none; gap: 4px; }
+  .nav a { text-decoration: none; font: 700 1.05rem/1 var(--C); text-transform: uppercase; letter-spacing: .03em; padding: 10px 12px; border-radius: 10px; }
+  .nav a:hover { background: var(--paper); }
+  .ig { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; color: var(--black); text-decoration: none; }
+  .ig:hover { background: var(--paper); }
+  .ig svg { width: 24px; height: 24px; }
+  .join { text-decoration: none; display: inline-flex; align-items: center; gap: 8px; background: var(--pink); color: var(--black); border-radius: 12px; padding: 10px 14px; font: italic 800 1.1rem/1 var(--C); text-transform: uppercase; }
+  .join small { background: var(--black); color: var(--pink); border-radius: 6px; padding: 3px 6px; font: normal 800 .85rem/1 var(--C); }
+  .burger { width: 42px; height: 42px; border: 0; border-radius: 12px; background: var(--black); display: grid; place-content: center; gap: 5px; cursor: pointer; }
+  .burger i { display: block; width: 18px; height: 2.4px; border-radius: 2px; background: var(--white); transition: transform .2s; }
+  .burger[aria-expanded="true"] i:first-child { transform: translateY(3.7px) rotate(45deg); }
+  .burger[aria-expanded="true"] i:last-child { transform: translateY(-3.7px) rotate(-45deg); }
+  .sheet { position: fixed; inset: 64px 0 0; z-index: 39; background: var(--white); padding: 18px 20px 32px; overflow-y: auto; }
+  .sheet[hidden] { display: none; }
+  .sheet a.row { display: flex; justify-content: space-between; align-items: center; padding: 16px 4px; border-bottom: 1px solid var(--line); text-decoration: none; font: italic 800 1.7rem/1 var(--C); text-transform: uppercase; }
+  .sheet a.row small { font: 500 .9rem/1.2 Barlow, sans-serif; text-transform: none; color: var(--muted); }
+  .sheet .btn { width: 100%; margin-top: 20px; }
   @media (min-width: 960px) {
-    .route { padding: 78px 0 0; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 30px; }
-    .dot { left: 0; top: -66px; }
-    .stop.end .dot { left: -4px; top: -70px; }
+    .nav { display: flex; }
+    .burger, .sheet { display: none !important; }
   }
+  @media (max-width: 380px) { .brand small { display: none; } .join small { display: none; } }
 
-  /* Where we run */
-  .pgrid { display: grid; gap: 14px; grid-template-columns: 1fr; }
-  @media (min-width: 640px) { .pgrid { grid-template-columns: 1fr 1fr; } }
-  @media (min-width: 1080px) { .pgrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-  @media (max-width: 639px) {
-    .pgrid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 calc(-1 * var(--gut)); padding: 4px var(--gut) 18px; scroll-padding: 0 var(--gut); scrollbar-width: none; overscroll-behavior-x: contain; }
-    .pgrid::-webkit-scrollbar { display: none; }
-    .pgrid::after { content: ""; flex: none; width: 2px; }
-    .place { flex: 0 0 84%; scroll-snap-align: start; min-height: 0; }
-    .pbody { padding-top: 18px; }
+  /* ---------- Hero: bright Mumbai morning ---------- */
+  .hero { position: relative; overflow: hidden; padding: 30px 0 0; background:
+    radial-gradient(1200px 520px at 85% 0%, #ffe3eb 0%, rgba(255,227,235,0) 60%), linear-gradient(#fff 0%, #fff6f8 70%, #ffeef3 100%); }
+  .lanes { position: absolute; inset: 0; pointer-events: none; opacity: .55;
+    background: repeating-linear-gradient(118deg, transparent 0 46px, rgba(254,144,174,.18) 46px 49px); -webkit-mask-image: linear-gradient(90deg, transparent 20%, #000 75%); mask-image: linear-gradient(90deg, transparent 20%, #000 75%); }
+  .hero-grid { position: relative; display: grid; gap: 26px; }
+  .chip { display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 7px 12px; border-radius: 999px; background: var(--black); color: var(--white); font: 700 .78rem/1 var(--C); letter-spacing: .18em; text-transform: uppercase; }
+  .chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--pink); }
+  .wm { margin: 14px 0 0; line-height: .8; }
+  .wm-u { display: block; font: italic 800 clamp(6.2rem, 31vw, 13.5rem)/.8 var(--C); letter-spacing: -.02em; color: var(--black);
+    text-shadow: .045em .045em 0 var(--pink); padding-right: .06em; }
+  .wm-s { display: flex; align-items: center; gap: 12px; margin-top: 14px; font: 800 clamp(1rem, 4.2vw, 1.45rem)/1 var(--C); letter-spacing: .34em; text-transform: uppercase; }
+  .wm-s::after { content: ""; flex: 1; max-width: 220px; height: 3px; background: repeating-linear-gradient(90deg, var(--black) 0 10px, transparent 10px 16px); }
+  .tagline { margin: 16px 0 0; font: italic 800 clamp(1.7rem, 6vw, 2.4rem)/1 var(--C); text-transform: uppercase; }
+  .tagline em { font-style: inherit; color: var(--pink-2); }
+  .lead { margin: 10px 0 0; font-size: 1.08rem; color: #2d2d33; max-width: 520px; }
+
+  /* Who are you? Four ways in */
+  .paths { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 22px; }
+  .path { position: relative; display: flex; flex-direction: column; gap: 4px; min-height: 112px; padding: 13px 13px 38px; border-radius: 16px; background: var(--white); text-decoration: none;
+    box-shadow: inset 0 0 0 2px var(--black), 0 14px 26px -22px rgba(0,0,0,.6); transition: transform .15s, box-shadow .15s; }
+  .path:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 2px var(--black), 0 18px 30px -20px rgba(0,0,0,.55); }
+  .path small { font: 700 .74rem/1.15 var(--C); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .path b { font: italic 800 1.5rem/.95 var(--C); text-transform: uppercase; }
+  .path span { font-size: .86rem; line-height: 1.3; color: #3a3a41; }
+  .path::after { content: "→"; position: absolute; right: 12px; bottom: 10px; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--black); color: var(--pink); font-weight: 800; font-size: .95rem; }
+  .path.go { background: var(--pink); }
+  .path.go small, .path.go span { color: #2a0f17; }
+
+  /* Next race */
+  .next { position: relative; align-self: start; border-radius: 20px; background: var(--white); box-shadow: inset 0 0 0 2px var(--black), 0 28px 50px -34px rgba(0,0,0,.7); overflow: hidden; text-decoration: none; display: block; }
+  .next[hidden] { display: none; }
+  .next .nt { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--black); color: var(--white); font: 700 .8rem/1 var(--C); letter-spacing: .18em; text-transform: uppercase; }
+  .next .nt b { color: var(--pink); }
+  .next .nb { padding: 16px 16px 18px; }
+  .next h2 { margin: 0; padding-right: 108px; font: italic 800 2rem/.95 var(--C); text-transform: uppercase; }
+  .next .nm { margin: 10px 0 0; display: grid; gap: 4px; font-weight: 600; font-size: .98rem; }
+  .next .nm span { display: flex; gap: 8px; align-items: center; }
+  .next .nm svg { width: 18px; height: 18px; flex: none; color: var(--pink-2); }
+  .cd { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 14px; }
+  .cd div { background: var(--paper); border-radius: 12px; padding: 8px 4px; text-align: center; }
+  .cd b { display: block; font: italic 800 1.9rem/1 var(--C); }
+  .cd span { font: 700 .66rem/1 var(--C); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .cd .today { grid-column: 1 / -1; background: var(--pink); font: italic 800 1.4rem/1 var(--C); text-transform: uppercase; padding: 14px; }
+  .next .go { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 12px; border-top: 2px dashed var(--line); font: italic 800 1.1rem/1 var(--C); text-transform: uppercase; }
+  .next .go i { font-style: normal; color: var(--pink-2); }
+  /* Entry stamp: FREE for active members, or the fee */
+  .stamp { position: absolute; right: 12px; top: 52px; width: 96px; height: 96px; border-radius: 50%; display: grid; place-content: center; text-align: center; gap: 3px;
+    background: var(--white); color: var(--green); border: 3px solid currentColor; box-shadow: inset 0 0 0 3px var(--white), inset 0 0 0 5px currentColor; transform: rotate(-10deg); }
+  .stamp b { font: italic 800 1.9rem/.85 var(--C); text-transform: uppercase; }
+  .stamp span { font: 800 .5rem/1.15 Barlow, sans-serif; letter-spacing: .08em; text-transform: uppercase; padding: 0 10px; }
+  .stamp.paid { color: var(--black); } .stamp.paid b { font-size: 1.55rem; }
+
+  /* The city line: Sea Link, skyline, the sea and a running track */
+  .art { position: relative; height: 190px; margin-top: 34px; }
+  .art svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  @media (min-width: 760px) { .art { height: 250px; } }
+  @media (min-width: 960px) {
+    .hero { padding-top: 44px; }
+    .hero-grid { grid-template-columns: 1.25fr .85fr; align-items: end; gap: 40px; }
+    .paths { grid-template-columns: repeat(4, 1fr); }
+    .next { margin-bottom: 8px; }
+    .art { margin-top: 10px; height: 280px; }
   }
-  .swipe-hint { display: none; }
-  @media (max-width: 639px) and (pointer: coarse) { .swipe-hint { display: inline-flex; align-items: center; gap: 6px; margin: 14px 0 0; color: var(--muted); font: 700 .85rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .14em; } }
-  @media (max-width: 639px) and (pointer: coarse) and (prefers-reduced-motion: no-preference) { .swipe-hint i { display: inline-block; font-style: normal; animation: nudge 1.4s ease-in-out infinite; } }
-  @keyframes nudge { 50% { transform: translateX(6px); } }
-  .place { position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 360px; border-radius: 24px; color: var(--white);
-    background: radial-gradient(120% 70% at 50% 0%, #22101a, #0a0608 55%, #000 100%); box-shadow: 0 30px 60px -38px rgba(0,0,0,.7); transition: transform .3s var(--ease); }
-  .place:hover { transform: translateY(-5px); }
-  .place .ill { display: block; width: 100%; height: auto; margin-top: 30px; }
-  .pregion { position: absolute; top: 18px; left: 20px; font: 700 .76rem/1 "Barlow Condensed", sans-serif; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.55); }
-  .pbody { margin-top: auto; padding: 0 22px 22px; }
-  .place h3 { margin: 0 0 8px; font: italic 800 2.1rem/.92 "Barlow Condensed", sans-serif; text-transform: uppercase; }
-  .place p { margin: 0; color: rgba(255,255,255,.72); line-height: 1.5; }
-  .pnext { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 8px 12px; border-radius: 999px; background: var(--pink); color: var(--black); text-decoration: none;
-    font: 700 .82rem/1 "Barlow Condensed", sans-serif; letter-spacing: .1em; text-transform: uppercase; }
-  .pnext:hover { background: var(--white); }
-  .ill .s1 { fill: none; stroke: var(--pink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-  .ill .s2 { fill: none; stroke: rgba(255,255,255,.55); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-  .ill .s3 { fill: none; stroke: rgba(255,255,255,.26); stroke-width: 1.4; stroke-linecap: round; }
-  .ill .win { fill: none; stroke: rgba(255,240,244,.5); stroke-width: 2.2; stroke-dasharray: 3 4; }
-  .ill .bld { fill: #0e0e12; stroke: rgba(255,255,255,.5); stroke-width: 1.5; stroke-linejoin: round; }
-  .ill .lamp { fill: #fff; }
-  .ill .halo { fill: rgba(254,144,174,.28); }
-  .ill .moonf { fill: #ffe9ef; }
-  .ill .sunf { fill: rgba(254,144,174,.18); stroke: var(--pink); stroke-width: 2; }
-  .ill .pk { fill: var(--pink); }
-  .ill .air { fill: var(--pink); animation: blink 1.6s steps(1) infinite; }
+  @media (min-width: 960px) { .hero-copy { grid-column: 1; } .next { grid-column: 2; grid-row: 1; } .paths { grid-column: 1 / -1; } }
+  @media (max-width: 959px) { .paths { order: 2; margin-top: 0; } .next { order: 3; } }
 
-  /* Race day photos: a mosaic, newest race first */
-  .rdp-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px 40px; flex-wrap: wrap; margin-bottom: 34px; }
-  .rdp-head .sh { margin: 0; }
-  .mosaic { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 150px; grid-auto-flow: dense; }
-  @media (min-width: 700px) { .mosaic { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 180px; gap: 14px; } }
-  @media (min-width: 1100px) { .mosaic { grid-auto-rows: 210px; } }
-  .tile { position: relative; overflow: hidden; padding: 0; border: 0; border-radius: 18px; background: #141417; cursor: zoom-in; -webkit-tap-highlight-color: transparent; }
-  .tile.big { grid-column: span 2; grid-row: span 2; }
-  .tile.tall { grid-row: span 2; }
-  .tile.wide { grid-column: span 2; }
-  .tile img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .7s var(--ease), filter .4s; }
-  .tile:hover img { transform: scale(1.05); }
-  .tile .tc { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 8px; padding: 34px 12px 11px; text-align: left; color: var(--white);
-    background: linear-gradient(transparent, rgba(0,0,0,.78)); font: 600 .84rem/1.25 "Barlow", sans-serif; opacity: 0; transform: translateY(6px); transition: opacity .3s, transform .3s; }
-  .tile .tc b { flex: none; background: var(--pink); color: var(--black); font: 700 .74rem/1 "Barlow Condensed", sans-serif; letter-spacing: .06em; padding: 4px 6px; border-radius: 5px; }
-  .tile:hover .tc, .tile:focus-visible .tc, .tile.big .tc { opacity: 1; transform: none; }
-  .tile.big .tc { font-size: .95rem; padding: 40px 16px 14px; }
-  @media (hover: none) { .tile .tc { opacity: 1; transform: none; } .tile:not(.big) .tc span { display: none; } }
-  .rdp-more { margin-top: 22px; }
-  .ig-line { margin: 0; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; color: rgba(255,255,255,.72); }
-  .ig-line a { color: var(--white); }
+  /* ---------- How UNBND works ---------- */
+  .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 26px; }
+  .fact { border-radius: 16px; padding: 16px; background: var(--paper); }
+  .fact b { display: block; font: italic 800 2rem/1 var(--C); text-transform: uppercase; }
+  .fact b small { font-size: .55em; color: var(--muted); }
+  .fact span { display: block; margin-top: 6px; font-size: .92rem; line-height: 1.35; color: #3a3a41; }
+  .fact.hl { background: var(--black); color: var(--white); } .fact.hl b { color: var(--pink); } .fact.hl span { color: rgba(255,255,255,.8); }
+  .steps { list-style: none; margin: 30px 0 0; padding: 0; display: grid; gap: 12px; counter-reset: st; }
+  .step { position: relative; border-radius: 18px; padding: 18px 18px 18px 74px; background: var(--white); box-shadow: inset 0 0 0 2px var(--black); }
+  .step::before { counter-increment: st; content: counter(st, decimal-leading-zero); position: absolute; left: 16px; top: 16px; width: 44px; height: 44px; border-radius: 12px; background: var(--pink); display: grid; place-items: center; font: italic 800 1.35rem/1 var(--C); }
+  .step h3 { margin: 0; font: italic 800 1.55rem/1 var(--C); text-transform: uppercase; }
+  .step p { margin: 6px 0 0; color: #3a3a41; font-size: .98rem; }
+  .step a { display: inline-block; margin-top: 8px; font-weight: 700; text-decoration-color: var(--pink-2); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+  .step .must { display: inline-block; margin-top: 8px; padding: 4px 9px; border-radius: 8px; background: var(--black); color: var(--pink); font: 700 .76rem/1.2 var(--C); letter-spacing: .1em; text-transform: uppercase; }
+  @media (min-width: 760px) { .facts { grid-template-columns: repeat(4, 1fr); } .steps { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1100px) { .steps { grid-template-columns: repeat(4, 1fr); } .step { padding: 74px 18px 20px; } .step::before { top: 18px; } }
 
-  .lb { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,.95); display: grid; place-items: center; padding: 16px; touch-action: pan-y; }
-  .lb[hidden] { display: none; }
-  .lb img { max-width: 94vw; max-height: 84vh; border-radius: 10px; user-select: none; -webkit-user-drag: none; }
-  .lbx, .lbn { position: absolute; width: 46px; height: 46px; border-radius: 50%; border: 0; background: rgba(255,255,255,.16); color: var(--white); font-size: 1.3rem; cursor: pointer; }
-  .lbx { top: calc(var(--safe-top) + 12px); right: 12px; }
-  .lbn { top: 50%; margin-top: -23px; } .lbn.prev { left: 12px; } .lbn.next { right: 12px; }
-  .lbc { position: absolute; left: 0; right: 0; bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); margin: 0; text-align: center; color: rgba(255,255,255,.75); font: 700 1rem/1 "Barlow Condensed", sans-serif; letter-spacing: .1em; }
+  /* ---------- Upcoming races ---------- */
+  .rlist { list-style: none; margin: 26px 0 0; padding: 0; display: grid; gap: 12px; }
+  .rlist a { position: relative; display: grid; grid-template-columns: 74px 1fr; gap: 14px; align-items: center; padding: 14px; border-radius: 18px; background: var(--white); text-decoration: none; box-shadow: 0 14px 30px -26px rgba(0,0,0,.6); }
+  .rdate { border-radius: 14px; background: var(--black); color: var(--white); text-align: center; padding: 9px 4px; }
+  .rdate small { display: block; font: 700 .7rem/1 var(--C); letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,.7); }
+  .rdate b { display: block; font: italic 800 2.2rem/1 var(--C); color: var(--pink); }
+  .rname { font: italic 800 1.45rem/1 var(--C); text-transform: uppercase; }
+  .rmeta { margin-top: 5px; font-size: .92rem; color: var(--muted); }
+  .rtop { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+  .pill { display: inline-block; border-radius: 7px; padding: 4px 8px; font: 800 .72rem/1 var(--C); letter-spacing: .1em; text-transform: uppercase; background: var(--paper); }
+  .pill.free { background: #e3f5eb; color: var(--green); } .pill.fee { background: var(--black); color: var(--pink); } .pill.next { background: var(--pink); }
+  .rempty { margin-top: 26px; border-radius: 18px; background: var(--white); padding: 20px; }
+  .rempty b { display: block; font: italic 800 1.5rem/1 var(--C); text-transform: uppercase; }
+  .rnote { margin: 18px 0 0; display: flex; gap: 10px; align-items: flex-start; font-weight: 600; font-size: .95rem; }
+  .rnote svg { width: 22px; height: 22px; flex: none; color: var(--pink-2); margin-top: 1px; }
+  @media (min-width: 760px) { .rlist { grid-template-columns: 1fr 1fr; } }
 
-  /* The UNBND way */
-  .way { background: var(--pink); color: var(--black); overflow: hidden; }
-  .way::before { content: ""; position: absolute; inset: 0; pointer-events: none;
-    background: repeating-linear-gradient(118deg, transparent 0 46px, rgba(0,0,0,.06) 46px 48px); }
-  .way .kick { color: var(--black); }
-  .way .kick::before { background: var(--black); }
-  .wr { position: relative; display: grid; gap: 12px; padding: 22px 0 26px; border-top: 2px solid var(--black); }
-  .wr:nth-of-type(3) { border-bottom: 2px solid var(--black); }
-  .wt { font: italic 800 clamp(3.8rem, 17vw, 9.4rem)/.82 "Barlow Condensed", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: -.025em; }
-  .wr:nth-of-type(2) .wt { color: transparent; -webkit-text-stroke: 2px var(--black); }
-  .wr p { margin: 0; max-width: 40ch; font-weight: 600; font-size: 1.08rem; }
-  .wr .n { position: absolute; right: 0; top: 24px; font: 700 .8rem/1 "Barlow Condensed", sans-serif; letter-spacing: .16em; }
-  @media (min-width: 900px) { .wr { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 40px; align-items: end; } .wr p { padding-bottom: 14px; } }
-  .way .ctas { margin-top: 36px; }
-
-  /* Members */
-  .mgrid { display: grid; gap: 14px; }
-  @media (min-width: 960px) { .mgrid { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) minmax(0, 1fr); } }
-  .mcard { position: relative; display: flex; flex-direction: column; padding: 26px 22px 22px; border-radius: 24px; background: var(--white); color: var(--black);
-    box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 24px 50px -34px rgba(0,0,0,.5); }
-  .mcard .lane { margin: 0 0 12px; font: 700 .8rem/1 "Barlow Condensed", sans-serif; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
-  .mcard h3 { margin: 0 0 10px; font: italic 800 2.25rem/.92 "Barlow Condensed", sans-serif; text-transform: uppercase; }
-  .mcard p { margin: 0 0 18px; color: #4a4a52; }
-  .mcard > .btn { margin-top: auto; width: 100%; }
-  .mcard.find { background: var(--black); color: var(--white); scroll-margin-top: calc(var(--top-h) + 20px); overflow: hidden; }
-  .mcard.find::before { content: ""; position: absolute; right: -60px; top: -60px; width: 220px; height: 220px; border-radius: 50%; pointer-events: none;
-    background: radial-gradient(circle, rgba(254,144,174,.35), transparent 70%); }
-  .mcard.find .lane { color: var(--pink); }
-  .mcard.find p { color: rgba(255,255,255,.72); }
+  /* ---------- Members ---------- */
+  .mgrid { display: grid; gap: 12px; margin-top: 26px; }
+  .mcard { border-radius: 20px; padding: 20px; background: var(--paper); }
+  .mcard h3 { margin: 6px 0 6px; font: italic 800 1.8rem/.95 var(--C); text-transform: uppercase; }
+  .mcard p { margin: 0 0 14px; color: #3a3a41; }
+  .mcard small.k { font: 700 .76rem/1 var(--C); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  .mcard.find { background: var(--black); color: var(--white); }
+  .mcard.find small.k { color: var(--pink); } .mcard.find p { color: rgba(255,255,255,.8); }
   .mcard.find.flash { animation: flash 1.2s ease-out; }
-  @keyframes flash { 0%, 40% { box-shadow: 0 0 0 4px var(--pink), 0 24px 50px -34px rgba(0,0,0,.5); } }
-  .frow { position: relative; display: flex; gap: 10px; flex-wrap: wrap; }
-  .frow input { flex: 1 1 220px; min-width: 0; font: inherit; font-size: 1.08rem; color: var(--black); background: var(--white); border: 2px solid transparent; border-radius: 14px; padding: 15px 16px; }
-  .frow input:focus { border-color: var(--pink); outline: none; }
-  .frow .btn { flex: 1 1 190px; }
-  .err { color: #ff7a8a; font-size: .92rem; margin: 10px 0 0; }
-  .err:empty { display: none; }
-  .fres { position: relative; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.1); border-radius: 14px; padding: 13px 15px; margin-top: 12px; }
-  .fres a { color: var(--pink); font-weight: 700; }
-  .fres b.id { display: block; font: italic 800 2.1rem/1 "Barlow Condensed", sans-serif; color: var(--pink); }
-  .fres .st { display: inline-block; font: 700 .9rem "Barlow Condensed", sans-serif; padding: 4px 9px; border-radius: 6px; margin-bottom: 6px; }
-  .fres .st.Active { background: #d8f3e4; color: #0b5e36; } .fres .st.Pending { background: #fff1c2; color: #7a5a00; } .fres .st.Deactivated { background: #ffd9de; color: #9c0019; }
-  .fres small { display: block; color: rgba(255,255,255,.6); margin-top: 4px; }
+  @keyframes flash { 0% { box-shadow: 0 0 0 0 rgba(254,144,174,.9); } 100% { box-shadow: 0 0 0 18px rgba(254,144,174,0); } }
+  .frow { display: flex; gap: 8px; }
+  .frow input { flex: 1; min-width: 0; font: inherit; border: 0; border-radius: 12px; padding: 14px; background: var(--white); color: var(--black); }
+  .frow .btn { padding: 14px 16px; white-space: nowrap; }
+  .ferr { color: #ffb3c4; margin: 8px 0 0; font-weight: 600; } .ferr:empty { display: none; }
+  .fres { margin-top: 12px; border-radius: 14px; background: #1b1b20; padding: 14px; }
+  .fres .st { display: inline-block; border-radius: 7px; padding: 4px 8px; font: 800 .74rem/1 var(--C); letter-spacing: .1em; text-transform: uppercase; background: #333; }
+  .fres .st.Active { background: #19c37d; color: #000; } .fres .st.Pending { background: #ffc400; color: #000; } .fres .st.Deactivated { background: #ff5f6d; color: #000; }
+  .fres .id { display: block; margin-top: 6px; font: italic 800 2.4rem/1 var(--C); color: var(--pink); }
+  .fres small { display: block; color: rgba(255,255,255,.65); }
+  .fres .nxt { display: block; margin-top: 10px; font-weight: 600; }
+  .fres .nxt a { color: var(--pink); font-weight: 700; }
+  .fres.none a { color: var(--pink); }
+  @media (min-width: 760px) { .mgrid { grid-template-columns: 1.3fr 1fr 1fr; } }
 
-  /* Closing call to action: the Sea Link at night */
-  .finale { position: relative; overflow: hidden; background: var(--black); color: var(--white); padding: 96px 0 0; }
-  @media (min-width: 900px) { .finale { padding-top: 130px; } }
-  .finale::before { content: ""; position: absolute; inset: 0; pointer-events: none;
-    background: radial-gradient(70% 45% at 50% 100%, rgba(254,144,174,.3), transparent 70%), radial-gradient(40% 30% at 85% 20%, rgba(254,144,174,.08), transparent 70%); }
-  .finale .wrap { position: relative; z-index: 2; }
-  .finale h2 { margin: 0; font: italic 800 clamp(3.6rem, 15vw, 9.6rem)/.84 "Barlow Condensed", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: -.02em; }
-  .finale h2 span { color: var(--pink); }
-  .finale .ctas { margin-top: 30px; }
-  .sl { position: relative; height: clamp(250px, 40vw, 520px); margin-top: -10px; }
-  .sl svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-  .sl .deck { fill: none; stroke: rgba(255,255,255,.75); stroke-width: 3; }
-  .sl .deck2 { fill: none; stroke: rgba(254,144,174,.5); stroke-width: 1.2; }
-  .sl .pier { fill: #0d0d10; }
-  .sl .pylon { fill: none; stroke: var(--pink); stroke-width: 5; stroke-linejoin: round; stroke-linecap: round; }
-  .sl .cable { fill: none; stroke: rgba(255,255,255,.42); stroke-width: 1.1; }
-  .sl .dl { fill: #fff; }
-  .sl .dg { fill: url(#slLamp); }
-  .sl .city rect { fill: #060607; }
-  .sl .city path { fill: none; stroke: rgba(255,240,244,.32); }
-  .sl .water { fill: url(#slSea); }
-  .sl .refl path { fill: none; stroke: rgba(254,144,174,.4); stroke-linecap: round; animation: shim 2.8s linear infinite; }
-  .chequer { position: relative; z-index: 3; height: 14px; background: conic-gradient(#fff 25%, #000 0 50%, #fff 0 75%, #000 0) 0 0 / 14px 14px; }
+  /* ---------- Race day photos ---------- */
+  .mosaic { display: grid; grid-template-columns: repeat(2, 1fr); grid-auto-rows: 150px; grid-auto-flow: dense; gap: 8px; margin-top: 26px; }
+  .tile { position: relative; width: 100%; height: 100%; padding: 0; border: 0; border-radius: 14px; overflow: hidden; background: #e9e9ec; cursor: zoom-in; }
+  .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .tile.big { grid-column: span 2; grid-row: span 2; }
+  .tile .tc { position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 10px 8px; background: linear-gradient(transparent, rgba(0,0,0,.7)); color: #fff; text-align: left; font: 600 .8rem/1.2 Barlow, sans-serif; display: flex; gap: 6px; align-items: center; }
+  .tile .tc b { background: var(--pink); color: #000; border-radius: 5px; padding: 2px 6px; font: 800 .72rem/1.2 var(--C); }
+  .igline { margin: 14px 0 0; font-weight: 600; }
+  .igline a { font-weight: 700; text-decoration-color: var(--pink-2); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+  .more { margin-top: 16px; }
+  @media (min-width: 760px) { .mosaic { grid-template-columns: repeat(4, 1fr); grid-auto-rows: 180px; } }
+  .lb { position: fixed; inset: 0; z-index: 80; background: rgba(0,0,0,.92); display: grid; place-items: center; padding: 50px 12px; }
+  .lb[hidden] { display: none; }
+  .lb img { max-width: 100%; max-height: 100%; border-radius: 10px; }
+  .lbx, .lbn { position: absolute; border: 0; border-radius: 50%; width: 46px; height: 46px; background: rgba(255,255,255,.14); color: #fff; font-size: 1.3rem; cursor: pointer; }
+  .lbx { top: 12px; right: 12px; } .lbn.prev { left: 10px; } .lbn.next { right: 10px; }
+  .lbn[hidden] { display: none; }
+  .lbc { position: absolute; bottom: 10px; left: 0; right: 0; text-align: center; color: rgba(255,255,255,.7); margin: 0; }
 
-  /* Footer */
-  .foot { background: var(--black); color: rgba(255,255,255,.7); padding: 56px 0 calc(env(safe-area-inset-bottom, 0px) + 28px); }
-  .foot-grid { display: grid; gap: 34px; grid-template-columns: 1fr 1fr; }
-  .foot-brand { grid-column: 1 / -1; }
-  @media (min-width: 900px) { .foot-grid { grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr)); } .foot-brand { grid-column: auto; } }
-  .foot-brand img { width: 60px; height: 60px; display: block; margin-bottom: 14px; }
-  .foot-brand p { margin: 0; max-width: 34ch; }
-  .foot-brand .motto { max-width: none; white-space: nowrap; margin-top: 14px; color: var(--pink); font: 700 .9rem/1 "Barlow Condensed", sans-serif; letter-spacing: .18em; text-transform: uppercase; }
-  .foot h3 { margin: 0 0 14px; color: var(--white); font: 700 .85rem/1 "Barlow Condensed", sans-serif; letter-spacing: .18em; text-transform: uppercase; }
-  .foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-  .foot ul a { color: rgba(255,255,255,.78); text-decoration: none; }
-  .foot ul a:hover { color: var(--pink); }
-  .foot-base { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 46px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.1); font-size: .92rem; color: rgba(255,255,255,.55); }
-  .foot-base a { color: var(--pink); font-weight: 700; text-decoration: none; }
+  /* ---------- The UNBND way ---------- */
+  .way { background: var(--pink); position: relative; overflow: hidden; }
+  .way::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(118deg, transparent 0 46px, rgba(0,0,0,.06) 46px 49px); }
+  .way .wide { position: relative; }
+  .way .kick { color: #2a0f17; } .way .kick::before { background: var(--black); }
+  .mottos { display: grid; gap: 0; margin: 10px 0 24px; }
+  .motto { border-top: 2px solid var(--black); padding: 14px 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 18px; align-items: baseline; }
+  .motto:last-child { border-bottom: 2px solid var(--black); }
+  .motto b { font: italic 800 clamp(2.4rem, 9vw, 4rem)/.95 var(--C); text-transform: uppercase; }
+  .motto span { font-weight: 600; }
+  @media (max-width: 640px) { .motto { grid-template-columns: 1fr; } }
 
-  /* Scroll reveal */
-  .rv .reveal { opacity: 0; translate: 0 36px; transition: opacity .8s var(--ease), translate .8s var(--ease); transition-delay: calc(var(--d, 0) * 90ms); }
-  .rv .reveal.in { opacity: 1; translate: none; }
+  /* ---------- Questions ---------- */
+  .faq { margin-top: 24px; display: grid; gap: 10px; }
+  .faq details { border-radius: 16px; background: var(--paper); padding: 0 18px; }
+  .faq summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 14px; align-items: center; padding: 16px 0; font: 700 1.05rem/1.3 Barlow, sans-serif; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--black); color: var(--pink); display: grid; place-items: center; font-weight: 800; }
+  .faq details[open] summary::after { content: "–"; }
+  .faq details p { margin: 0 0 16px; color: #3a3a41; }
+  .help { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  @media (min-width: 960px) { .faq { grid-template-columns: 1fr 1fr; align-items: start; } }
 
-  @media (prefers-reduced-motion: reduce) {
-    .tape.tk::before, .tape.tk::after, .live::after, .stars .tw, .md-lamps .g.tw, .md-refl path, .md-air, .ill .air, .sl .refl path { animation: none; }
-    .tk-track { animation: none; display: flex; flex-wrap: wrap; justify-content: center; white-space: normal; }
-    .tk-set { flex-wrap: wrap; justify-content: center; row-gap: 6px; } .tk-set.dup, .tk-set .rep, .tk-btn { display: none; }
-    .tk-view { white-space: normal; padding: 0 5%; }
-  }
+  /* ---------- Footer ---------- */
+  .foot { background: var(--black); color: rgba(255,255,255,.8); padding: 48px 0 calc(env(safe-area-inset-bottom, 0px) + 28px); }
+  .fgrid { display: grid; gap: 28px; }
+  .fbrand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--white); }
+  .fbrand img { width: 52px; height: 52px; }
+  .fbrand b { display: block; font: italic 800 2.4rem/.85 var(--C); color: var(--pink); }
+  .fbrand small { display: block; font: 700 .7rem/1 var(--C); letter-spacing: .26em; text-transform: uppercase; margin-top: 4px; }
+  .foot p { margin: 12px 0 0; max-width: 360px; }
+  .foot h3 { margin: 0 0 10px; font: 700 .8rem/1 var(--C); letter-spacing: .2em; text-transform: uppercase; color: var(--white); }
+  .foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .foot a { text-decoration: none; } .foot a:hover { color: var(--pink); }
+  .foot .igf { display: inline-flex; gap: 8px; align-items: center; }
+  .foot .igf svg { width: 20px; height: 20px; }
+  .fcols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .fbot { margin-top: 32px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.14); font-size: .9rem; color: rgba(255,255,255,.6); }
+  @media (min-width: 760px) { .fgrid { grid-template-columns: 1.2fr 2fr; } .fcols { grid-template-columns: repeat(3, 1fr); } }
 </style>
 </head>
 <body>
-<header class="hdr" id="hdr">
-  <div class="hdr-in">
-    <a class="brand" href="index.html"><img src="logo.png" alt="UNBND Run Club home" width="44" height="44"><span aria-hidden="true"><b>UNBND Run Club</b>Mumbai</span></a>
-    <nav class="menu-d" aria-label="Site">
-      <a href="races.html">Races</a><a href="rules.html">Club rules</a><a href="support.html">Support</a><a href="#find">Find my Club ID</a>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="hdr">
+  <div class="wide">
+    <a class="brand" href="index.html" aria-label="UNBND Run Club home"><img src="logo.png" alt="" width="42" height="42"><span><b>UNBND</b><small>Run club</small></span></a>
+    <nav class="nav" aria-label="Site">
+      <a href="races.html">Races</a><a href="#how">How it works</a><a href="#members">Members</a><a href="rules.html">Club rules</a><a href="support.html">Support</a>
     </nav>
+    <a class="ig" href="https://www.instagram.com/unbndrunclub/" aria-label="UNBND on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor" stroke="none"/></svg></a>
     <a class="join" href="register.html">Join <small>₹999</small></a>
-    <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="sheet" aria-label="Open menu"><span></span><span></span></button>
-  </div>
-  <div class="track" id="track" aria-hidden="true">
-    <i class="fill" id="trFill"></i>
-    <span class="runner" id="runner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="15.5" cy="3.8" r="2.3" fill="currentColor" stroke="none"/>
-      <path d="M14 7.2 11.2 13.4"/>
-      <g class="pa"><path d="M13.6 8.4 16.6 10.6 19 9M13.6 8.4 10.2 9.6 8.4 7.6M11.2 13.4 15 15.6 14.2 20.6M11.2 13.4 8.6 17.4 4.4 17.6"/></g>
-      <g class="pb"><path d="M13.6 8.4 14.8 11.6 17 12.6M13.6 8.4 12 11.2 10 12M11.2 13.4 12.8 17.2 11 21M11.2 13.4 10.2 17.4 7 19.4"/></g>
-    </svg></span>
-    <i class="flag"></i>
+    <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="sheet" aria-label="Open menu"><i></i><i></i></button>
   </div>
 </header>
-
-<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-label="Menu">
-  <div class="sheet-in">
-    <nav class="sheet-nav" aria-label="Menu">
-      <a href="index.html" aria-current="page" style="--i:0"><span>01</span>Home</a>
-      <a href="races.html" style="--i:1"><span>02</span>Races</a>
-      <a href="rules.html" style="--i:2"><span>03</span>Club rules</a>
-      <a href="support.html" style="--i:3"><span>04</span>Support</a>
-    </nav>
-    <div class="sheet-quick" style="--i:4">
-      <a href="#find">Find my Club ID<small>For members</small></a>
-      <a href="pay.html">Complete payment<small>Registered, not paid?</small></a>
-    </div>
-    <a class="btn pink" href="register.html" style="--i:5">Join the club · ₹999 <span class="arr">→</span></a>
-    <p class="sheet-ig" style="--i:6">Follow us on Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></p>
-  </div>
+<div class="sheet" id="sheet" hidden>
+  <a class="row" href="races.html">Races <small>Schedule and race cards</small></a>
+  <a class="row" href="#how">How it works <small>Membership, races, race cards</small></a>
+  <a class="row" href="#find">Find my Club ID <small>For members</small></a>
+  <a class="row" href="pay.html">Complete payment <small>Registered, not paid?</small></a>
+  <a class="row" href="rules.html">Club rules</a>
+  <a class="row" href="support.html">Support</a>
+  <a class="btn pink" href="register.html">Join the club <span class="tag">₹999</span></a>
 </div>
 
-<section class="stage" id="stage" aria-labelledby="h1">
-  <div class="sky" aria-hidden="true"></div>
-  <svg class="stars" id="stars" viewBox="0 0 1600 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"></svg>
-  <div class="moon" aria-hidden="true"></div>
-  <div class="stage-in">
-    <div class="copy">
-      <p class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></svg>Mumbai's run club</p>
-      <h1 id="h1"><span class="ln l1">Run</span><span class="ln l2">unbound.</span></h1>
-      <p class="tag">Group runs and races across Mumbai, from the sea face to the hills. Every pace, every distance, one club.</p>
-      <div class="ctas">
-        <a class="btn pink" href="register.html">Join the club <span class="fee">₹999</span></a>
-        <a class="btn ghost" href="races.html"><span class="lg">Race schedule</span><span class="sm">Races</span></a>
+<main id="main">
+<section class="hero" aria-labelledby="h1">
+  <div class="lanes" aria-hidden="true"></div>
+  <div class="wide hero-grid">
+    <div class="hero-copy">
+      <p class="chip"><i aria-hidden="true"></i>Mumbai's run club</p>
+      <h1 class="wm" id="h1"><span class="wm-u">UNBND</span><span class="wm-s">Run club</span></h1>
+      <p class="tagline">Run <em>unbound.</em></p>
+      <p class="lead">Group runs and races across Mumbai, from the sea face to the hills. Every pace welcome.</p>
+    </div>
+    <a class="next" id="nextRace" href="races.html" hidden>
+      <div class="nt"><span><b>●</b> Next race</span><span id="nrId"></span></div>
+      <div class="stamp" id="nrStamp" aria-hidden="true"></div>
+      <div class="nb">
+        <h2 id="nrName"></h2>
+        <div class="nm">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span id="nrWhen"></span></span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg><span id="nrWhere"></span></span>
+        </div>
+        <div class="cd" id="nrCd" aria-label="Time until the race"></div>
+        <div class="go"><span>Race details and race card</span><i aria-hidden="true">→</i></div>
       </div>
-    </div>
-    <div class="art" aria-hidden="true">
-      <svg id="mdArt" viewBox="0 0 1600 700" preserveAspectRatio="xMidYMax slice" focusable="false"></svg>
-      <p class="geo">Marine Drive · <b>18.94° N 72.82° E</b></p>
-    </div>
-    <a class="ticket" id="nextRace" href="races.html" hidden>
-      <div class="tk-top"><span class="tk-lbl"><i class="live" aria-hidden="true"></i>Next race</span><span class="tk-id" id="nrId"></span></div>
-      <h2 class="tk-name" id="nrName"></h2>
-      <p class="tk-meta">
-        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span id="nrWhen"></span></span>
-        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></svg><span class="cap" id="nrWhere"></span></span>
-      </p>
-      <div class="tk-cd" id="nrCd" role="timer" aria-label="Time until the race"></div>
-      <div class="tk-foot"><span id="nrKm"></span><span class="tk-go">Race details <span class="arr">→</span></span></div>
     </a>
+    <nav class="paths" aria-label="Start here">
+      <a class="path go" href="register.html"><small>New here?</small><b>Join the club</b><span>₹999 for one year of membership</span></a>
+      <a class="path" href="pay.html"><small>Registered, not paid?</small><b>Complete payment</b><span>Upload your payment screenshot</span></a>
+      <a class="path" href="races.html"><small>Active member?</small><b>Races &amp; race cards</b><span>Pick a race, make your race card</span></a>
+      <a class="path" href="#find"><small>Forgot your Club ID?</small><b>Find it</b><span>With your registered mobile</span></a>
+    </nav>
+  </div>
+  <div class="art" aria-hidden="true"><svg id="cityArt" preserveAspectRatio="xMidYMax slice"></svg></div>
+</section>
+
+<section id="how" aria-labelledby="howTitle">
+  <div class="wide">
+    <p class="kick">How UNBND works</p>
+    <h2 class="h2" id="howTitle">Member first. <em>Then the start line.</em></h2>
+    <p class="sub">Every UNBND race is for club members. Here's everything you need to know, in four steps.</p>
+    <div class="facts">
+      <div class="fact hl"><b>₹999</b><span>Membership for one year. Renew every year to keep racing.</span></div>
+      <div class="fact"><b>Free <small>&amp;</small> paid</b><span>Many races are free for active members. Some have an entry fee.</span></div>
+      <div class="fact"><b>1 card</b><span>Each race needs its own race card, for active members only.</span></div>
+      <div class="fact"><b>All paces</b><span>Beginners, regulars and racers all run together.</span></div>
+    </div>
+    <ol class="steps">
+      <li class="step"><h3>Become a member</h3><p>Register online in a few minutes, then pay the ₹999 membership fee and upload your payment screenshot.</p><span class="must">Membership is a must</span><br><a href="register.html">Register now</a></li>
+      <li class="step"><h3>Get your Club ID</h3><p>We check your payment, activate your membership and email you your Club ID. Your membership lasts one year.</p><a href="#find">Already registered? Find your Club ID</a></li>
+      <li class="step"><h3>Pick a race</h3><p>See the race schedule. Each race is marked <b>Free</b> for active members, or shows its entry fee.</p><a href="races.html">See the race schedule</a></li>
+      <li class="step"><h3>Make your race card</h3><p>Create your race card for that race with your Club ID and registered mobile, then show its QR code at the start line.</p><span class="must">Active members only</span></li>
+    </ol>
   </div>
 </section>
 
-<div class="tapes">
-  <div class="tape tk ticker" aria-label="Upcoming runs">
-    <div class="tk-view"><div class="tk-track" id="tkTrack"></div></div>
-    <button class="tk-btn" id="tkPause" type="button" aria-pressed="false" aria-label="Pause scrolling">&#10074;&#10074;</button>
+<section class="paper" id="races" aria-labelledby="raceTitle">
+  <div class="wide">
+    <p class="kick">On the calendar</p><h2 class="h2" id="raceTitle">Upcoming <em>races</em></h2>
+    <ol class="rlist" id="rList"></ol>
+    <div class="rempty" id="rEmpty" hidden></div>
+    <a class="btn" href="races.html" style="margin-top:18px">Full race schedule <span aria-hidden="true">→</span></a>
+    <p class="rnote"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9h6M7 13h10M7 16.5h4"/></svg>To run, make your race card for the race on the race schedule. Race cards are for active members only.</p>
   </div>
-</div>
+</section>
 
-<main id="start">
-  <section class="sec light" aria-labelledby="fixTitle" style="padding-top:64px">
-    <div class="wrap fix-grid">
-        <div class="sh fix-head reveal">
-          <p class="kick">On the calendar</p>
-          <h2 class="h2" id="fixTitle">Upcoming <em>races</em></h2>
-          <p>Night runs on the sea front, early starts in the hills. Every club race is free for members with an active Club ID.</p>
-        </div>
-      <div class="fix-list">
-        <ol class="fx" id="fxList"></ol>
-        <div class="fx-empty" id="fxEmpty" hidden></div>
+<section id="members" aria-labelledby="memTitle">
+  <div class="wide">
+    <p class="kick">Members</p>
+    <h2 class="h2" id="memTitle">Already <em>with us?</em></h2>
+    <div class="mgrid">
+      <div class="mcard find" id="find">
+        <small class="k">Find your Club ID</small>
+        <h3>Check your membership</h3>
+        <p>Enter the mobile number you registered with to see your Club ID and whether your membership is active.</p>
+        <form id="fForm" novalidate>
+          <label class="kick" for="fPhone" style="color:rgba(255,255,255,.7)">Registered mobile number</label>
+          <div class="frow"><input id="fPhone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="10-digit mobile number" maxlength="12"><button class="btn pink" id="fBtn" type="submit">Find</button></div>
+          <p class="ferr" id="fErr" role="alert"></p>
+        </form>
+        <div id="fOut" aria-live="polite"></div>
       </div>
-      <div class="fix-more reveal">
-        <div class="ctas"><a class="btn" href="races.html">Full race schedule <span class="arr">→</span></a></div>
-        <p class="fix-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1Z"/><path d="M4 22v-7"/></svg>Start points, race-day weather and a live countdown for every race.</p>
+      <div class="mcard">
+        <small class="k">Registered, not paid?</small>
+        <h3>Complete your payment</h3>
+        <p>Pay the ₹999 membership fee and upload the screenshot. We'll check it, activate your membership and email your Club ID.</p>
+        <a class="btn" href="pay.html">Pay and upload screenshot</a>
+      </div>
+      <div class="mcard">
+        <small class="k">Active member?</small>
+        <h3>Get your race card</h3>
+        <p>Pick your race on the schedule and make your race card. Keep it to yourself: its QR code is your entry.</p>
+        <a class="btn" href="races.html">Go to races</a>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section class="sec white join-sec" aria-labelledby="joinTitle">
-    <div class="wrap join-grid">
-      <div>
-        <div class="sh reveal">
-          <p class="kick">Membership</p>
-          <h2 class="h2" id="joinTitle">One club.<br><em>Every pace.</em></h2>
-          <p>Sign up in about two minutes, pay the ₹999 membership fee, and Mumbai's start lines are yours. Beginners, regulars and racers all run together.</p>
-        </div>
-        <ul class="perks">
-          <li class="reveal"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 3.5 4 5.6 2.5 10l3.1 1.2V20.5h12.8v-9.3l3.1-1.2L20 5.6l-4.5-2.1a3.6 3.6 0 0 1-7 0Z"/></svg></span><div><b>Club t-shirt</b><span>Included with your membership.</span></div></li>
-          <li class="reveal" style="--d:1"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="15" r="5.5"/><path d="m8.7 10.6-2.6-7.1h3.8l2.1 4.2 2.1-4.2h3.8l-2.6 7.1M10.6 15l1 1 2-2.2"/></svg></span><div><b>Free club races</b><span>Every UNBND race is free with an active Club ID.</span></div></li>
-          <li class="reveal" style="--d:2"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9.5M9.5 2.5h5M18.6 6.6l1.4-1.4"/></svg></span><div><b>Every pace welcome</b><span>Run your pace and stay with the club. Nobody gets left behind.</span></div></li>
-          <li class="reveal" style="--d:3"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8h3.4l2-3h6.2l2 3h3.4v11.5h-17Z"/><circle cx="12" cy="13.4" r="3.6"/></svg></span><div><b>Race cards and photos</b><span>Make a race card for your story, and find yourself in the race day photos.</span></div></li>
-        </ul>
-        <div class="ctas join-ctas reveal">
-          <a class="btn pink" href="register.html">Join the club <span class="arr">→</span></a>
-          <a class="tlink" href="pay.html">Registered, not paid? Complete payment</a>
-        </div>
-      </div>
-      <div class="join-art reveal" id="bibWrap" aria-hidden="true">
-        <div class="bib" id="bib">
-          <span class="bib-band">UNBND Run Club · Mumbai</span>
-          <span class="pin p1"></span><span class="pin p2"></span><span class="pin p3"></span><span class="pin p4"></span>
-          <div class="bib-num"><small>₹</small>999</div>
-          <div class="bib-sub">Membership</div>
-          <div class="bib-row"><span>Club t-shirt</span><span>Free club races</span><span>All paces</span></div>
-          <div class="bib-tear"><span>Run unbound.</span><i></i></div>
-        </div>
-      </div>
-    </div>
-  </section>
+<section class="paper" id="rdp" hidden aria-labelledby="rdpTitle">
+  <div class="wide">
+    <p class="kick">Gallery</p>
+    <h2 class="h2" id="rdpTitle">Race day <em>photos</em></h2>
+    <p class="igline">More on Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></p>
+    <div class="mosaic" id="rdpList"></div>
+    <div class="more" id="rdpMore" hidden><button class="btn line" type="button" id="rdpAll"></button></div>
+  </div>
+</section>
 
-  <section class="sec how" aria-labelledby="howTitle">
-    <div class="wrap">
-      <div class="sh reveal">
-        <p class="kick">How it works</p>
-        <h2 class="h2" id="howTitle">Three stops to the <em>start line.</em></h2>
-        <p>Like a fast local, with no changes. Here's the route from sign-up to your first race.</p>
-      </div>
-      <ol class="route" id="route">
-        <li class="stop"><span class="dot" aria-hidden="true"></span><span class="board"><b>01</b>Register</span><p>Sign up online, one quick question at a time.</p><a href="register.html">Join the club →</a></li>
-        <li class="stop"><span class="dot" aria-hidden="true"></span><span class="board"><b>02</b>Pay ₹999</span><p>Pay the membership fee and upload your payment screenshot.</p><a href="pay.html">Pay now →</a></li>
-        <li class="stop"><span class="dot" aria-hidden="true"></span><span class="board"><b>03</b>Get your Club ID</span><p>Once we've checked your payment, we'll activate your membership and email you your Club ID.</p></li>
-        <li class="stop end"><span class="dot" aria-hidden="true"></span><span class="board">Start line</span><p>Club races are free for members. Every pace welcome.</p><a href="races.html">See the races →</a></li>
-        <li aria-hidden="true" class="rline" id="rline"><i></i></li>
-      </ol>
-      <div class="train" id="train" aria-hidden="true"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="21" fill="#fe90ae"/><rect x="12.5" y="9.5" width="19" height="23" rx="4.5" fill="#000"/><rect x="15" y="13.5" width="14" height="8" rx="1.6" fill="#fe90ae"/><path d="M22 13.5v8" stroke="#000" stroke-width="1.5"/><rect x="18" y="10.9" width="8" height="1.6" rx=".8" fill="#fff"/><circle cx="16.6" cy="27.4" r="1.5" fill="#fff"/><circle cx="27.4" cy="27.4" r="1.5" fill="#fff"/><path d="m15.5 32.5-2.4 3.4M28.5 32.5l2.4 3.4" stroke="#000" stroke-width="2" stroke-linecap="round"/></svg></div>
+<section class="way" aria-labelledby="wayTitle">
+  <div class="wide">
+    <p class="kick" id="wayTitle">The UNBND way</p>
+    <div class="mottos">
+      <div class="motto"><b>Run hard.</b><span>Run your pace and give it everything, whatever your level.</span></div>
+      <div class="motto"><b>Be kind.</b><span>Look out for each other. No abuse, harassment or body-shaming, ever.</span></div>
+      <div class="motto"><b>Have fun.</b><span>Good company, great routes and a start line full of friends.</span></div>
     </div>
-  </section>
+    <a class="btn" href="rules.html">Read the club rules <span aria-hidden="true">→</span></a>
+  </div>
+</section>
 
-  <section class="sec light" aria-labelledby="placesTitle">
-    <div class="wrap">
-      <div class="sh reveal">
-        <p class="kick">Where we run</p>
-        <h2 class="h2" id="placesTitle">The city is our <em>track.</em></h2>
-        <p>From the sea face to the hills, a few of the places you'll find us on race day.</p>
-        <p class="swipe-hint" aria-hidden="true">Swipe <i>→</i></p>
-      </div>
-      <div class="pgrid" id="pgrid">
-        <article class="place reveal" data-match="marine|chowpatty|queen">
-          <span class="pregion">South Mumbai</span>
-          <svg class="ill" viewBox="0 0 320 170" aria-hidden="true" focusable="false">
-            <circle class="moonf" cx="266" cy="30" r="11"/>
-            <path class="bld" d="M14 118V72q0-9 9-9h37v55Z"/>
-            <path class="bld" d="M60 118V54h32v64Zm8-64v-8h16v8"/>
-            <path class="bld" d="M92 118V68h52q9 0 9 9v41Z"/>
-            <path class="bld" d="M153 118V60h17v-8h22v8h15v58Z"/>
-            <path class="bld" d="M207 118V74q0-8 8-8h42v52Z"/>
-            <path class="bld" d="M257 118V60h48v58Z"/>
-            <path class="win" d="M26 75v38M38 75v38M50 75v38M70 62v51M82 62v51M104 77v36M116 77v36M128 77v36M140 80v33M164 68v45M178 60v53M192 68v45M219 77v36M231 77v36M245 77v36M268 68v45M281 68v45M294 68v45"/>
-            <path class="s1" d="M0 126Q160 108 320 120"/>
-            <g><circle class="halo" cx="16" cy="120" r="5"/><circle class="halo" cx="48" cy="117" r="5"/><circle class="halo" cx="80" cy="115" r="5"/><circle class="halo" cx="112" cy="113" r="5"/><circle class="halo" cx="144" cy="112" r="5"/><circle class="halo" cx="176" cy="111" r="5"/><circle class="halo" cx="208" cy="111" r="5"/><circle class="halo" cx="240" cy="112" r="5"/><circle class="halo" cx="272" cy="113" r="5"/><circle class="halo" cx="304" cy="115" r="5"/></g>
-            <g><circle class="lamp" cx="16" cy="120" r="1.8"/><circle class="lamp" cx="48" cy="117" r="1.8"/><circle class="lamp" cx="80" cy="115" r="1.8"/><circle class="lamp" cx="112" cy="113" r="1.8"/><circle class="lamp" cx="144" cy="112" r="1.8"/><circle class="lamp" cx="176" cy="111" r="1.8"/><circle class="lamp" cx="208" cy="111" r="1.8"/><circle class="lamp" cx="240" cy="112" r="1.8"/><circle class="lamp" cx="272" cy="113" r="1.8"/><circle class="lamp" cx="304" cy="115" r="1.8"/></g>
-            <path class="s2" d="M18 136v14M50 133v12M82 131v10M114 129v10M146 128v9M178 127v9M210 127v9M242 128v9M274 129v10M306 131v10" stroke-dasharray="3 3"/>
-            <path class="s3" d="M6 158q12-5 24 0t24 0 24 0 24 0 24 0 24 0 24 0 24 0 24 0 24 0 24 0 24 0 24 0"/>
-          </svg>
-          <div class="pbody"><h3>Marine Drive</h3><p>The Queen's Necklace. Mumbai's most famous sea-front promenade, lit up at night.</p></div>
-        </article>
-        <article class="place reveal" data-match="worli" style="--d:1">
-          <span class="pregion">Worli</span>
-          <svg class="ill" viewBox="0 0 320 170" aria-hidden="true" focusable="false">
-            <circle class="moonf" cx="48" cy="30" r="9"/>
-            <path class="s3" d="M70 58V44M200 26V12"/>
-            <path class="s2" d="M70 52 52 107M70 52 40 107M70 52 28 108M70 52 88 107M70 52 100 106M70 52 112 106"/>
-            <path class="s2" d="M200 20 176 105M200 22 158 105M200 24 140 105M200 26 122 106M200 20 224 104M200 22 242 104M200 24 260 103M200 26 278 103M200 28 296 103"/>
-            <path class="s1" d="M62 108 70 52l8 56M190 106l10-86 10 86" stroke-width="3"/>
-            <path class="s2" d="M0 110 320 101" stroke-width="2.4" stroke="rgba(255,255,255,.75)"/>
-            <path class="s3" d="M20 110v14M50 109v14M80 108v14M110 107v14M140 106v14M170 106v14M230 104v14M260 103v14M290 102v14"/>
-            <g><circle class="lamp" cx="30" cy="108" r="1.5"/><circle class="lamp" cx="90" cy="106.5" r="1.5"/><circle class="lamp" cx="150" cy="105" r="1.5"/><circle class="lamp" cx="210" cy="104" r="1.5"/><circle class="lamp" cx="270" cy="102.3" r="1.5"/></g>
-            <path class="s3" d="M10 132q10-4 20 0t20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0 20 0"/>
-            <path class="s1" d="M0 146H320"/>
-            <path class="s2" d="M0 140H320M16 140v6M48 140v6M80 140v6M112 140v6M144 140v6M176 140v6M208 140v6M240 140v6M272 140v6M304 140v6"/>
-          </svg>
-          <div class="pbody"><h3>Worli Sea Face</h3><p>A long sea-front promenade with the Bandra-Worli Sea Link on the horizon.</p></div>
-        </article>
-        <article class="place reveal" data-match="nariman|trident|ncpa" style="--d:2">
-          <span class="pregion">South Mumbai</span>
-          <svg class="ill" viewBox="0 0 320 170" aria-hidden="true" focusable="false">
-            <circle class="moonf" cx="56" cy="34" r="10"/>
-            <rect class="bld" x="112" y="56" width="24" height="64"/>
-            <rect class="bld" x="138" y="30" width="26" height="90"/>
-            <rect class="bld" x="166" y="44" width="20" height="76"/>
-            <rect class="bld" x="188" y="20" width="30" height="100"/>
-            <rect class="bld" x="220" y="50" width="22" height="70"/>
-            <rect class="bld" x="244" y="64" width="26" height="56"/>
-            <rect class="bld" x="86" y="78" width="24" height="42"/>
-            <path class="win" d="M118 60v56M128 60v56M145 34v82M156 34v82M172 48v68M180 48v68M195 24v92M203 24v92M211 24v92M226 54v62M235 54v62M251 68v48M262 68v48M92 82v34M103 82v34"/>
-            <circle class="air" cx="151" cy="27" r="2"/><circle class="air" cx="203" cy="16" r="2" style="animation-delay:-.8s"/>
-            <path class="s1" d="M0 132Q150 116 320 128"/>
-            <g><circle class="halo" cx="24" cy="128" r="4.5"/><circle class="halo" cx="70" cy="124" r="4.5"/><circle class="halo" cx="116" cy="122" r="4.5"/><circle class="halo" cx="162" cy="121" r="4.5"/><circle class="halo" cx="208" cy="121" r="4.5"/><circle class="halo" cx="254" cy="122" r="4.5"/><circle class="halo" cx="300" cy="124" r="4.5"/></g>
-            <g><circle class="lamp" cx="24" cy="128" r="1.7"/><circle class="lamp" cx="70" cy="124" r="1.7"/><circle class="lamp" cx="116" cy="122" r="1.7"/><circle class="lamp" cx="162" cy="121" r="1.7"/><circle class="lamp" cx="208" cy="121" r="1.7"/><circle class="lamp" cx="254" cy="122" r="1.7"/><circle class="lamp" cx="300" cy="124" r="1.7"/></g>
-            <path class="s3" d="M8 152q12-5 24 0t24 0 24 0 24 0 24 0 24 0 24 0 24 0 24 0 24 0 24 0 24 0 24 0"/>
-            <path class="s3" d="M30 164q12-4 24 0t24 0 24 0 24 0 24 0 24 0 24 0 24 0 24 0 24 0 24 0"/>
-          </svg>
-          <div class="pbody"><h3>Nariman Point</h3><p>Where Marine Drive begins, with the city's towers rising over the Arabian Sea.</p></div>
-        </article>
-        <article class="place reveal" data-match="kharg" style="--d:3">
-          <span class="pregion">Navi Mumbai</span>
-          <svg class="ill" viewBox="0 0 320 170" aria-hidden="true" focusable="false">
-            <path class="sunf" d="M196 96a30 30 0 0 1 60 0Z"/>
-            <path class="s1" d="M226 54v-12M196 66l-8-8M256 66l8-8M184 84h-12M268 84h12"/>
-            <path class="s2" d="M120 40l6 5 6-5M140 30l5 4 5-4"/>
-            <path class="s3" d="M0 92Q50 52 104 78T210 66T320 76"/>
-            <path class="s2" d="M0 116Q70 78 150 104T320 92"/>
-            <path class="s1" d="M0 146Q90 104 186 130T320 118"/>
-            <path class="s2" d="M40 160 78 148 60 140l46-10-12-7 48-8" stroke-dasharray="4 5"/>
-            <circle class="pk" cx="142" cy="115" r="4.5"/>
-            <path class="s2" d="M262 112l6-14 6 14ZM284 108l5-12 5 12ZM30 100l5-12 5 12ZM96 92l5-12 5 12Z"/>
-          </svg>
-          <div class="pbody"><h3>Kharghar Hills</h3><p>Early starts, hill climbs and trails in Navi Mumbai.</p></div>
-        </article>
-      </div>
+<section id="faq" aria-labelledby="faqTitle">
+  <div class="wide">
+    <p class="kick">Questions</p>
+    <h2 class="h2" id="faqTitle">Good to <em>know</em></h2>
+    <div class="faq">
+      <details><summary>Do I need to be a member to run?</summary><p>Yes. UNBND races are for club members. Register, pay the ₹999 membership fee and we'll activate your membership.</p></details>
+      <details><summary>How long does membership last?</summary><p>One year from when it's activated. Renew every year to keep running with the club.</p></details>
+      <details><summary>Are races free?</summary><p>Many races are free for active members, and some have an entry fee. Each race on the race schedule shows which.</p></details>
+      <details><summary>What is a race card?</summary><p>Your entry to one race. Make it on the race schedule with your Club ID and registered mobile, save it to your phone, and show its QR code at the start line. Each race needs its own race card.</p></details>
+      <details><summary>Can I share my race card?</summary><p>No. Your race card's QR code is unique to you, so please don't post it on social media or send it to anyone. Organisers may ask for a government photo ID to confirm who you are.</p></details>
+      <details><summary>I've paid. When do I get my Club ID?</summary><p>Once we've checked your payment, we activate your membership and email your Club ID. Check your spam or promotions folder, or use Find my Club ID above.</p></details>
+      <details><summary>I'm a beginner. Can I join?</summary><p>Of course. Every pace is welcome, and nobody gets left behind.</p></details>
     </div>
-  </section>
-
-  <section class="sec rdp" id="rdp" hidden aria-labelledby="rdpTitle">
-    <div class="wrap">
-      <div class="rdp-head">
-        <div class="sh reveal">
-          <p class="kick">Gallery</p>
-          <h2 class="h2" id="rdpTitle">Race day <em>photos</em></h2>
-          <p>Moments from UNBND races around Mumbai.</p>
-        </div>
-        <p class="ig-line reveal">More on Instagram <a class="tlink" href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></p>
-      </div>
-      <div class="mosaic" id="rdpList"></div>
-      <div class="ctas rdp-more" id="rdpMore" hidden><button class="btn ghost" type="button" id="rdpAll"></button></div>
-    </div>
-  </section>
-
-  <section class="sec way" aria-labelledby="wayTitle">
-    <div class="wrap">
-      <h2 class="kick" id="wayTitle">The UNBND way</h2>
-      <div class="wr reveal"><span class="wt">Run hard.</span><p>Run your pace and give it everything, whatever your level.</p><span class="n" aria-hidden="true">01</span></div>
-      <div class="wr reveal"><span class="wt">Be kind.</span><p>Look out for each other. No abuse, harassment or body-shaming, ever.</p><span class="n" aria-hidden="true">02</span></div>
-      <div class="wr reveal"><span class="wt">Have fun.</span><p>Good company, great routes and a start line full of friends.</p><span class="n" aria-hidden="true">03</span></div>
-      <div class="ctas"><a class="btn" href="rules.html">Read the club rules <span class="arr">→</span></a></div>
-    </div>
-  </section>
-
-  <section class="sec light" aria-labelledby="memTitle">
-    <div class="wrap">
-      <div class="sh reveal">
-        <p class="kick">Members</p>
-        <h2 class="h2" id="memTitle">Already <em>with us?</em></h2>
-      </div>
-      <div class="mgrid">
-        <article class="mcard find reveal" id="find">
-          <p class="lane">Already a member?</p>
-          <h3>Find your Club ID</h3>
-          <p>Enter the mobile number you registered with.</p>
-          <form id="fForm" novalidate>
-            <div class="frow">
-              <input id="fPhone" type="tel" inputmode="numeric" placeholder="10-digit mobile number" autocomplete="tel-national" aria-label="Registered mobile number">
-              <button class="btn pink" id="fBtn" type="submit">Find my Club ID</button>
-            </div>
-            <p class="err" id="fErr"></p>
-          </form>
-          <div id="fOut" aria-live="polite"></div>
-        </article>
-        <article class="mcard reveal" style="--d:1">
-          <p class="lane">Registered, not paid?</p>
-          <h3>Complete your payment</h3>
-          <p>Haven't paid the ₹999 membership fee yet, or paid but didn't upload the screenshot? Finish here using your registered mobile number.</p>
-          <a class="btn" href="pay.html">Pay and upload screenshot</a>
-        </article>
-        <article class="mcard reveal" style="--d:2">
-          <p class="lane">Questions?</p>
-          <h3>We're here to help</h3>
-          <p>Registration, payment or races: send us a message and we'll reply by email.</p>
-          <a class="btn" href="support.html">Contact support</a>
-        </article>
-      </div>
-    </div>
-  </section>
+    <div class="help"><a class="btn line" href="support.html">Contact support</a><span style="color:var(--muted)">Registration, payment or races: we'll reply by email.</span></div>
+  </div>
+</section>
 </main>
-
-<section class="finale" aria-labelledby="finTitle">
-  <div class="wrap">
-    <p class="kick reveal">Your move</p>
-    <h2 id="finTitle" class="reveal">See you at the<br><span>start line.</span></h2>
-    <div class="ctas reveal" style="--d:1">
-      <a class="btn pink" href="register.html">Join the club <span class="fee">₹999</span></a>
-      <a class="btn ghost" href="races.html">Race schedule</a>
-    </div>
-  </div>
-  <div class="sl" aria-hidden="true"><svg id="seaLink" viewBox="0 0 1600 560" preserveAspectRatio="xMidYMax slice" focusable="false"></svg></div>
-  <div class="chequer" aria-hidden="true"></div>
-</section>
 
 <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Photo">
   <button class="lbx" type="button" id="lbClose" aria-label="Close">✕</button>
@@ -888,183 +448,76 @@
 </div>
 
 <footer class="foot">
-  <div class="wrap">
-    <div class="foot-grid">
-      <div class="foot-brand">
-        <img src="logo.png" alt="" width="60" height="60" loading="lazy">
-        <p>Mumbai's run club. Group runs and races across the city. Every pace, every distance, one club.</p>
-        <p class="motto">Run hard · Be kind · Have fun</p>
+  <div class="wide">
+    <div class="fgrid">
+      <div>
+        <a class="fbrand" href="index.html"><img src="logo.png" alt="" width="52" height="52"><span><b>UNBND</b><small>Run club · Mumbai</small></span></a>
+        <p>Group runs and races across Mumbai. Every pace, every distance, one club.</p>
       </div>
-      <nav aria-labelledby="fClub"><h3 id="fClub">Club</h3><ul><li><a href="races.html">Race schedule</a></li><li><a href="rules.html">Club rules</a></li><li><a href="support.html">Support</a></li></ul></nav>
-      <nav aria-labelledby="fMem"><h3 id="fMem">Members</h3><ul><li><a href="register.html">Join the club</a></li><li><a href="pay.html">Complete payment</a></li><li><a href="#find">Find my Club ID</a></li></ul></nav>
-      <div><h3>Follow</h3><ul><li><a href="https://www.instagram.com/unbndrunclub/">Instagram @unbndrunclub</a></li></ul></div>
+      <div class="fcols">
+        <nav aria-labelledby="fClub"><h3 id="fClub">Club</h3><ul><li><a href="races.html">Race schedule</a></li><li><a href="rules.html">Club rules</a></li><li><a href="support.html">Support</a></li></ul></nav>
+        <nav aria-labelledby="fMem"><h3 id="fMem">Members</h3><ul><li><a href="register.html">Join the club</a></li><li><a href="pay.html">Complete payment</a></li><li><a href="#find">Find my Club ID</a></li></ul></nav>
+        <div><h3>Follow</h3><ul><li><a class="igf" href="https://www.instagram.com/unbndrunclub/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor" stroke="none"/></svg>@unbndrunclub</a></li></ul></div>
+      </div>
     </div>
-    <div class="foot-base"><span>&copy; <span class="yr">2026</span> UNBND Run Club. All rights reserved.</span><span>Made in Mumbai</span></div>
+    <div class="fbot">&copy; <span class="yr">2026</span> UNBND Run Club. All rights reserved.</div>
   </div>
 </footer>
 <script>document.querySelectorAll(".yr").forEach(function (e) { e.textContent = new Date().getFullYear(); });</script>
 
 <script>
   const API_URL = window.UNBND_API;
-
   const $ = (id) => document.getElementById(id);
-  const NS = "http://www.w3.org/2000/svg";
   const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const esc = (t) => String(t == null ? "" : t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-  const niceDate = (iso) => { const [y, m, d] = iso.split("-").map(Number); return d + " " + MONTHS[m - 1] + " " + y; };
   const time12 = (t) => { const [H, M] = t.split(":").map(Number); return (H % 12 || 12) + ":" + String(M).padStart(2, "0") + " " + (H < 12 ? "AM" : "PM"); };
   const raceStart = (r) => new Date(r.date + "T" + r.time + ":00+05:30");
   const where = (r) => { const s = String(r.start || "").trim(), l = String(r.landmark || "").trim(); return s + (l && l.toLowerCase() !== s.toLowerCase() ? " (" + l + ")" : ""); };
   const wday = (r) => (r.day || new Intl.DateTimeFormat("en-GB", { weekday: "long", timeZone: "Asia/Kolkata" }).format(raceStart(r))).slice(0, 3);
-  const calmMotion = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const fee = (r) => (/^\d+$/.test(String(r.fee || "")) ? Number(r.fee) : 0);
   const f1 = (n) => Math.round(n * 10) / 10;
 
-  // ---- Marine Drive at night: the Queen's Necklace, drawn once when the page opens ----
-  // A seeded shuffle keeps the skyline the same on every visit.
+  // ---- The city line: Sea Link, the skyline, the sea and a running track (drawn once, same every visit) ----
   (function () {
-    const svg = $("mdArt");
-    let seed = 20; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-    const P = [[-90, 640], [480, 560], [1080, 488], [1700, 466]];   // the curve of the sea front, near (left) to far (right)
-    const bez = (t) => { const u = 1 - t, a = u * u * u, b = 3 * u * u * t, c = 3 * u * t * t, d = t * t * t;
-      return [a * P[0][0] + b * P[1][0] + c * P[2][0] + d * P[3][0], a * P[0][1] + b * P[1][1] + c * P[2][1] + d * P[3][1]]; };
-    const K = (t) => 1 / (1 + 3.1 * t);   // how big things look: 1 up close, about a quarter at the far end
-    const N = 600, pts = [bez(0)], len = [0];
-    for (let i = 1; i <= N; i++) { pts.push(bez(i / N)); len.push(len[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1])); }
-    const total = len[N];
-    const tAt = (s) => { let lo = 0, hi = N; while (lo < hi) { const m = (lo + hi) >> 1; if (len[m] < s) lo = m + 1; else hi = m; } return lo / N; };
-    let back = "", towerWins = "", air = "", front = "", wins = "", rims = "", lamps = "", refl = "";
-
-    // Towers behind the sea-front row; the tall cluster at the far end is Nariman Point
-    for (let s = 10; s < total;) {
-      const t = tAt(s), k = K(t), [x, y] = bez(t), far = t > 0.8;
-      const w = (30 + rnd() * 30) * k, h = (far ? 300 + rnd() * 320 : (110 + rnd() * 230) * (0.55 + t)) * k;
-      if (rnd() < (far ? 0.95 : t < 0.35 ? 0.3 : 0.55)) {
-        const bx = x + (rnd() * 16 - 8) * k, top = y - 24 * k - h;
-        back += '<rect x="' + f1(bx) + '" y="' + f1(top) + '" width="' + f1(w) + '" height="' + f1(h + 20 * k) + '"/>';
-        let d = ""; const cols = Math.max(1, Math.floor(w / (10 * k)));
-        for (let c = 0; c < cols; c++) d += "M" + f1(bx + (c + 0.5) * w / cols) + " " + f1(top + 6 * k + rnd() * 10 * k) + "V" + f1(top + h);
-        towerWins += '<path d="' + d + '" stroke-width="' + f1(2.2 * k + .3) + '" stroke-dasharray="' + f1(2.4 * k + .4) + " " + f1((5 + rnd() * 9) * k) + '"/>';
-        if (far && h > 110 * k) air += '<circle class="md-air" cx="' + f1(bx + w / 2) + '" cy="' + f1(top - 3) + '" r="2.2" style="animation-delay:-' + f1(rnd() * 1.6) + 's"/>';
-      }
-      s += w * (far ? 0.85 : 1.5);
-    }
-    // The Art Deco row along the sea front
-    for (let s = 0; s < total;) {
-      const t = tAt(s); if (t > 0.985) break;
-      const k = K(t), [x, y] = bez(t);
-      const w = (52 + rnd() * 46) * k, h = (84 + rnd() * 76) * k, base = y - 5 * k, top = base - h;
-      const r = rnd() < 0.5 ? Math.min(16 * k, w / 3) : 0, rr = rnd() < 0.5 ? r : 0;
-      front += '<path d="M' + f1(x) + " " + f1(base + 30 * k) + "V" + f1(top + r) + (r ? "Q" + f1(x) + " " + f1(top) + " " + f1(x + r) + " " + f1(top) : "") +
-        "H" + f1(x + w - rr) + (rr ? "Q" + f1(x + w) + " " + f1(top) + " " + f1(x + w) + " " + f1(top + rr) : "") + "V" + f1(base + 30 * k) + 'Z"/>';
-      if (rnd() < 0.3) front += '<rect x="' + f1(x + w * 0.32) + '" y="' + f1(top - 11 * k) + '" width="' + f1(w * 0.36) + '" height="' + f1(12 * k) + '"/>';
-      rims += "M" + f1(x + r) + " " + f1(top) + "H" + f1(x + w - rr);
-      const cols = Math.max(1, Math.floor(w / (12 * k))), dash = 4.2 * k, gap = 5.2 * k, tone = rnd();
-      let d = "";
-      for (let c = 0; c < cols; c++) d += "M" + f1(x + (c + 0.5) * w / cols) + " " + f1(top + 6 * k + rnd() * gap * 2) + "V" + f1(base - 4 * k);
-      wins += '<path class="' + (tone < 0.16 ? "wp" : tone < 0.3 ? "wd" : "ww") + '" d="' + d + '" stroke-width="' + f1(3 * k) + '" stroke-dasharray="' +
-        f1(dash) + " " + f1(gap) + " " + f1(dash) + " " + f1(gap * (1 + rnd() * 5)) + '"/>';
-      s += w + (1 + rnd() * 5) * k;
-    }
-    // Street lights: evenly spaced on the ground, so closer together as they recede
-    for (let s = 14; s < total; s += 44 * K(tAt(s))) {
-      const t = tAt(s), k = K(t), [x, y] = bez(t), ly = y - 8 * k;
-      lamps += '<circle class="g' + (rnd() < 0.3 ? " tw" : "") + '" cx="' + f1(x) + '" cy="' + f1(ly) + '" r="' + f1(16 * k + 2) + '"' + (rnd() < 0.3 ? ' style="animation-delay:-' + f1(rnd() * 2.8) + 's"' : "") + '/>' +
-        '<circle class="c" cx="' + f1(x) + '" cy="' + f1(ly) + '" r="' + f1(2.6 * k + .5) + '"/>';
-      if (k > 0.3) refl += '<path d="M' + f1(x) + " " + f1(y + 10 * k) + "V" + f1(y + (70 + rnd() * 80) * k) + '" stroke-width="' + f1(3 * k + .6) + '" stroke-dasharray="' +
-        f1(6 * k + 1) + " " + f1(5 * k + 1) + " " + f1(11 * k + 2) + " " + f1(6 * k + 2) + '" style="animation-duration:' + f1(1.8 + rnd() * 1.6) + "s;animation-delay:-" + f1(rnd() * 2) + 's"/>';
-    }
-    const line = (dy) => "M" + pts.filter((p, i) => i % 5 === 0 || i === N).map((p, i) => f1(p[0]) + " " + f1(p[1] + dy * K((i * 5) / N))).join("L");
-    const road = line(0), wall = line(9);
-    let waves = "";
-    for (let i = 0; i < 9; i++) { const y0 = 600 + i * 12, a = 3 + i; let d = "M-20 " + y0; for (let x = -20; x < 1640; x += 80) d += "q20 " + (-a) + " 40 0t40 0"; waves += '<path d="' + d + '" style="opacity:' + (0.25 + i * 0.07).toFixed(2) + '"/>'; }
-    svg.innerHTML =
-      '<defs><radialGradient id="mdLamp"><stop offset="0" stop-color="#fff"/><stop offset=".22" stop-color="#ffe3ea" stop-opacity=".95"/><stop offset=".55" stop-color="#fe90ae" stop-opacity=".3"/><stop offset="1" stop-color="#fe90ae" stop-opacity="0"/></radialGradient>' +
-      '<linearGradient id="mdBld" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1a20"/><stop offset="1" stop-color="#08080a"/></linearGradient>' +
-      '<linearGradient id="mdSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14080d"/><stop offset=".4" stop-color="#070305"/><stop offset="1" stop-color="#000"/></linearGradient>' +
-      '<linearGradient id="mdFadeG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient>' +
-      '<mask id="mdFade" maskUnits="userSpaceOnUse" x="0" y="440" width="1600" height="260"><rect x="0" y="440" width="1600" height="260" fill="url(#mdFadeG)"/></mask></defs>' +
-      '<g class="md-back">' + back + "</g>" + '<g class="md-tw">' + towerWins + "</g>" + air +
-      '<g class="md-front">' + front + "</g>" + '<path class="md-rim" d="' + rims + '"/>' + '<g class="md-win">' + wins + "</g>" +
-      '<path class="md-sea" d="' + road + "L1700 700L-100 700Z" + '"/>' +
-      '<g class="md-waves">' + waves + "</g>" +
-      '<g class="md-refl" mask="url(#mdFade)">' + refl + "</g>" +
-      '<path class="md-glowline" d="' + road + '"/><path class="md-road" d="' + road + '"/><path class="md-wall" d="' + wall + '"/>' +
-      '<g class="md-lamps">' + lamps + "</g>" +
-      '<path id="mdPath" d="' + line(-3) + '" fill="none"/>';
-    // Phones show the near end of the necklace, larger
-    const phone = matchMedia("(max-width: 699px)");
-    const fit = () => { svg.setAttribute("viewBox", phone.matches ? "0 330 980 370" : "0 0 1600 700"); svg.setAttribute("preserveAspectRatio", phone.matches ? "xMinYMax slice" : "xMidYMax slice"); };
-    fit(); if (phone.addEventListener) phone.addEventListener("change", fit);
-    // A runner's light heading up the sea front (still, for people who prefer reduced motion)
-    const runner = document.createElementNS(NS, "g"), reach = phone.matches ? 0.32 : 1, dur = phone.matches ? 8 : 18;
-    [[5.5, 0, "md-runner"], [4, 0.12, "md-trail"], [3, 0.24, "md-trail"], [2, 0.36, "md-trail"]].forEach(([r, lag, cls]) => {
-      const c = document.createElementNS(NS, "circle"); c.setAttribute("r", r); c.setAttribute("class", cls);
-      if (calmMotion) { const p = bez(0.16 + lag * 0.02); c.setAttribute("cx", p[0] - lag * 40); c.setAttribute("cy", p[1] - 3); }
-      else {
-        const b = "-" + f1(dur / 3 + lag * dur / 18) + "s";
-        c.innerHTML = '<animateMotion dur="' + dur + 's" repeatCount="indefinite" begin="' + b + '" calcMode="spline" keyTimes="0;1" keyPoints="0;' + reach + '" keySplines=".15 .45 .45 1"><mpath href="#mdPath" xlink:href="#mdPath"/></animateMotion>' +
-          '<animate attributeName="r" values="' + r + ";" + f1(r * (phone.matches ? 0.7 : 0.3)) + '" dur="' + dur + 's" repeatCount="indefinite" begin="' + b + '" calcMode="spline" keyTimes="0;1" keySplines=".15 .45 .45 1"/>';
-      }
-      runner.appendChild(c);
-    });
-    svg.appendChild(runner);
-  })();
-
-  // ---- Stars over the Arabian Sea ----
-  (function () {
+    const svg = $("cityArt"), W = 1600, H = 300, sea = 228, track = 258;
     let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-    let h = "";
-    for (let i = 0; i < 110; i++) {
-      const tw = rnd() < 0.35;
-      h += '<circle cx="' + f1(rnd() * 1600) + '" cy="' + f1(rnd() * 560) + '" r="' + f1(0.6 + rnd() * rnd() * 1.8) + '" opacity="' + (0.25 + rnd() * 0.65).toFixed(2) + '"' +
-        (tw ? ' class="tw" style="animation-delay:-' + f1(rnd() * 3.2) + "s;animation-duration:" + f1(2.4 + rnd() * 2.4) + 's"' : "") + "/>";
-    }
-    $("stars").innerHTML = h;
-  })();
-
-  // ---- The Bandra-Worli Sea Link at night ----
-  (function () {
-    const svg = $("seaLink");
-    let seed = 3; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-    const deckY = (x) => 432 - x * 0.012;
-    let city = "", cityWin = "", piers = "", cables = "", pylons = "", lights = "", refl = "";
-    for (let x = -10; x < 1620;) {   // Worli and Bandra far behind
-      const w = 20 + rnd() * 34, h = 30 + rnd() * (x > 1150 ? 150 : 90);
-      if (rnd() < 0.8) {
-        city += '<rect x="' + f1(x) + '" y="' + f1(deckY(x) - 12 - h) + '" width="' + f1(w) + '" height="' + f1(h + 12) + '"/>';
-        let d = ""; for (let c = 0; c < Math.floor(w / 8); c++) d += "M" + f1(x + 4 + c * 8) + " " + f1(deckY(x) - 8 - h) + "V" + f1(deckY(x) - 14);
-        cityWin += '<path d="' + d + '" stroke-width="2" stroke-dasharray="2 ' + f1(4 + rnd() * 8) + '"/>';
+    let far = "", near = "", wins = "";
+    for (let x = -10; x < W;) { const w = 34 + rnd() * 50, h = 40 + rnd() * 90; far += '<rect x="' + f1(x) + '" y="' + f1(sea - h) + '" width="' + f1(w) + '" height="' + f1(h) + '"/>'; x += w + 2; }
+    const block = (x0, x1, hMin, hMax) => {
+      for (let x = x0; x < x1;) {
+        const w = 40 + rnd() * 46, h = hMin + rnd() * (hMax - hMin), top = sea - h, r = rnd() < 0.3 ? 12 : 0;
+        near += '<path d="M' + f1(x) + " " + sea + "V" + f1(top + r) + (r ? "Q" + f1(x) + " " + f1(top) + " " + f1(x + r) + " " + f1(top) : "") + "H" + f1(x + w) + "V" + sea + '"/>';
+        if (rnd() < 0.35) near += '<path d="M' + f1(x + w * 0.35) + " " + f1(top) + "V" + f1(top - 12) + "H" + f1(x + w * 0.65) + "V" + f1(top) + '"/>';
+        for (let wy = top + 12; wy < sea - 12; wy += 16) for (let wx = x + 9; wx < x + w - 10; wx += 13) if (rnd() < 0.42) wins += '<rect x="' + f1(wx) + '" y="' + f1(wy) + '" width="5" height="7"/>';
+        x += w + 6 + rnd() * 8;
       }
-      x += w + rnd() * 10;
-    }
-    for (let x = 30; x < 1600; x += 70) piers += '<rect class="pier" x="' + (x - 4) + '" y="' + f1(deckY(x)) + '" width="8" height="' + f1(492 - deckY(x)) + '"/>';
-    function pylon(px, top, apex, span, n, legs) {
-      const dy = deckY(px);
-      pylons += '<path class="pylon" d="M' + (px - legs) + " " + f1(dy + 2) + "L" + px + " " + apex + "L" + (px + legs) + " " + f1(dy - 1) + "M" + px + " " + apex + "V" + top + '"/>';
-      for (let i = 0; i < n; i++) {
-        const ay = top + 10 + i * ((apex - top - 14) / (n - 1)), off = 40 + (i + 1) * (span / n);
-        cables += "M" + px + " " + f1(ay) + "L" + f1(px - off) + " " + f1(deckY(px - off)) + "M" + px + " " + f1(ay) + "L" + f1(px + off) + " " + f1(deckY(px + off));
-      }
-      refl += '<path d="M' + px + " 500V" + 556 + '" stroke-width="5" stroke-dasharray="8 6 14 7" style="animation-duration:2.2s"/>';
-    }
-    pylon(1060, 96, 236, 520, 13, 26);
-    pylon(420, 214, 300, 270, 9, 16);
-    for (let x = 0; x <= 1600; x += 26) {
-      const y = deckY(x) - 4;
-      lights += '<circle class="dg" cx="' + x + '" cy="' + f1(y) + '" r="9"/><circle class="dl" cx="' + x + '" cy="' + f1(y) + '" r="1.8"/>';
-      if (x % 52 === 0) refl += '<path d="M' + x + " " + f1(496 + rnd() * 6) + "V" + f1(520 + rnd() * 36) + '" stroke-width="2.4" stroke-dasharray="5 4 9 5" style="animation-duration:' + f1(1.8 + rnd() * 1.4) + "s;animation-delay:-" + f1(rnd() * 2) + 's"/>';
-    }
+    };
+    block(-20, 330, 70, 150); block(1060, 1620, 80, 175);
+    // The Sea Link between the two blocks: two inverted-Y towers with fans of cables
+    let link = "", cab = "";
+    const deck = (x) => sea - 18 - Math.sin(((x - 300) / 820) * Math.PI) * 10;
+    [[560, 150], [840, 124]].forEach(([tx, th]) => {
+      const d = deck(tx), top = d - th, fork = d - th * 0.38;
+      link += '<path d="M' + tx + " " + f1(top) + "V" + f1(fork) + "L" + (tx - 22) + " " + f1(d + 26) + "M" + tx + " " + f1(fork) + "L" + (tx + 22) + " " + f1(d + 26) + '"/>';
+      for (let k = 1; k <= 8; k++) { const ay = top + 8 + k * 9, span = 22 + k * 26; cab += "M" + tx + " " + f1(ay) + "L" + (tx - span) + " " + f1(deck(tx - span)) + "M" + tx + " " + f1(ay) + "L" + (tx + span) + " " + f1(deck(tx + span)); }
+    });
+    let dk = "M300 " + f1(deck(300)); for (let x = 320; x <= 1080; x += 20) dk += "L" + x + " " + f1(deck(x));
+    let waves = ""; for (let i = 0; i < 3; i++) { let d = "M-20 " + (sea + 8 + i * 8); for (let x = -20; x < W + 40; x += 60) d += "q15 -4 30 0t30 0"; waves += '<path d="' + d + '"/>'; }
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     svg.innerHTML =
-      '<defs><radialGradient id="slLamp"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset=".35" stop-color="#fe90ae" stop-opacity=".35"/><stop offset="1" stop-color="#fe90ae" stop-opacity="0"/></radialGradient>' +
-      '<linearGradient id="slSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#160910"/><stop offset="1" stop-color="#000"/></linearGradient>' +
-      '<filter id="slGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>' +
-      '<g class="city">' + city + "<g>" + cityWin + "</g></g>" +
-      '<rect class="water" x="0" y="486" width="1600" height="74"/>' + piers +
-      '<g class="refl">' + refl + "</g>" +
-      '<path class="cable" d="' + cables + '"/>' +
-      '<path class="deck" d="M-10 ' + f1(deckY(-10)) + "L1610 " + f1(deckY(1610)) + '"/><path class="deck2" d="M-10 ' + f1(deckY(-10) + 9) + "L1610 " + f1(deckY(1610) + 9) + '"/>' +
-      '<g filter="url(#slGlow)">' + pylons + "</g>" + lights;
+      '<defs><radialGradient id="sunG"><stop offset="0" stop-color="#ff8fb0"/><stop offset=".7" stop-color="#fe90ae"/><stop offset="1" stop-color="#ffb3c8"/></radialGradient></defs>' +
+      '<circle cx="1240" cy="128" r="96" fill="url(#sunG)"/><circle cx="1240" cy="128" r="128" fill="none" stroke="#fe90ae" stroke-opacity=".35" stroke-width="2" stroke-dasharray="4 10"/>' +
+      '<g fill="#ffd4e0">' + far + "</g>" +
+      '<g fill="#fff" stroke="#0b0b0d" stroke-width="2.4" stroke-linejoin="round">' + near + "</g>" +
+      '<g fill="#fe90ae">' + wins + "</g>" +
+      '<path d="' + cab + '" stroke="#0b0b0d" stroke-width="1.3" fill="none"/>' +
+      '<path d="' + link + '" stroke="#0b0b0d" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" fill="none"/>' +
+      '<path d="' + dk + '" stroke="#0b0b0d" stroke-width="7" fill="none"/>' +
+      '<rect x="0" y="' + sea + '" width="' + W + '" height="' + (track - sea) + '" fill="#e9f6fb"/>' +
+      '<g stroke="#9fd3e6" stroke-width="2" fill="none" stroke-linecap="round">' + waves + "</g>" +
+      '<rect x="0" y="' + track + '" width="' + W + '" height="' + (H - track) + '" fill="#fe90ae"/>' +
+      '<path d="M0 ' + (track + 14) + "H" + W + "M0 " + (track + 28) + "H" + W + '" stroke="#fff" stroke-width="2.5" stroke-dasharray="26 18"/>' +
+      '<rect x="0" y="' + track + '" width="' + W + '" height="3" fill="#0b0b0d"/>';
   })();
 
   async function post(payload, timeoutMs) {
@@ -1117,94 +570,52 @@
   }
   if (outbox().length) setTimeout(sendOutbox, 1500);
 
-  // ---- A little burst of pink streaks at the finish line ----
-  function burst(host, x, y, opts) {
-    if (calmMotion || !host.animate) return;
-    const n = opts.n || 12, colors = opts.colors || ["#fe90ae", "#ffffff", "#ff5f8f"];
-    for (let i = 0; i < n; i++) {
-      const s = document.createElement("i"); s.className = "spark";
-      const deg = opts.dir + (Math.random() - 0.5) * opts.spread, dist = (opts.dist || 64) * (0.6 + Math.random() * 0.7);
-      s.style.left = x + "px"; s.style.top = y + "px"; s.style.background = colors[i % colors.length];
-      host.appendChild(s);
-      s.animate([
-        { transform: "rotate(" + deg + "deg) translateX(4px) scaleX(.2)", opacity: 1 },
-        { transform: "rotate(" + deg + "deg) translateX(" + dist + "px) scaleX(1)", opacity: 0 }
-      ], { duration: 520 + Math.random() * 260, easing: "cubic-bezier(.2,.7,.3,1)" }).onfinish = () => s.remove();
-    }
-  }
-
-  // ---- Header: goes solid once you scroll, runner jogs along the track, finish-line cheer ----
-  const hdr = $("hdr"), track = $("track"), runner = $("runner"), sheet = $("sheet"), burger = $("burger");
-  let sheetOpen = false, docMax = 1, trackW = 0, finished = false, goTimer = 0;
-  function measure() { docMax = Math.max(1, document.documentElement.scrollHeight - innerHeight); trackW = track.offsetWidth; }
-  function paint() {
-    const y = Math.max(0, scrollY), p = Math.min(1, y / docMax);
-    hdr.classList.toggle("solid", y > 8 || sheetOpen);
-    $("trFill").style.transform = "scaleX(" + p.toFixed(4) + ")";
-    runner.style.transform = "translateX(" + (p * (trackW - 30)).toFixed(1) + "px)";
-    if (p > 0.985 && docMax > 300 && !finished) { finished = true; cheer(); }
-    if (p < 0.6) finished = false;
-  }
-  function cheer() {
-    burst(hdr, trackW - 6, hdr.offsetHeight - 6, { n: 16, dist: 70, spread: 160, dir: 170, colors: ["#fe90ae", "#ffffff", "#ff5f8f", "#ffd1de"] });
-    if (calmMotion) return;
-    const chip = document.createElement("span"); chip.className = "finish-chip"; chip.textContent = "Finish line!";
-    hdr.appendChild(chip);
-    chip.animate([{ opacity: 0, transform: "translateY(-6px) scale(.9)" }, { opacity: 1, transform: "none", offset: 0.15 }, { opacity: 1, transform: "none", offset: 0.85 }, { opacity: 0, transform: "translateY(-4px)" }], { duration: 2200, easing: "ease-out" }).onfinish = () => chip.remove();
-  }
-  let ticking = false;
-  addEventListener("scroll", () => {
-    track.classList.add("go"); clearTimeout(goTimer); goTimer = setTimeout(() => track.classList.remove("go"), 160);
-    if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; paint(); route(); }); }
-  }, { passive: true });
-  addEventListener("resize", () => { measure(); paint(); routeLayout(); if (innerWidth > 860 && sheetOpen) setSheet(false); });
-  addEventListener("load", () => { measure(); paint(); routeLayout(); });
-  if (window.ResizeObserver) new ResizeObserver(() => { measure(); paint(); routeLayout(); }).observe(document.body);   // page grows as photos and results load
-
   // ---- Mobile menu ----
+  const burger = $("burger"), sheet = $("sheet");
   function setSheet(open) {
-    sheetOpen = open; sheet.hidden = !open;
-    burger.setAttribute("aria-expanded", String(open)); burger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    sheet.hidden = !open; burger.setAttribute("aria-expanded", String(open)); burger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
     document.documentElement.classList.toggle("locked", open);
-    paint();
   }
-  burger.addEventListener("click", () => setSheet(!sheetOpen));
+  burger.addEventListener("click", () => setSheet(sheet.hidden));
   sheet.addEventListener("click", (e) => { if (e.target.closest("a")) setSheet(false); });
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && sheetOpen) { setSheet(false); burger.focus(); } });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !sheet.hidden) { setSheet(false); burger.focus(); } });
+  addEventListener("resize", () => { if (innerWidth >= 960 && !sheet.hidden) setSheet(false); });
 
-  // Jumping to "Find my Club ID" gives the card a quick pink flash
-  function flashFind() { if (location.hash !== "#find") return; const c = $("find"); c.classList.remove("flash"); void c.offsetWidth; c.classList.add("flash"); }
+  // Jumping to "Find my Club ID" gives the card a quick pink flash and puts the cursor in the box
+  function flashFind() {
+    if (location.hash !== "#find") return;
+    const c = $("find"); c.classList.remove("flash"); void c.offsetWidth; c.classList.add("flash");
+    setTimeout(() => $("fPhone").focus({ preventScroll: true }), 400);
+  }
   addEventListener("hashchange", flashFind);
   document.addEventListener("click", (e) => { const a = e.target.closest('a[href="#find"]'); if (a && location.hash === "#find") setTimeout(flashFind, 350); });
 
-  // ---- Next race ticket ----
-  // Moves to the following race once a race day has passed, and hides when none are scheduled
+  // ---- Entry stamp and pill ----
+  const stampHtml = (r) => fee(r) ? "<b>₹" + fee(r) + "</b><span>Entry for active club members</span>" : "<b>Free</b><span>for all active club members</span>";
+  const pillHtml = (r) => fee(r) ? '<span class="pill fee">Entry ₹' + fee(r) + "</span>" : '<span class="pill free">Free for active members</span>';
+
+  // ---- Next race ----
   function renderNext(list) {
     const el = $("nextRace");
-    if (!list || !list.length) { el.hidden = true; $("stage").classList.add("no-race"); return; }
+    if (!list || !list.length) { el.hidden = true; return; }
     const r = list[0], [, m, d] = r.date.split("-").map(Number);
     el.href = "races.html#" + encodeURIComponent(r.id);
     $("nrId").textContent = r.id;
     $("nrName").textContent = r.name;
-    $("nrWhen").textContent = wday(r) + ", " + d + " " + MONTHS[m - 1] + " · " + time12(r.time);
+    $("nrWhen").textContent = wday(r) + ", " + d + " " + MONTHS[m - 1] + " · " + time12(r.time) + (r.distance ? " · " + r.distance + " km" : "");
     $("nrWhere").textContent = where(r);
-    $("nrKm").innerHTML = r.distance ? "<b>" + esc(r.distance) + "</b> km" : "Free for members";
+    $("nrStamp").className = "stamp" + (fee(r) ? " paid" : ""); $("nrStamp").innerHTML = stampHtml(r);
     $("nrCd").dataset.cd = raceStart(r).toISOString(); $("nrCd").innerHTML = "";
-    el.hidden = false; $("stage").classList.remove("no-race");
+    el.hidden = false;
     tickCd(); if (!renderNext.t) renderNext.t = setInterval(tickCd, 1000);
-    measure();
   }
   function tickCd() {
     const box = $("nrCd"); if (!box.dataset.cd) return;
     const ms = new Date(box.dataset.cd) - new Date();
     if (ms <= 0) { box.innerHTML = '<div class="today">Race day is here</div>'; delete box.dataset.cd; return; }
     const v = [Math.floor(ms / 864e5), Math.floor(ms / 36e5) % 24, Math.floor(ms / 6e4) % 60, Math.floor(ms / 1e3) % 60];
-    if (!box.querySelector("b")) box.innerHTML = ["days", "hrs", "mins", "secs"].map((u) => '<div class="box"><b></b><span>' + u + "</span></div>").join("");
-    box.querySelectorAll("b").forEach((b, i) => {
-      const t = String(v[i]).padStart(2, "0"); if (b.textContent === t) return;
-      const first = !b.textContent; b.textContent = t;
-      if (!first && !calmMotion) { b.classList.remove("flip"); void b.offsetWidth; b.classList.add("flip"); }
-    });
+    if (!box.querySelector("b")) box.innerHTML = ["days", "hrs", "mins", "secs"].map((u) => "<div><b></b><span>" + u + "</span></div>").join("");
+    box.querySelectorAll("b").forEach((b, i) => { const t = String(v[i]).padStart(2, "0"); if (b.textContent !== t) b.textContent = t; });
   }
 
   // ---- Upcoming races: the next four, soonest first ----
@@ -1213,186 +624,93 @@
     const n = Math.round(dn(r.date) - dn(todayIST()));
     return n <= 0 ? "Today" : n === 1 ? "Tomorrow" : "In " + n + " days";
   }
-  function renderFixtures(list) {
-    const ol = $("fxList"), empty = $("fxEmpty");
+  function renderRaces(list) {
+    const ol = $("rList"), empty = $("rEmpty");
     if (!list || !list.length) {
       ol.innerHTML = ""; empty.hidden = false;
       empty.innerHTML = !list ? "<b>Couldn't load races</b>Check your connection and refresh the page."
-        : '<b>New races coming soon</b>New races are announced here and on Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a>.';
+        : "<b>No races scheduled right now</b>New races are posted on the race schedule as soon as they're announced.";
       return;
     }
     empty.hidden = true;
     ol.innerHTML = list.slice(0, 4).map((r, i) => {
       const [, m, d] = r.date.split("-").map(Number);
       return '<li><a href="races.html#' + encodeURIComponent(r.id) + '">' +
-        '<span class="fx-date"><small>' + esc(wday(r)) + "</small><b>" + d + "</b><small>" + MONTHS[m - 1] + "</small></span>" +
-        '<span class="fx-body"><span class="fx-top">' + (i === 0 ? '<span class="fx-next">Next</span>' : "") + '<span class="fx-when">' + daysAway(r) + " · " + esc(r.id) + "</span></span>" +
-        '<span class="fx-name">' + esc(r.name) + "</span>" +
-        '<span class="fx-meta">' + time12(r.time) + (r.start ? ' · <span class="cap">' + esc(r.start) + "</span>" : "") + (r.distance ? " · " + esc(r.distance) + " km" : "") + "</span></span>" +
-        '<span class="fx-go" aria-hidden="true">→</span></a></li>';
-    }).join("") + (list.length < 3 ? '<li class="soon"><a href="https://www.instagram.com/unbndrunclub/"><span class="fx-date plus" aria-hidden="true">+</span><span class="fx-body">' +
-      '<span class="fx-name">More races coming soon</span><span class="fx-meta">New races are announced here and on Instagram @unbndrunclub.</span></span><span class="fx-go" aria-hidden="true">→</span></a></li>' : "");
+        '<span class="rdate"><small>' + esc(wday(r)) + "</small><b>" + d + "</b><small>" + MONTHS[m - 1] + "</small></span>" +
+        "<span><span class=\"rtop\">" + (i === 0 ? '<span class="pill next">Next</span>' : "") + pillHtml(r) + '<span class="pill">' + daysAway(r) + "</span></span>" +
+        '<span class="rname">' + esc(r.name) + "</span>" +
+        '<span class="rmeta" style="display:block">' + time12(r.time) + (r.start ? " · " + esc(r.start) : "") + (r.distance ? " · " + esc(r.distance) + " km" : "") + "</span></span></a></li>";
+    }).join("");
   }
+  loadRaces((list) => { renderNext(list); renderRaces(list); });
 
-  // ---- Where we run: flag the next race at each place ----
-  function renderPlaces(list) {
-    document.querySelectorAll(".place[data-match]").forEach((card) => {
-      const re = new RegExp(card.dataset.match, "i"), r = (list || []).find((x) => re.test([x.start, x.landmark, x.name].join(" ")));
-      let a = card.querySelector(".pnext");
-      if (!r) { if (a) a.remove(); return; }
-      if (!a) { a = document.createElement("a"); a.className = "pnext"; card.querySelector(".pbody").appendChild(a); }
-      const [, m, d] = r.date.split("-").map(Number);
-      a.href = "races.html#" + encodeURIComponent(r.id);
-      a.textContent = "Next race here · " + wday(r) + " " + d + " " + MONTHS[m - 1] + " →";
-    });
-  }
-
-  // ---- How it works: the train runs down the line as you read ----
-  let routeGeo = null;
-  function routeLayout() {
-    const ol = $("route"), stops = [...ol.querySelectorAll(".stop")], ob = ol.getBoundingClientRect();
-    const c = stops.map((s) => { const d = s.querySelector(".dot").getBoundingClientRect(); return [d.left + d.width / 2 - ob.left, d.top + d.height / 2 - ob.top]; });
-    const a = c[0], b = c[c.length - 1], horiz = Math.abs(b[1] - a[1]) < 4;
-    $("rline").style.cssText = horiz ? "left:" + a[0] + "px;top:" + (a[1] - 3) + "px;width:" + (b[0] - a[0]) + "px;height:6px"
-      : "left:" + (a[0] - 3) + "px;top:" + a[1] + "px;width:6px;height:" + (b[1] - a[1]) + "px";
-    routeGeo = { c: c, horiz: horiz, stops: stops, ol: ol };
-    route();
-  }
-  function route() {
-    if (!routeGeo) return;
-    const g = routeGeo, ob = g.ol.getBoundingClientRect(), a = g.c[0], b = g.c[g.c.length - 1], fill = $("rline").firstElementChild, train = $("train");
-    const host = train.offsetParent ? train.offsetParent.getBoundingClientRect() : ob, ox = ob.left - host.left, oy = ob.top - host.top;
-    let p;
-    if (g.horiz) p = calmMotion ? 1 : clamp((innerHeight * 0.85 - ob.top) / (innerHeight * 0.5), 0, 1);
-    else p = calmMotion ? 1 : clamp((innerHeight * 0.62 - ob.top - a[1]) / (b[1] - a[1]), 0, 1);
-    const x = a[0] + (b[0] - a[0]) * p, y = a[1] + (b[1] - a[1]) * p;
-    train.style.translate = f1(ox + x - 22) + "px " + f1(oy + y - 22) + "px";
-    if (g.horiz) { fill.style.width = f1(x - a[0]) + "px"; fill.style.height = "100%"; } else { fill.style.height = f1(y - a[1]) + "px"; fill.style.width = "100%"; }
-    g.stops.forEach((s, i) => s.classList.toggle("on", g.horiz ? x >= g.c[i][0] - 2 : y >= g.c[i][1] - 2));
-  }
-  routeLayout();
-
-  // ---- Race tape: the next three runs, then the club motto ----
-  function renderTicker(list) {
-    const items = (list || []).slice(0, 3).map((r) => {
-      const [, m, d] = r.date.split("-").map(Number);
-      return { hot: true, text: wday(r) + " " + d + " " + MONTHS[m - 1] + " · " + r.name + " · " + time12(r.time) + (r.start ? " · " + r.start : "") + (r.distance ? " · " + r.distance + " km" : "") };
-    });
-    ["Run hard", "Be kind", "Have fun"].forEach((t) => items.push({ text: t }));
-    const set = items.map((x) => "<span" + (x.hot ? ' class="hot"' : "") + ">" + esc(x.text) + "</span>").join("");
-    $("tkTrack").innerHTML = '<div class="tk-set">' + set + "</div>";
-    const one = $("tkTrack").firstChild.offsetWidth, reps = one ? Math.max(1, Math.ceil($("tkTrack").parentNode.clientWidth / one)) : 1;
-    const full = set + (reps > 1 ? '<span class="rep" aria-hidden="true">' + set.repeat(reps - 1) + "</span>" : "");   // a short list is repeated so the tape is never half empty
-    $("tkTrack").innerHTML = '<div class="tk-set">' + full + '</div><div class="tk-set dup" aria-hidden="true">' + full + "</div>";
-    const w = $("tkTrack").firstChild.offsetWidth;
-    if (w) $("tkTrack").style.animationDuration = Math.max(20, w / 55) + "s";   // same speed whatever the length
-  }
-  $("tkPause").addEventListener("click", () => {
-    const on = $("tkPause").getAttribute("aria-pressed") !== "true";
-    $("tkPause").setAttribute("aria-pressed", String(on)); $("tkPause").setAttribute("aria-label", on ? "Play scrolling" : "Pause scrolling");
-    $("tkPause").innerHTML = on ? "&#9654;" : "&#10074;&#10074;"; document.querySelector(".ticker").classList.toggle("paused", on);
-  });
-  let tickerList = null, tickerW = innerWidth;
-  renderTicker(null);
-  loadRaces((list) => { tickerList = list; renderNext(list); renderFixtures(list); renderPlaces(list); renderTicker(list); routeLayout(); });
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { renderTicker(tickerList); routeLayout(); });   // re-measure once the club fonts arrive
-  addEventListener("resize", () => { if (innerWidth === tickerW) return; tickerW = innerWidth; clearTimeout(renderTicker.t); renderTicker.t = setTimeout(() => renderTicker(tickerList), 200); });
-
-  // ---- Find your Club ID ----
+  // ---- Find your Club ID, and what to do next ----
   const fmtD = (dmy) => { const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(dmy || ""); return m ? Number(m[1]) + " " + MONTHS[Number(m[2]) - 1] + " " + m[3] : ""; };
-  $("fPhone").addEventListener("input", (e) => { let d = e.target.value.replace(/\D/g, ""); if (d.length === 12 && d.startsWith("91")) d = d.slice(2); e.target.value = d.slice(0, d.startsWith("91") ? 12 : 10); });   // room for a typed +91, dropped once the number is complete
+  const NEXT_STEP = {
+    Active: 'You can run. <a href="races.html">Pick a race and make your race card</a>.',
+    Pending: 'Paid already? We\'re checking it and will email your Club ID. Not paid yet? <a href="pay.html">Complete your payment</a>.',
+    Deactivated: 'This membership isn\'t active. <a href="support.html">Contact support</a> to renew or ask why.',
+  };
+  $("fPhone").addEventListener("input", (e) => { let d = e.target.value.replace(/\D/g, ""); if (d.length === 12 && d.startsWith("91")) d = d.slice(2); e.target.value = d.slice(0, d.startsWith("91") ? 12 : 10); });   // room for a typed +91, dropped once complete
   $("fForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     $("fErr").textContent = ""; $("fOut").innerHTML = "";
     const ph = $("fPhone").value;
     if (!/^[6-9]\d{9}$/.test(ph)) { $("fErr").textContent = "Enter your 10-digit registered mobile number."; return; }
-    const btn = $("fBtn"); btn.disabled = true; btn.textContent = "Searching…";
+    const btn = $("fBtn"); btn.disabled = true; btn.textContent = "Finding…";
     const out = await post({ action: "lookup", phone: ph }, 25000);
-    btn.disabled = false; btn.textContent = "Find my Club ID";
+    btn.disabled = false; btn.textContent = "Find";
     if (!out.ok) { $("fErr").textContent = (out.errors || ["Something went wrong. Please try again."])[0]; return; }
-    if (!out.members.length) { $("fOut").innerHTML = '<div class="fres">No registration found for this number. <a href="register.html">Register here</a>.</div>'; return; }
+    if (!out.members.length) { $("fOut").innerHTML = '<div class="fres none">No registration found for this number. New here? <a href="register.html">Join the club</a>.</div>'; return; }
     $("fOut").innerHTML = out.members.map((m) => {
       const label = { Active: "Active", Pending: "Pending activation", Deactivated: "Deactivated" }[m.status] || m.status;
       return '<div class="fres"><span class="st ' + esc(m.status) + '">' + esc(label) + "</span>" +
         (m.clubId ? '<b class="id">' + esc(m.clubId) + "</b>" : "") + "<div>" + esc(m.name) + "</div>" +
-        "<small>Registered on " + esc(fmtD(m.registered)) + "</small>" + (m.activated ? "<small>Activated on " + esc(fmtD(m.activated)) + "</small>" : "") + "</div>";
+        "<small>Registered on " + esc(fmtD(m.registered)) + "</small>" + (m.activated ? "<small>Activated on " + esc(fmtD(m.activated)) + "</small>" : "") +
+        (NEXT_STEP[m.status] ? '<span class="nxt">' + NEXT_STEP[m.status] + "</span>" : "") + "</div>";
     }).join("");
   });
   try { $("fPhone").addEventListener("focus", () => fetch(API_URL + "?warm=1", { mode: "no-cors", cache: "no-store" }).catch(() => {}), { once: true }); } catch (e) {}
 
-  // ---- Scroll reveal ----
-  const revealAll = (function () {
-    if (!document.documentElement.classList.contains("rv")) return () => {};
-    const io = new IntersectionObserver((ents) => ents.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } }), { rootMargin: "0px 0px -6% 0px", threshold: 0.08 });
-    const run = () => document.querySelectorAll(".reveal:not(.in)").forEach((el) => io.observe(el));
-    run(); return run;
-  })();
-
-  // ---- The bib leans towards the pointer (mouse only) ----
-  if (!calmMotion && window.matchMedia && matchMedia("(hover: hover) and (pointer: fine)").matches) {
-    const wrap = $("bibWrap"), bib = $("bib");
-    wrap.addEventListener("pointermove", (e) => {
-      const r = wrap.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
-      bib.style.transform = "perspective(900px) rotateX(" + (-y * 12).toFixed(2) + "deg) rotateY(" + (x * 14).toFixed(2) + "deg)";
-    });
-    wrap.addEventListener("pointerleave", () => { bib.style.transform = ""; });
-  }
-
-  // ---- On touch screens, nudge a sideways row once so it's clear it swipes ----
-  function nudge(row) {
-    if (calmMotion || !window.matchMedia || !matchMedia("(pointer: coarse)").matches || !("IntersectionObserver" in window)) return;
-    const io = new IntersectionObserver((ents) => {
-      if (!ents[0].isIntersecting) return; io.disconnect();
-      if (row.scrollLeft > 0 || row.scrollWidth <= row.clientWidth + 10) return;
-      setTimeout(() => { row.scrollTo({ left: 70, behavior: "smooth" }); setTimeout(() => { if (row.scrollLeft <= 80) row.scrollTo({ left: 0, behavior: "smooth" }); }, 650); }, 300);
-    }, { threshold: 0.6 });
-    io.observe(row);
-  }
-  nudge($("pgrid"));
-
-  // ---- Race day photos: one mosaic, newest race first; the first photo leads ----
+  // ---- Race day photos: one mosaic, newest race first ----
   (async () => {
     let data = null;
     try { const res = await fetch("data/home-gallery.json?t=" + Date.now(), { cache: "no-store" }); if (res.ok) data = await res.json(); } catch (e) {}
     const races = (data && data.races || []).filter((r) => r.photos && r.photos.length);
     if (!races.length) return;
     const all = []; races.forEach((r) => r.photos.forEach((p) => all.push({ src: p.path, r: r })));
-    const SHAPE = ["big", "", "", "tall", "", "wide", ""], FIRST = 9;
+    const FIRST = 9;   // one big photo and eight small ones fill the grid on phones and laptops
     $("rdpList").innerHTML = all.map((x, i) => {
       const r = x.r, [, m, d] = (r.date || "--").split("-").map(Number), when = r.date ? d + " " + MONTHS[m - 1] : "";
-      return '<button type="button" class="tile ' + SHAPE[i % SHAPE.length] + '" data-full="' + esc(x.src) + '"' + (i >= FIRST ? " hidden" : "") + '>' +
+      return '<button type="button" class="tile' + (i ? "" : " big") + '" data-full="' + esc(x.src) + '"' + (i >= FIRST ? " hidden" : "") + '>' +
         '<img loading="lazy" draggable="false" src="' + esc(x.src) + '" alt="Race day photo ' + (i + 1) + ", " + esc(r.name) + '">' +
         '<span class="tc"><b>' + esc(when || r.id) + "</b><span>" + esc(r.name) + "</span></span></button>";
     }).join("");
     if (all.length > FIRST) {
       $("rdpMore").hidden = false; $("rdpAll").textContent = "Show all " + all.length + " photos";
-      $("rdpAll").addEventListener("click", () => { $("rdpList").querySelectorAll(".tile[hidden]").forEach((t) => (t.hidden = false)); $("rdpMore").hidden = true; measure(); });
+      $("rdpAll").addEventListener("click", () => { $("rdpList").querySelectorAll(".tile[hidden]").forEach((t) => (t.hidden = false)); $("rdpMore").hidden = true; });
     }
     $("rdp").hidden = false;
-    revealAll(); measure(); routeLayout();
   })();
 
   // ---- Photo viewer: arrows, arrow keys or swipe to move between photos ----
-  let lbList = [], lbI = 0, lbFrom = null, lbX = null;
-  function showLb(dir) {
+  let lbList = [], lbI = 0, lbFrom = null, lbX = null, lbSwiped = false;
+  function showLb() {
     $("lbImg").src = lbList[lbI];
     $("lbCount").textContent = lbList.length > 1 ? (lbI + 1) + " / " + lbList.length : "";
     $("lbPrev").hidden = $("lbNext").hidden = lbList.length < 2;
-    if (dir && !calmMotion && $("lbImg").animate) $("lbImg").animate([{ transform: "translateX(" + (dir * 40) + "px)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 260, easing: "ease-out" });
   }
-  function stepLb(d) { if (lbList.length < 2) return; lbI = (lbI + d + lbList.length) % lbList.length; showLb(d); }
+  function stepLb(d) { if (lbList.length < 2) return; lbI = (lbI + d + lbList.length) % lbList.length; showLb(); }
   function closeLb() { if ($("lb").hidden) return; $("lb").hidden = true; document.documentElement.classList.remove("locked"); if (lbFrom) lbFrom.focus({ preventScroll: true }); }
   document.addEventListener("click", (e) => {
     const b = e.target.closest("[data-full]"); if (!b) return;
-    const set = b.closest(".mosaic");
-    lbList = set ? [...set.querySelectorAll("[data-full]")].map((x) => x.dataset.full) : [b.dataset.full];
+    lbList = [...$("rdpList").querySelectorAll("[data-full]")].map((x) => x.dataset.full);
     lbI = Math.max(0, lbList.indexOf(b.dataset.full)); lbFrom = b;
-    showLb(0); $("lb").hidden = false; document.documentElement.classList.add("locked"); $("lbClose").focus({ preventScroll: true });
+    showLb(); $("lb").hidden = false; document.documentElement.classList.add("locked"); $("lbClose").focus({ preventScroll: true });
   });
   $("lbClose").addEventListener("click", closeLb);
   $("lbPrev").addEventListener("click", () => stepLb(-1));
   $("lbNext").addEventListener("click", () => stepLb(1));
-  let lbSwiped = false;
   $("lb").addEventListener("click", (e) => { if (e.target.id === "lb" && !lbSwiped) closeLb(); lbSwiped = false; });
   $("lb").addEventListener("pointerdown", (e) => { lbX = e.clientX; lbSwiped = false; });
   $("lb").addEventListener("pointerup", (e) => { if (lbX === null) return; const dx = e.clientX - lbX; lbX = null; if (Math.abs(dx) > 50) { lbSwiped = true; stepLb(dx < 0 ? 1 : -1); } });
@@ -1400,8 +718,6 @@
     if ($("lb").hidden) return;
     if (e.key === "Escape") closeLb(); else if (e.key === "ArrowRight") stepLb(1); else if (e.key === "ArrowLeft") stepLb(-1);
   });
-
-  measure(); paint();
 </script>
 </body>
 </html>
