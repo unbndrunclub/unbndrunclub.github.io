@@ -1,6 +1,7 @@
 // UNBND Run Club: shared on every public page.
 // 1) Shows the announcement ribbon (from data/announcement.json)
-// 2) Makes the site installable as an app
+// 2) Opens and closes the mobile menu in the page header
+// 3) Makes the site installable as an app
 (function () {
   var style = document.createElement("style");
   style.textContent =
@@ -40,6 +41,22 @@
       }).catch(function () {});
   }
   if (document.body) start(); else document.addEventListener("DOMContentLoaded", start);
+
+  // Mobile menu in the page header (the homepage wires up its own)
+  function menu() {
+    var burger = document.getElementById("burger"), sheet = document.getElementById("sheet");
+    if (!burger || !sheet || window.UNBND_MENU) return;
+    window.UNBND_MENU = true;
+    function set(open) {
+      sheet.hidden = !open; burger.setAttribute("aria-expanded", String(open)); burger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      document.documentElement.classList.toggle("locked", open);
+    }
+    burger.addEventListener("click", function () { set(sheet.hidden); });
+    sheet.addEventListener("click", function (e) { if (e.target.closest("a")) set(false); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !sheet.hidden) { set(false); burger.focus(); } });
+    window.addEventListener("resize", function () { if (window.innerWidth >= 960 && !sheet.hidden) set(false); });
+  }
+  if (document.body) menu(); else document.addEventListener("DOMContentLoaded", menu);
 
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });

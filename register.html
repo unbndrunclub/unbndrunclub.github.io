@@ -8,7 +8,7 @@
 <link rel="icon" href="logo.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#070708">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="UNBND">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -16,7 +16,7 @@
 <script src="site.js" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
 <style>
   :root {
     --black: #000000;
@@ -306,13 +306,30 @@
     @keyframes rise { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
   }
 </style>
+<link rel="stylesheet" href="theme.css">
 </head>
 <body>
-<section class="hero">
-  <div class="bar">
-    <a href="index.html" aria-label="UNBND Run Club home"><img src="logo.png" alt="UNBND Run Club"></a>
-    <nav class="links" aria-label="Site"><a href="index.html">Home</a><a href="races.html">Races</a><a href="rules.html">Club rules</a><a href="support.html">Support</a><a class="cta" href="register.html" aria-current="page">Join</a></nav>
+<header class="hdr">
+  <div class="hdr-in">
+    <a class="brand" href="index.html" aria-label="UNBND Run Club home"><img src="logo.png" alt="" width="40" height="40"><span><b>UNBND</b><small>Run club</small></span></a>
+    <nav class="hnav" aria-label="Site"><a href="races.html">Races</a><a href="index.html#how">How it works</a><a href="index.html#members">Members</a><a href="rules.html">Club rules</a><a href="support.html">Support</a></nav>
+    <a class="ig" href="https://www.instagram.com/unbndrunclub/" aria-label="UNBND on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor" stroke="none"/></svg></a>
+    <a class="join" href="register.html" aria-current="page">Join <small>₹999</small></a>
+    <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="sheet" aria-label="Open menu"><i></i><i></i></button>
   </div>
+</header>
+<div class="sheet" id="sheet" hidden>
+  <a class="row" href="index.html">Home</a>
+  <a class="row" href="races.html">Races <small>Schedule and race cards</small></a>
+  <a class="row" href="index.html#how">How it works <small>Membership, races, race cards</small></a>
+  <a class="row" href="index.html#find">Find my Club ID <small>For members</small></a>
+  <a class="row" href="pay.html">Complete payment <small>Registered, not paid?</small></a>
+  <a class="row" href="rules.html">Club rules</a>
+  <a class="row" href="support.html">Support</a>
+  <a class="sjoin" href="register.html">Join the club <span>₹999</span></a>
+</div>
+<section class="hero">
+  <div class="speed" aria-hidden="true"><i></i><i></i><i></i></div>
   <div class="hero-inner">
     <h1>Run<br>unbound.</h1>
     <p class="tagline">Every pace. Every distance.<br>One club.</p>
@@ -530,7 +547,23 @@
   </div>
 </main>
 
-<footer class="site-foot"><div class="wide"><span>&copy; <span class="yr">2026</span> UNBND Run Club. All rights reserved.</span><span>Follow us on Instagram <a href="https://www.instagram.com/unbndrunclub/">@unbndrunclub</a></span></div></footer>
+<footer class="sfoot">
+  <div class="finish" aria-hidden="true"></div>
+  <div class="sf-in">
+    <div class="fgrid">
+      <div>
+        <a class="fbrand" href="index.html"><img src="logo.png" alt="" width="52" height="52"><span><b>UNBND</b><small>Run club · Mumbai</small></span></a>
+        <p>Group runs and races across Mumbai. Every pace, every distance, one club.</p>
+      </div>
+      <div class="fcols">
+        <nav aria-label="Club"><h3>Club</h3><ul><li><a href="races.html">Race schedule</a></li><li><a href="rules.html">Club rules</a></li><li><a href="support.html">Support</a></li></ul></nav>
+        <nav aria-label="Members"><h3>Members</h3><ul><li><a href="register.html">Join the club</a></li><li><a href="pay.html">Complete payment</a></li><li><a href="index.html#find">Find my Club ID</a></li></ul></nav>
+        <div><h3>Follow</h3><ul><li><a class="igf" href="https://www.instagram.com/unbndrunclub/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor" stroke="none"/></svg>@unbndrunclub</a></li></ul></div>
+      </div>
+    </div>
+    <div class="fbot">&copy; <span class="yr">2026</span> UNBND Run Club. All rights reserved.</div>
+  </div>
+</footer>
 <script>document.querySelectorAll(".yr").forEach(function (e) { e.textContent = new Date().getFullYear(); });</script>
 
 

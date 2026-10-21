@@ -568,6 +568,7 @@
   if (outbox().length) setTimeout(sendOutbox, 1500);
 
   // ---- Mobile menu ----
+  window.UNBND_MENU = true;   // site.js leaves the menu to this page
   const burger = $("burger"), sheet = $("sheet");
   function setSheet(open) {
     sheet.hidden = !open; burger.setAttribute("aria-expanded", String(open)); burger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
