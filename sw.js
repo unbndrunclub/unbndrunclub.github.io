@@ -1,9 +1,10 @@
 // UNBND Run Club: makes the site installable and usable offline.
 // Pages and race data: fresh from the network first, saved copy if offline.
 // Images and fonts: saved copy first, refreshed in the background.
-const CACHE = "unbnd-v2";
+const CACHE = "unbnd-v3";
 const CORE = ["./", "index.html", "races.html", "rules.html", "support.html", "register.html", "pay.html", "upload.html",
-  "site.js", "config.js", "logo.png", "hero.jpg", "icon-192.png", "manifest.webmanifest"];
+  "site.js", "config.js", "logo.png", "hero.jpg", "icon-192.png", "manifest.webmanifest",
+  "admin.html", "data/races.json", "vendor/jsQR-1.4.0.min.js", "vendor/qrcode-generator-1.4.4.js"];   // admin: race day check-in without signal
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE).catch(() => {})).then(() => self.skipWaiting()));
@@ -18,8 +19,7 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(req.url);
   const sameSite = url.origin === self.location.origin;
   const isFont = /fonts\.(googleapis|gstatic)\.com$/.test(url.hostname);
-  if (!sameSite && !isFont) return;                      // backend, weather, etc. are never cached
-  if (sameSite && /admin\.html$/.test(url.pathname)) return; // admin always comes fresh
+  if (!sameSite && !isFont) return;                      // backend (including every admin request), weather, etc. are never cached
 
   const isPageOrData = req.mode === "navigate" || /\.(html|json|js)$/.test(url.pathname) || url.pathname.endsWith("/");
   if (sameSite && isPageOrData) {

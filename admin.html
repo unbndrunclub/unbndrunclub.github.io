@@ -11,7 +11,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
+<script>if ("serviceWorker" in navigator) addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });   // keeps a copy for race day without signal</script>
 <style>
   :root {
     --black: #000000;
@@ -595,6 +596,13 @@
   .ci-list li:first-child { border-top: 0; }
   .ci-list time { font-weight: 700; min-width: 72px; }
   .ci-list small { margin-left: auto; color: var(--muted); text-transform: uppercase; font: 700 .75rem "Barlow Condensed", sans-serif; letter-spacing: .1em; }
+  .ci-sync { margin: 6px 0 0; color: var(--muted); font-size: .92rem; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .ci-sync button { border: 1.5px solid var(--black); background: var(--white); border-radius: 999px; padding: 6px 12px; font: 700 .95rem "Barlow Condensed", sans-serif; cursor: pointer; }
+  .ci-sync.warn { color: #8a5300; }
+  .ci-off { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .ci-off .btn { margin-top: 0; }
+  body.ci-only #checkinPanel .backbtn { display: none; }
+  .ci-list .oth { color: var(--muted); }
   .ci-result { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 24px; text-align: center; color: var(--white); cursor: pointer; }
   .ci-result.ok { background: #0f9d58; } .ci-result.bad { background: #d0021b; } .ci-result.dup { background: #f59e0b; color: #000; }
   .ci-result .in { display: grid; gap: 10px; justify-items: center; max-width: 560px; }
@@ -637,6 +645,10 @@
       </div>
       <div class="summary" id="loginErr" role="alert"></div>
       <button class="btn" type="submit">Log in</button>
+      <div class="ci-off" id="ciOffBox" hidden>
+        <button class="btn pink" type="button" id="ciOffline">Continue check-in offline</button>
+        <p class="hint" id="ciOffNote"></p>
+      </div>
     </form>
     <p class="lfoot">Run hard · Be kind · Have fun</p>
   </div>
@@ -688,6 +700,7 @@
       <div class="ci-races" id="ciRaces" role="radiogroup" aria-labelledby="ciRaceLbl"><p class="hint">Loading races…</p></div>
       <button class="ci-more" id="ciMore" type="button" hidden>Show all races</button>
       <p class="ci-count" id="ciCount" aria-live="polite"></p>
+      <p class="ci-sync" id="ciSync"></p>
     </div>
     <div class="ci-box">
       <div class="ci-cam" id="ciCam"><video id="ciVideo" playsinline muted autoplay hidden></video><span class="frame" id="ciFrame" hidden></span><p id="ciCamText">Tap Start scanning to use the camera. Hold each race card inside the pink square.</p></div>
@@ -994,12 +1007,15 @@
     enter();
   });
   function enter() {
+    ciOffline = false; document.body.classList.remove("ci-only");
     $("loginView").hidden = true; $("adminView").hidden = false; $("logout").hidden = false; document.body.classList.remove("out");
     $("pass").value = "";
     showSection("menuPanel");
+    setTimeout(() => { ciLoad(); if (ci.queue.length) ciSync(); }, 0);   // check-ins made offline go up as soon as someone logs in
   }
   function logout(msg) {
-    ciStop();
+    ciStop(); ciOffline = false; ciLookups = {}; document.body.classList.remove("ci-only");
+    setTimeout(ciOfferOffline, 0);
     passcode = ""; headers = []; rows = []; refs = []; regLoaded = false; homeData = null; mainAt = 0; alertAt = 0;
     try { sessionStorage.removeItem("unbnd_admin"); sessionStorage.removeItem("unbnd_admin_data"); } catch (x) {}
     $("adminView").hidden = true; $("loginView").hidden = false; $("logout").hidden = true; document.body.classList.add("out");
@@ -2154,10 +2170,12 @@
   // ---------- Race Day Check-in ----------
   // Cards carry a sealed QR code: UB1|<Club ID>|<name>|<race ID>|<race date>|<stamp>. The phone checks the stamp
   // with CARD_PUBLIC_KEY itself, so scanning needs no signal. Check-ins are kept on this phone (and synced later).
-  const CI_KEY = "unbnd_ci", CI_RACE = "unbnd_ci_race", CI_RACES = "unbnd_ci_races";
+  const CI_KEY = "unbnd_ci", CI_RACE = "unbnd_ci_race", CI_RACES = "unbnd_ci_races", CI_PACK = "unbnd_ci_pack";
+  const CI_OFFLINE_HOURS = 12, CI_SYNC_MS = 3 * 60000;
   const IST_TIME = new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", hour: "numeric", minute: "2-digit", hour12: true });
   const istToday = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date());
   const ciShift = (iso, n) => { const [y, m, d] = iso.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10); };
+  let ciOffline = false, ciSyncing = false, ciLookups = {};
   let ci = null, ciRaces = [], ciRaceId = "", ciAllRaces = false, ciKey = null, ciStream = null, ciDetector = null, ciTimer = 0, ciPaused = false, ciLast = { text: "", at: 0 }, ciAudio = null, ciHideT = 0, ciJsQR = null;
   function ciLoad() {
     if (ci) return ci;
@@ -2176,13 +2194,86 @@
     const m = /^(dr\.)(.+)$/i.exec(parts[0] || ""); if (m) return "Dr " + m[2].charAt(0).toUpperCase() + m[2].slice(1);
     return parts[0] || "";
   }
-  // Members by Club ID, from the registrations loaded in this tab
+  // The check-in pack saved on this phone: active members, Club IDs that aren't active, and other phones' check-ins
+  function ciPack() { try { const p = JSON.parse(localStorage.getItem(CI_PACK) || "null"); return p && p.members ? p : null; } catch (e) { return null; } }
+  const ciPackFresh = (p) => !!p && Date.now() - p.savedAt < CI_OFFLINE_HOURS * 3600000;
+  // Members by Club ID: the saved pack, then the registrations loaded in this tab (fresher), then single lookups
   function ciMembers() {
-    const map = {}, iId = headers.indexOf("Club ID"), iSt = headers.indexOf("Membership status"), iName = headers.indexOf("Full name");
-    if (iId < 0) return null;
-    rows.forEach((r) => { const id = String(r[iId] || "").trim().toUpperCase(); if (id) map[id] = { status: r[iSt], name: ciFirstName(r[iName]) }; });
-    return map;
+    const map = {}, pk = ciPack(), iId = headers.indexOf("Club ID"), iSt = headers.indexOf("Membership status"), iName = headers.indexOf("Full name");
+    if (pk) { pk.members.forEach((m) => (map[m[0]] = { status: "Active", name: m[1] })); pk.inactive.forEach((id) => (map[id] = { status: "Not active", name: "" })); }
+    if (iId > -1) rows.forEach((r) => { const id = String(r[iId] || "").trim().toUpperCase(); if (id) map[id] = { status: r[iSt], name: ciFirstName(r[iName]) }; });
+    Object.keys(ciLookups).forEach((id) => (map[id] = ciLookups[id]));
+    return pk || iId > -1 || Object.keys(ciLookups).length ? map : null;
   }
+  // Other phones' check-ins from the pack, so "already checked in" works across phones once synced
+  const ciIstToIso = (t) => { const m = /^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})$/.exec(t || ""); return m ? new Date(Date.UTC(+m[3], m[2] - 1, +m[1], +m[4], +m[5], +m[6]) - 330 * 60000).toISOString() : ""; };
+  function ciMerge(raceId, list) {
+    ciLoad();
+    const log = ci.log[raceId] = ci.log[raceId] || {};
+    (list || []).forEach((c) => {
+      if (log[c.clubId] || c.deviceId === ci.deviceId) return;
+      const at = ciIstToIso(c.scanned); if (!at) return;
+      log[c.clubId] = { at: at, name: c.name, method: c.method === "Typed" ? "typed" : "qr", by: c.organiser || "", other: true };
+    });
+    ciSave();
+  }
+  // Sends waiting check-ins, then refreshes the pack. Every 3 minutes, when the signal comes back, and on opening Check-in.
+  async function ciSync() {
+    ciLoad();
+    if (ciSyncing || !passcode || navigator.onLine === false) { ciRenderSync(); return; }
+    ciSyncing = true; ciRenderSync();
+    try {
+      if (ci.queue.length) {
+        const out = await api({ action: "checkinSave", items: ci.queue.slice(0, 200) }, "", { retries: 0, timeout: 30000 });
+        if (out.ok && Array.isArray(out.done)) {
+          const done = {}; out.done.forEach((k) => (done[k] = true));
+          ci.queue = ci.queue.filter((q) => !done[[q.raceId, q.clubId, q.deviceId, q.at].join("|")]);   // cleared only once the server confirms
+          ciSave();
+        }
+      }
+      const raceId = ciRaceId;
+      if (raceId && passcode) {
+        const pk = await api({ action: "checkinPack", raceId: raceId }, "", READ);
+        if (pk.ok) {
+          const old = ciPack() || {}, checkins = Object.assign({}, old.checkins || {});
+          checkins[raceId] = pk.checkins || [];
+          try { localStorage.setItem(CI_PACK, JSON.stringify({ savedAt: Date.now(), members: pk.members || [], inactive: pk.inactive || [], checkins: checkins })); } catch (e) {}
+          ciMerge(raceId, pk.checkins);
+        }
+      }
+    } finally { ciSyncing = false; ciRenderList(); ciRenderSync(); }
+  }
+  function ciRenderSync() {
+    const el = $("ciSync"); if (!el || !ci) return;
+    const pk = ciPack(), waiting = ci.queue.length, online = navigator.onLine !== false;
+    let h = "", warn = false;
+    if (ciOffline) { h = "Offline check-in. " + (waiting ? waiting + " waiting to sync. " : "") + (online ? '<button type="button" id="ciLogin">Log in to sync</button>' : "They'll sync after you log in with signal."); warn = waiting > 0; }
+    else if (ciSyncing) h = "Syncing…";
+    else if (!online) { h = "No signal. Scanning still works" + (waiting ? "; " + waiting + " will sync when the signal is back." : "."); warn = waiting > 0; }
+    else h = pk ? "Member list saved on this phone at " + esc(ciTime(new Date(pk.savedAt).toISOString())) + "." + (waiting ? " " + waiting + " waiting to sync." : " All synced.") : "Saving the member list on this phone…";
+    el.innerHTML = h; el.classList.toggle("warn", warn);
+    const b = $("ciLogin"); if (b) b.addEventListener("click", () => logout());
+  }
+  setInterval(() => { if (passcode && ci && (ci.queue.length || !$("checkinPanel").hidden)) ciSync(); }, CI_SYNC_MS);
+  addEventListener("online", () => { ciRenderSync(); if (passcode) ciSync(); });
+  addEventListener("offline", ciRenderSync);
+
+  // Login screen: carry on checking people in without signal, using the pack saved in the last 12 hours.
+  // The passcode is never stored on the phone; syncing waits until someone logs in again.
+  function ciOfferOffline() {
+    const pk = ciPack(), box = $("ciOffBox");
+    if (pk && Date.now() - pk.savedAt > 24 * 3600000) { try { localStorage.removeItem(CI_PACK); } catch (e) {} }   // old member lists don't linger
+    if (!ciPackFresh(pk)) { box.hidden = true; return; }
+    $("ciOffNote").textContent = "For race day without signal. Uses the member list saved on this phone at " + ciTime(new Date(pk.savedAt).toISOString()) + ".";
+    box.hidden = false;
+  }
+  $("ciOffline").addEventListener("click", () => {
+    if (!ciPackFresh(ciPack())) { ciOfferOffline(); return; }
+    ciOffline = true;
+    $("loginView").hidden = true; $("adminView").hidden = false; $("logout").hidden = false; document.body.classList.remove("out"); document.body.classList.add("ci-only");
+    showSection("checkinPanel");
+  });
+  ciOfferOffline();
 
   async function openCheckin() {
     ciLoad();
@@ -2193,7 +2284,8 @@
     ciRaces = (list || []).slice().sort((a, b) => (a.date + a.time < b.date + b.time ? -1 : 1));
     try { ciRaceId = localStorage.getItem(CI_RACE) || ""; } catch (e) {}
     ciRenderRaces();
-    if (!regLoaded) loadRegistrations();   // member list: deactivated check and typed Club IDs
+    if (passcode) { if (!regLoaded) loadRegistrations(); ciSync(); }   // member list for the deactivated check and typed Club IDs
+    else ciRenderSync();
   }
   function ciRenderRaces() {
     const today = istToday(), near = ciRaces.filter((r) => r.date >= ciShift(today, -1) && r.date <= ciShift(today, 1));
@@ -2208,7 +2300,11 @@
     try { localStorage.setItem(CI_RACE, ciRaceId); } catch (e) {}
     ciRenderList();
   }
-  $("ciRaces").addEventListener("click", (e) => { const b = e.target.closest("[data-ci]"); if (!b) return; ciRaceId = b.dataset.ci; ciRenderRaces(); $("ciFound").innerHTML = ""; });
+  $("ciRaces").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-ci]"); if (!b) return;
+    ciRaceId = b.dataset.ci; const pk = ciPack(); if (pk && pk.checkins) ciMerge(ciRaceId, pk.checkins[ciRaceId]);
+    ciRenderRaces(); $("ciFound").innerHTML = ""; if (passcode) ciSync();
+  });
   $("ciMore").addEventListener("click", () => { ciAllRaces = !ciAllRaces; ciRenderRaces(); });
   $("ciWho").addEventListener("input", () => { ciLoad(); ci.who = $("ciWho").value.trim().slice(0, 30); ciSave(); });
   function ciRenderList() {
@@ -2216,7 +2312,8 @@
     const log = ci.log[ciRaceId] || {}, items = Object.keys(log).map((id) => Object.assign({ id: id }, log[id])).sort((a, b) => (a.at < b.at ? 1 : -1));
     const waiting = ci.queue.length;
     $("ciCount").innerHTML = ciRaceId ? "<b>" + items.length + "</b> checked in" + (waiting ? " <span>· " + waiting + " waiting to sync</span>" : "") : "";
-    $("ciList").innerHTML = items.slice(0, 30).map((x) => "<li><time>" + esc(ciTime(x.at)) + "</time><span><b>" + esc(x.id) + "</b> " + esc(x.name || "") + "</span><small>" + (x.method === "qr" ? "Card" : "Typed") + "</small></li>").join("");
+    ciRenderSync();
+    $("ciList").innerHTML = items.slice(0, 30).map((x) => "<li><time>" + esc(ciTime(x.at)) + "</time><span><b>" + esc(x.id) + "</b> " + esc(x.name || "") + "</span><small>" + (x.other ? '<span class="oth">Other phone · </span>' : "") + (x.method === "qr" ? "Card" : "Typed") + "</small></li>").join("");
     $("ciEmpty").hidden = items.length > 0;
   }
 
@@ -2245,10 +2342,12 @@
     if (f[3] !== race.id) { ciShow("bad", "Not valid", name + " · " + clubId, "This card is for a different race (" + f[3] + "). They need a card for " + race.id + "."); return "bad"; }
     return ciAdmit(clubId, name, "qr");
   }
+  const log0 = (raceId) => (ci.log[raceId] = ci.log[raceId] || {});
   function ciAdmit(clubId, name, method) {
     const race = ciRaces.find((r) => r.id === ciRaceId);
     const m = ciMembers(), who = m && m[clubId];
     if (who && who.status !== "Active") { ciShow("bad", "Not valid", name + " · " + clubId, "This membership is " + String(who.status || "not active").toLowerCase() + "."); return "bad"; }
+    if (log0(race.id)[clubId] && log0(race.id)[clubId].other) { const o = log0(race.id)[clubId]; ciShow("dup", "Already checked in", o.name + " · " + clubId, "Checked in at " + ciTime(o.at) + " on another phone" + (o.by ? " by " + o.by : "") + "."); return "dup"; }
     const log = ci.log[race.id] = ci.log[race.id] || {};
     if (log[clubId]) { ciShow("dup", "Already checked in", log[clubId].name + " · " + clubId, "Checked in at " + ciTime(log[clubId].at) + (log[clubId].by ? " by " + log[clubId].by : "") + "."); return "dup"; }
     const at = new Date().toISOString();
@@ -2295,13 +2394,14 @@
     if (!ciRaceId) { out.innerHTML = '<div class="ci-found bad"><p>Pick the race at the top first.</p></div>'; return; }
     const clubId = "UB" + digits.padStart(4, "0");
     let m = ciMembers();
-    if ((!m || !m[clubId]) && navigator.onLine !== false) {   // not in the list on this phone: one live lookup
+    if ((!m || !m[clubId]) && passcode && navigator.onLine !== false) {   // not in the list on this phone: one live lookup
       out.innerHTML = '<div class="ci-found"><p>Looking up ' + clubId + "…</p></div>";
-      const res = await api({ action: "adminList" }, "", READ);
-      if (res.ok) { setData(res); regLoaded = true; m = ciMembers(); }
+      const res = await api({ action: "checkinLookup", clubId: clubId }, "", READ);
+      if (res.ok && res.found) ciLookups[clubId] = { status: res.status, name: res.name };
+      if (res.ok) m = ciMembers() || {};
     }
     const who = m && m[clubId];
-    if (!who) { out.innerHTML = '<div class="ci-found bad"><b>' + clubId + "</b><p>" + (m ? "No member has this Club ID." : "The member list isn't on this phone yet. Connect to the internet and try again.") + "</p></div>"; return; }
+    if (!who) { out.innerHTML = '<div class="ci-found bad"><b>' + clubId + "</b><p>" + (m ? "No member has this Club ID." : (passcode ? "The member list isn't on this phone yet. Connect to the internet and try again." : "This Club ID isn't in the member list saved on this phone.")) + "</p></div>"; return; }
     if (who.status !== "Active") { out.innerHTML = '<div class="ci-found bad"><b>' + clubId + " · " + esc(who.name) + "</b><p>This membership is " + esc(String(who.status).toLowerCase()) + ".</p></div>"; return; }
     out.innerHTML = '<div class="ci-found"><b>' + clubId + " · " + esc(who.name) + '</b><p>Ask the runner their first name. Check them in only if it matches.</p>' +
       '<div class="ci-row"><button class="btn pink" type="button" id="ciTypedOk">Check in ' + esc(who.name) + '</button><button class="btn" type="button" id="ciTypedNo">Cancel</button></div></div>';
