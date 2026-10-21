@@ -450,6 +450,7 @@
         <button type="button" id="cardFlip" aria-pressed="false">Flip card</button>
       </div>
       <p class="hint" style="text-align:center">Share it on your Instagram story and tag <b>@unbndrunclub</b>.</p>
+      <p class="hint" id="cardQrNote" style="text-align:center" hidden></p>
     </div>
   </div>
 </div>
@@ -726,8 +727,18 @@
   const kf = (id, fn) => $(id).addEventListener("input", (e) => { const n = fn(e.target.value); if (n !== e.target.value) e.target.value = n; });
   kf("kId", (v) => v.replace(/\D/g, "").slice(0, 4));
   kf("kPhone", (v) => { let d = v.replace(/\D/g, ""); if (d.length === 12 && d.startsWith("91")) d = d.slice(2); return d.slice(0, 10); });
+  // QR codes on race cards: made on the phone from the sealed text the server sends back
+  let qrLib = null;
+  function loadQrLib() {
+    return qrLib || (qrLib = new Promise((res, rej) => {
+      if (window.qrcode) return res();
+      const s = document.createElement("script"); s.src = "vendor/qrcode-generator-1.4.4.js";
+      s.onload = () => res(); s.onerror = () => { qrLib = null; s.remove(); rej(new Error("QR maker didn't load")); };
+      document.head.appendChild(s);
+    }));
+  }
   function openCard(r) {
-    cardRace = r; cardBlob = null;
+    cardRace = r; cardBlob = null; loadQrLib().catch(() => {});
     $("cardRace").textContent = r.name + ", " + r.day + " " + niceDate(r.date);
     $("cardForm").hidden = false; $("cardDone").hidden = true; $("kErr").innerHTML = "";
     $("cardModal").hidden = false; $("kId").focus();
@@ -741,13 +752,20 @@
     const id = $("kId").value, ph = $("kPhone").value;
     if (!/^\d{1,4}$/.test(id) || !/^[6-9]\d{9}$/.test(ph)) { $("kErr").innerHTML = "<ul><li>Enter your Club ID digits and your 10-digit registered mobile number.</li></ul>"; return; }
     const btn = $("kBtn"); btn.disabled = true; btn.textContent = "Checking…";
-    const out = await post({ action: "card", clubId: "UB" + id.padStart(4, "0"), phone: ph }, 25000);
+    const out = await post({ action: "card", clubId: "UB" + id.padStart(4, "0"), phone: ph, raceId: cardRace.id }, 25000);
     btn.disabled = false; btn.textContent = "Create my card";
     if (!out.ok) { $("kErr").innerHTML = "<ul>" + (out.errors || ["Something went wrong."]).map((m) => "<li>" + esc(m) + "</li>").join("") + "</ul>"; return; }
     showHolo(cardRace, out.clubId, out.name);
-    const forRace = cardRace;
-    const blob = await drawCard(forRace, out.clubId, out.name);
-    if (cardRace === forRace) { cardBlob = blob; $("cardShare").disabled = $("cardSave").disabled = false; }
+    const forRace = cardRace, qr = typeof out.qr === "string" && out.qr.split("|")[3] === forRace.id ? out.qr : "";
+    $("cardQrNote").hidden = true;
+    const card = await drawCard(forRace, out.clubId, out.name, qr);
+    if (cardRace !== forRace) return;
+    cardBlob = card.blob; $("cardShare").disabled = $("cardSave").disabled = false;
+    if (qr) {
+      $("cardQrNote").textContent = card.qr ? "Your card has a check-in QR code for this race. Save it, and show it at the start line."
+        : "We couldn't add the check-in QR code to your card. Check your connection and create the card again.";
+      $("cardQrNote").hidden = false;
+    }
   });
 
   // ---- Holographic race card: follows the phone's tilt or the pointer, shimmers, flips ----
@@ -834,7 +852,11 @@
       this.arcTo(x, y + h, x, y, r); this.arcTo(x, y, x + w, y, r); this.closePath(); return this;
     };
   }
-  async function drawCard(r, clubId, name) {
+  async function drawCard(r, clubId, name, qr) {
+    let q = null;   // with a sealed QR code, the card gets a check-in pass at the bottom
+    if (qr) {
+      try { await loadQrLib(); qrcode.stringToBytes = qrcode.stringToBytesFuncs["UTF-8"]; q = qrcode(0, "M"); q.addData(qr, "Byte"); q.make(); } catch (e) { q = null; }
+    }
     try { await Promise.all([document.fonts.load('italic 800 100px "Barlow Condensed"'), document.fonts.load('700 40px "Barlow Condensed"'), document.fonts.load('600 40px "Barlow"')]); } catch (e) {}
     const W = 1080, H = 1920, c = document.createElement("canvas"); c.width = W; c.height = H;
     const x = c.getContext("2d"), PINK = "#fe90ae", C = '"Barlow Condensed", "Arial Narrow", sans-serif', B = 'Barlow, Arial, sans-serif';
@@ -850,13 +872,16 @@
     x.fillStyle = "#fff"; x.font = "700 44px " + C; x.textBaseline = "alphabetic";
     x.fillText("I'M RUNNING", 90, 420);
     x.fillStyle = PINK; x.font = "italic 800 130px " + C;
-    let y = 540; wrap(x, r.name.toUpperCase(), W - 180).slice(0, 4).forEach((l) => { x.fillText(l, 90, y); y += 122; });
+    const title = wrap(x, r.name.toUpperCase(), W - 180).slice(0, q ? 3 : 4);
+    let y = 540; title.forEach((l) => { x.fillText(l, 90, y); y += 122; });
     x.fillStyle = "#fff"; x.font = "600 44px " + B;
     x.fillText(r.day + ", " + niceDate(r.date) + " · " + time12(r.time), 90, y + 10);
     x.fillStyle = "rgba(255,255,255,.75)"; x.font = "500 38px " + B;
-    wrap(x, r.start, W - 180).slice(0, 2).forEach((l, i) => x.fillText(l, 90, y + 70 + i * 48));
+    wrap(x, r.start, W - 180).slice(0, q && title.length > 2 ? 1 : 2).forEach((l, i) => x.fillText(l, 90, y + 70 + i * 48));
     // Holographic card: foil frame, iridescent sheen, glare stripe and glitter, with a foil Club ID
-    const bh = 500, bx = 90, bw = W - 180, by = Math.min(Math.max(1000, y + 170), 1690 - bh), rad = 40;
+    const bh = q ? 420 : 500, bx = 90, bw = W - 180, rad = 40;
+    const by = q ? Math.min(Math.max(960, y + 150), 1040) : Math.min(Math.max(1000, y + 170), 1690 - bh);
+    const at = q ? { tag: 40, id: 286, name: 352, rc: 398 } : { tag: 54, id: 330, name: 408, rc: 460 };   // text inside the card
     const FOIL = ["#ff6fb5", "#ffd36e", "#7af0ff", "#b98bff", "#ff6fb5"];
     const foil = x.createLinearGradient(bx, by, bx + bw, by + bh); FOIL.forEach((c, i) => foil.addColorStop(i / (FOIL.length - 1), c));
     x.save(); x.shadowColor = "rgba(254,144,174,.55)"; x.shadowBlur = 60;
@@ -877,17 +902,33 @@
     x.textAlign = "center";
     x.font = "700 40px " + C;
     const tagW = Math.max(340, x.measureText("UNBND RUN CLUB").width + 64);
-    x.fillStyle = PINK; x.beginPath(); x.roundRect(W / 2 - tagW / 2, by + 54, tagW, 64, 12); x.fill();
-    x.fillStyle = "#000"; x.fillText("UNBND RUN CLUB", W / 2, by + 100);
+    x.fillStyle = PINK; x.beginPath(); x.roundRect(W / 2 - tagW / 2, by + at.tag, tagW, 64, 12); x.fill();
+    x.fillStyle = "#000"; x.fillText("UNBND RUN CLUB", W / 2, by + at.tag + 46);
     x.font = "italic 800 230px " + C;
     const idW = x.measureText(clubId).width, idFoil = x.createLinearGradient(W / 2 - idW / 2, 0, W / 2 + idW / 2, 0);
     ["#ffffff", "#ffd0dc", "#7af0ff", "#ffd36e", "#ffffff"].forEach((c, i, a) => idFoil.addColorStop(i / (a.length - 1), c));
-    x.fillStyle = idFoil; x.fillText(clubId, W / 2, by + 330);
-    x.fillStyle = "#fff"; x.font = "700 52px " + B; x.fillText(name.length > 26 ? name.slice(0, 25) + "…" : name, W / 2, by + 408);
-    x.fillStyle = "rgba(255,255,255,.7)"; x.font = "700 30px " + B; x.fillText(("Race card · " + r.id).toUpperCase().split("").join(String.fromCharCode(8202)), W / 2, by + 460);
-    x.fillStyle = PINK; x.font = "italic 800 64px " + C; x.fillText("@UNBNDRUNCLUB", W / 2, 1760);
-    x.fillStyle = "rgba(255,255,255,.7)"; x.font = "500 34px " + B; x.fillText("Run unbound.", W / 2, 1815);
-    return await new Promise((res) => c.toBlob(res, "image/png"));
+    x.fillStyle = idFoil; x.fillText(clubId, W / 2, by + at.id);
+    x.fillStyle = "#fff"; x.font = "700 52px " + B; x.fillText(name.length > 26 ? name.slice(0, 25) + "…" : name, W / 2, by + at.name);
+    x.fillStyle = "rgba(255,255,255,.7)"; x.font = "700 30px " + B; x.fillText(("Race card · " + r.id).toUpperCase().split("").join(String.fromCharCode(8202)), W / 2, by + at.rc);
+    if (q) {
+      // Check-in pass: black on white with a 4-module quiet zone, about a third of the card wide
+      const n = q.getModuleCount(), cell = Math.max(5, Math.floor(330 / n)), qs = (n + 8) * cell, qx = 90, qy = Math.max(1500, by + bh + 36);
+      x.fillStyle = "#fff"; x.beginPath(); x.roundRect(qx, qy, qs, qs, 26); x.fill();
+      x.fillStyle = "#000";
+      for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) if (q.isDark(i, j)) x.fillRect(qx + (j + 4) * cell, qy + (i + 4) * cell, cell, cell);
+      const tx = qx + qs + 44, tw = W - 90 - tx, [yy, mm, dd] = r.date.split("-").map(Number);
+      x.textAlign = "left";
+      x.fillStyle = PINK; x.font = "700 38px " + C; x.fillText("CHECK-IN PASS".split("").join(String.fromCharCode(8202)), tx, qy + 52);
+      x.fillStyle = "#fff"; x.font = "600 42px " + B;
+      let ty = qy + 116; wrap(x, "Show this code at the start line.", tw).slice(0, 3).forEach((l) => { x.fillText(l, tx, ty); ty += 52; });
+      x.fillStyle = "rgba(255,255,255,.7)"; x.font = "500 32px " + B;
+      wrap(x, "Valid for " + r.id + " on " + dd + " " + MONTHS[mm - 1] + " " + yy + " only.", tw).slice(0, 2).forEach((l) => { x.fillText(l, tx, ty + 6); ty += 42; });
+      x.fillStyle = PINK; x.font = "italic 800 54px " + C; x.fillText("@UNBNDRUNCLUB", tx, qy + qs - 8);
+    } else {
+      x.fillStyle = PINK; x.font = "italic 800 64px " + C; x.fillText("@UNBNDRUNCLUB", W / 2, 1760);
+      x.fillStyle = "rgba(255,255,255,.7)"; x.font = "500 34px " + B; x.fillText("Run unbound.", W / 2, 1815);
+    }
+    return { blob: await new Promise((res) => c.toBlob(res, "image/png")), qr: !!q };
   }
   const cardName = () => "UNBND-" + (cardRace ? cardRace.id : "race") + "-card.png";
   $("cardShare").addEventListener("click", async () => {
