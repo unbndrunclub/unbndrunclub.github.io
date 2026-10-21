@@ -2175,7 +2175,7 @@
   const IST_TIME = new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", hour: "numeric", minute: "2-digit", hour12: true });
   const istToday = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date());
   const ciShift = (iso, n) => { const [y, m, d] = iso.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10); };
-  let ciOffline = false, ciSyncing = false, ciLookups = {};
+  let ciOffline = false, ciSyncing = false, ciLookups = {}, ciSyncErr = "";
   let ci = null, ciRaces = [], ciRaceId = "", ciAllRaces = false, ciKey = null, ciStream = null, ciDetector = null, ciTimer = 0, ciPaused = false, ciLast = { text: "", at: 0 }, ciAudio = null, ciHideT = 0, ciJsQR = null;
   function ciLoad() {
     if (ci) return ci;
@@ -2221,10 +2221,12 @@
   async function ciSync() {
     ciLoad();
     if (ciSyncing || !passcode || navigator.onLine === false) { ciRenderSync(); return; }
-    ciSyncing = true; ciRenderSync();
+    ciSyncing = true; ciSyncErr = ""; ciRenderSync();
+    const failed = (out) => { if (!ciSyncErr) ciSyncErr = (out.errors && out.errors[0]) || "No reply from the server."; };
     try {
       if (ci.queue.length) {
         const out = await api({ action: "checkinSave", items: ci.queue.slice(0, 200) }, "", { retries: 0, timeout: 30000 });
+        if (!out.ok) failed(out);
         if (out.ok && Array.isArray(out.done)) {
           const done = {}; out.done.forEach((k) => (done[k] = true));
           ci.queue = ci.queue.filter((q) => !done[[q.raceId, q.clubId, q.deviceId, q.at].join("|")]);   // cleared only once the server confirms
@@ -2234,6 +2236,7 @@
       const raceId = ciRaceId;
       if (raceId && passcode) {
         const pk = await api({ action: "checkinPack", raceId: raceId }, "", READ);
+        if (!pk.ok) failed(pk);
         if (pk.ok) {
           const old = ciPack() || {}, checkins = Object.assign({}, old.checkins || {});
           checkins[raceId] = pk.checkins || [];
@@ -2249,10 +2252,13 @@
     let h = "", warn = false;
     if (ciOffline) { h = "Offline check-in. " + (waiting ? waiting + " waiting to sync. " : "") + (online ? '<button type="button" id="ciLogin">Log in to sync</button>' : "They'll sync after you log in with signal."); warn = waiting > 0; }
     else if (ciSyncing) h = "Syncing…";
+    else if (ciSyncErr && online) { h = "Couldn't sync: " + esc(ciSyncErr) + (/[.!?]$/.test(ciSyncErr) ? "" : ".") + (/unknown admin action/i.test(ciSyncErr) ? " The check-in update to Code.gs isn't deployed yet: in Apps Script, deploy it as a New version." : "") +
+      (waiting ? " " + waiting + " still saved on this phone." : "") + ' <button type="button" id="ciRetry">Try again</button>'; warn = true; }
     else if (!online) { h = "No signal. Scanning still works" + (waiting ? "; " + waiting + " will sync when the signal is back." : "."); warn = waiting > 0; }
     else h = pk ? "Member list saved on this phone at " + esc(ciTime(new Date(pk.savedAt).toISOString())) + "." + (waiting ? " " + waiting + " waiting to sync." : " All synced.") : "Saving the member list on this phone…";
     el.innerHTML = h; el.classList.toggle("warn", warn);
     const b = $("ciLogin"); if (b) b.addEventListener("click", () => logout());
+    const t = $("ciRetry"); if (t) t.addEventListener("click", () => ciSync());
   }
   setInterval(() => { if (passcode && ci && (ci.queue.length || !$("checkinPanel").hidden)) ciSync(); }, CI_SYNC_MS);
   addEventListener("online", () => { ciRenderSync(); if (passcode) ciSync(); });
