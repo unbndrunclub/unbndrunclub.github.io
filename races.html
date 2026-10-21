@@ -332,7 +332,12 @@
   .glare { z-index: 6; mix-blend-mode: soft-light;
     background: radial-gradient(farthest-corner circle at var(--gx) var(--gy), rgba(255,255,255,.85) 0%, rgba(255,255,255,.14) 30%, rgba(0,0,0,.25) 95%); }
   .holo-hint { text-align: center; margin: 12px 0 0; }
-  #cardDone .holo-hint, #cardDone .tiltbtn, #cardDone .actions { position: relative; z-index: 2; }   /* stay tappable above the tilted card */
+  #cardDone .holo-hint, #cardDone .tiltbtn, #cardDone .actions, #cardDone .qrpass { position: relative; z-index: 2; }
+  .qrpass { display: flex; gap: 14px; align-items: center; max-width: 440px; margin: 16px auto 0; padding: 12px; border-radius: 18px; background: #fff; color: #000; border: 2px solid #000; text-align: left; }
+  .qrpass img { flex: none; width: 148px; height: 148px; image-rendering: pixelated; border-radius: 8px; }
+  .qrpass b { display: block; font: italic 800 1.5rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+  .qrpass span { display: block; margin-top: 4px; font-weight: 700; }
+  .qrpass small { display: block; margin-top: 6px; color: #44444c; font-size: .88rem; line-height: 1.35; }   /* stay tappable above the tilted card */
   .tiltbtn { display: block; margin: 10px auto 0; border: 1.5px solid #000; background: #fff; border-radius: 999px; padding: 9px 14px; font: 700 1rem/1 "Barlow Condensed", sans-serif; cursor: pointer; }
   .actions button[disabled] { opacity: .55; cursor: progress; }
   @media (prefers-reduced-motion: reduce) { .holo.reveal .holo-in { animation: none; } .holo-in { transition: none; } }
@@ -450,6 +455,10 @@
         <button type="button" id="cardFlip" aria-pressed="false">Flip card</button>
       </div>
       <p class="hint" style="text-align:center">Share it on your Instagram story and tag <b>@unbndrunclub</b>.</p>
+      <div class="qrpass" id="cardPass" hidden>
+        <img id="cardPassImg" alt="Check-in QR code" width="148" height="148">
+        <div><b>Check-in pass</b><span id="cardPassRace"></span><small>Show this at the start line. It's also on your saved card, so tap Download to keep it.</small></div>
+      </div>
       <p class="hint" id="cardQrNote" style="text-align:center" hidden></p>
     </div>
   </div>
@@ -757,13 +766,16 @@
     if (!out.ok) { $("kErr").innerHTML = "<ul>" + (out.errors || ["Something went wrong."]).map((m) => "<li>" + esc(m) + "</li>").join("") + "</ul>"; return; }
     showHolo(cardRace, out.clubId, out.name);
     const forRace = cardRace, qr = typeof out.qr === "string" && out.qr.split("|")[3] === forRace.id ? out.qr : "";
-    $("cardQrNote").hidden = true;
+    $("cardQrNote").hidden = true; $("cardPass").hidden = true;
     const card = await drawCard(forRace, out.clubId, out.name, qr);
     if (cardRace !== forRace) return;
     cardBlob = card.blob; $("cardShare").disabled = $("cardSave").disabled = false;
-    if (qr) {
-      $("cardQrNote").textContent = card.qr ? "Your card has a check-in QR code for this race. Save it, and show it at the start line."
-        : "We couldn't add the check-in QR code to your card. Check your connection and create the card again.";
+    if (qr && card.qr) {   // the same QR code as on the saved card, shown here too
+      const [, m, d] = forRace.date.split("-").map(Number);
+      $("cardPassImg").src = card.qrImg; $("cardPassRace").textContent = forRace.id + " · " + d + " " + MONTHS[m - 1] + " only";
+      $("cardPass").hidden = false;
+    } else if (qr) {
+      $("cardQrNote").textContent = "We couldn't add the check-in QR code to your card. Check your connection and create the card again.";
       $("cardQrNote").hidden = false;
     }
   });
@@ -928,7 +940,14 @@
       x.fillStyle = PINK; x.font = "italic 800 64px " + C; x.fillText("@UNBNDRUNCLUB", W / 2, 1760);
       x.fillStyle = "rgba(255,255,255,.7)"; x.font = "500 34px " + B; x.fillText("Run unbound.", W / 2, 1815);
     }
-    return { blob: await new Promise((res) => c.toBlob(res, "image/png")), qr: !!q };
+    let qrImg = "";
+    if (q) {   // the QR code on its own, for the check-in pass shown under the card
+      const n = q.getModuleCount(), cell = 8, pc = document.createElement("canvas"); pc.width = pc.height = (n + 8) * cell;
+      const px = pc.getContext("2d"); px.fillStyle = "#fff"; px.fillRect(0, 0, pc.width, pc.height); px.fillStyle = "#000";
+      for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) if (q.isDark(i, j)) px.fillRect((j + 4) * cell, (i + 4) * cell, cell, cell);
+      qrImg = pc.toDataURL("image/png");
+    }
+    return { blob: await new Promise((res) => c.toBlob(res, "image/png")), qr: !!q, qrImg: qrImg };
   }
   const cardName = () => "UNBND-" + (cardRace ? cardRace.id : "race") + "-card.png";
   $("cardShare").addEventListener("click", async () => {
