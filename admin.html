@@ -608,7 +608,6 @@
   #ciLockForm { position: fixed; right: 14px; bottom: 14px; margin: 0; }
   #ciKey { display: block; width: 64px; height: 26px; padding: 0 6px; border: 0; border-radius: 3px; background: #fff; color: #f0f0f2; caret-color: #e2e2e6;
     font: 16px/1 Barlow, sans-serif; outline: none; box-shadow: none; -webkit-text-security: disc; }   /* 16px: iPhones don't zoom in on it */
-  #ciWhoBox.nudge { box-shadow: 0 0 0 3px var(--pink), 0 18px 40px -30px rgba(0,0,0,.4); }
   .ci-result { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 24px; text-align: center; color: var(--white); cursor: pointer; }
   .ci-result.ok { background: #0f9d58; } .ci-result.bad { background: #d0021b; } .ci-result.dup { background: #f59e0b; color: #000; }
   .ci-result .in { display: grid; gap: 10px; justify-items: center; max-width: 560px; }
@@ -706,11 +705,6 @@
       <form id="ciLockForm" novalidate><input id="ciKey" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label=" "></form>
     </div>
     <div id="ciOpen" hidden>
-    <div class="ci-box" id="ciWhoBox">
-      <label class="ci-lbl" for="ciWho">Your first name</label>
-      <div class="ci-row"><input id="ciWho" type="text" autocomplete="given-name" maxlength="30" placeholder="e.g. Parikshit"></div>
-      <p class="hint">Shown in the Check-ins sheet next to everyone you check in.</p>
-    </div>
     <div class="ci-box">
       <span class="ci-lbl" id="ciRaceLbl">Race</span>
       <div class="ci-races" id="ciRaces" role="radiogroup" aria-labelledby="ciRaceLbl"><p class="hint">Loading races…</p></div>
@@ -2201,7 +2195,7 @@
     try { ci = JSON.parse(localStorage.getItem(CI_KEY) || "null"); } catch (e) { ci = null; }
     if (!ci || typeof ci !== "object") ci = {};
     if (!ci.deviceId) ci.deviceId = Array.from(crypto.getRandomValues(new Uint8Array(6)), (b) => b.toString(16).padStart(2, "0")).join("");
-    ci.log = ci.log || {}; ci.queue = ci.queue || []; ci.who = ci.who || "";
+    ci.log = ci.log || {}; ci.queue = ci.queue || []; delete ci.who;
     ciSave(); return ci;
   }
   function ciSave() { try { localStorage.setItem(CI_KEY, JSON.stringify(ci)); } catch (e) {} }
@@ -2232,7 +2226,7 @@
     (list || []).forEach((c) => {
       if (log[c.clubId] || c.deviceId === ci.deviceId) return;
       const at = ciIstToIso(c.scanned); if (!at) return;
-      log[c.clubId] = { at: at, name: c.name, method: c.method === "Typed" ? "typed" : "qr", by: c.organiser || "", other: true };
+      log[c.clubId] = { at: at, name: c.name, method: c.method === "Typed" ? "typed" : "qr", other: true };
     });
     ciSave();
   }
@@ -2315,7 +2309,6 @@
   async function openCheckin() {
     if (!ciShowLock()) return;
     ciLoad();
-    $("ciWho").value = ci.who;
     let list = await siteFile("data/races.json");
     if (list && list.races) { try { localStorage.setItem(CI_RACES, JSON.stringify(list.races)); } catch (e) {} list = list.races; }
     else { try { list = JSON.parse(localStorage.getItem(CI_RACES) || "null"); } catch (e) { list = null; } }
@@ -2343,21 +2336,6 @@
     ciRenderRaces(); $("ciFound").innerHTML = ""; ciSync();
   });
   $("ciMore").addEventListener("click", () => { ciAllRaces = !ciAllRaces; ciRenderRaces(); });
-  // The organiser's name goes with each check-in. Check-ins from this phone still waiting to sync without a name take it too.
-  $("ciWho").addEventListener("input", () => {
-    ciLoad(); ci.who = $("ciWho").value.trim().slice(0, 30);
-    if (ci.who) {
-      ci.queue.forEach((q) => { if (!q.organiser && q.deviceId === ci.deviceId) { q.organiser = ci.who; const l = ci.log[q.raceId] && ci.log[q.raceId][q.clubId]; if (l && !l.other && !l.by) l.by = ci.who; } });
-      $("ciWhoBox").classList.remove("nudge");
-    }
-    ciSave();
-  });
-  let ciNudged = false;
-  function ciNudgeWho() {   // a reminder, once; never stops anyone being checked in
-    if (ciNudged || (ci && ci.who)) return;
-    ciNudged = true; $("ciWhoBox").classList.add("nudge");
-    toast("Add your first name at the top, so the sheet shows who checked people in.");
-  }
   function ciRenderList() {
     ciLoad();
     const log = ci.log[ciRaceId] || {}, items = Object.keys(log).map((id) => Object.assign({ id: id }, log[id])).sort((a, b) => (a.at < b.at ? 1 : -1));
@@ -2398,12 +2376,12 @@
     const race = ciRaces.find((r) => r.id === ciRaceId);
     const m = ciMembers(), who = m && m[clubId];
     if (who && who.status !== "Active") { ciShow("bad", "Not valid", name + " · " + clubId, "This membership is " + String(who.status || "not active").toLowerCase() + "."); return "bad"; }
-    if (log0(race.id)[clubId] && log0(race.id)[clubId].other) { const o = log0(race.id)[clubId]; ciShow("dup", "Already checked in", o.name + " · " + clubId, "Checked in at " + ciTime(o.at) + " on another phone" + (o.by ? " by " + o.by : "") + "."); return "dup"; }
+    if (log0(race.id)[clubId] && log0(race.id)[clubId].other) { const o = log0(race.id)[clubId]; ciShow("dup", "Already checked in", o.name + " · " + clubId, "Checked in at " + ciTime(o.at) + " on another phone."); return "dup"; }
     const log = ci.log[race.id] = ci.log[race.id] || {};
-    if (log[clubId]) { ciShow("dup", "Already checked in", log[clubId].name + " · " + clubId, "Checked in at " + ciTime(log[clubId].at) + (log[clubId].by ? " by " + log[clubId].by : "") + "."); return "dup"; }
+    if (log[clubId]) { ciShow("dup", "Already checked in", log[clubId].name + " · " + clubId, "Checked in at " + ciTime(log[clubId].at) + "."); return "dup"; }
     const at = new Date().toISOString();
-    log[clubId] = { at: at, name: name, method: method, by: ci.who };
-    ci.queue.push({ raceId: race.id, clubId: clubId, name: name, method: method, at: at, deviceId: ci.deviceId, organiser: ci.who });
+    log[clubId] = { at: at, name: name, method: method };
+    ci.queue.push({ raceId: race.id, clubId: clubId, name: name, method: method, at: at, deviceId: ci.deviceId });
     ciSave(); ciRenderList();
     ciShow("ok", "Active member", name, clubId + " · " + ciTime(at));
     return "ok";
@@ -2438,7 +2416,7 @@
 
   // Typed Club ID: show the member's first name so the organiser can ask the runner to confirm it
   $("ciType").addEventListener("submit", async (e) => {
-    e.preventDefault(); ciSound(); ciLoad(); ciNudgeWho();
+    e.preventDefault(); ciSound(); ciLoad();
     const raw = $("ciId").value.trim().toUpperCase().replace(/\s/g, ""), digits = raw.replace(/^UB/, "");
     const out = $("ciFound");
     if (!/^\d{1,4}$/.test(digits)) { out.innerHTML = '<div class="ci-found bad"><p>Type the Club ID, for example 10 or UB0010.</p></div>'; return; }
@@ -2495,7 +2473,7 @@
     }, 140);
   }
   async function ciStart() {
-    ciSound(); ciLoad(); if (!ciStream) ciNudgeWho();
+    ciSound(); ciLoad();
     if (ciStream) { ciStop(); return; }
     if (!ciRaceId) { toast("Pick the race first."); return; }
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { $("ciCamText").textContent = "This browser can't use the camera here. Use Chrome on Android or Safari on iPhone, or type Club IDs below."; return; }
