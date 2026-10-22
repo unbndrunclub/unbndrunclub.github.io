@@ -6,3 +6,5 @@ window.UNBND_API = "https://unbnd-api.unbndrunclub.workers.dev";
 if (!/^https:\/\//.test(window.UNBND_API)) window.UNBND_API = window.UNBND_API_DIRECT;
 window.UNBND_WHATSAPP = "https://chat.whatsapp.com/F031vsoBQIXANVwAoXJLbn";
 window.UNBND_INSTAGRAM = "https://www.instagram.com/unbndrunclub/";
+// Race check-in runs on Supabase. The publishable key is safe in a web page: the database's own rules decide what it can do.
+window.UNBND_SUPABASE = { url: "https://cjtskyfpjtuqcrpqrfiw.supabase.co", key: "sb_publishable_TSdf1AZ27uRMadlnmHABkA_Bf0Fhk0x" };
