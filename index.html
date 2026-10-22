@@ -210,6 +210,8 @@
   .step h3 { margin: 0; font: italic 800 1.6rem/1 var(--C); text-transform: uppercase; }
   .step p { margin: 6px 0 0; color: rgba(255,255,255,.78); font-size: .98rem; }
   .step p b { color: var(--green); }
+  .step .ask { display: block; margin-top: 12px; font-weight: 600; color: #fff; }
+  .step .ask + a { margin-top: 4px; }
   .step a { display: inline-block; margin-top: 8px; font-weight: 700; color: var(--pink); text-decoration-thickness: 2px; text-underline-offset: 3px; }
   .step .must { display: inline-flex; align-items: center; gap: 7px; margin-top: 10px; font: 700 .95rem/1.2 Barlow, sans-serif; color: var(--pink); }   /* a note, not a button */
   .step .must svg { width: 14px; height: 14px; fill: currentColor; flex: none; }
@@ -388,7 +390,7 @@
     <p class="sub">Every UNBND race is for club members. Here's everything you need to know, in three steps.</p>
     <ol class="steps">
       <li class="step"><h3>Register and pay ₹999</h3><p>Register online in a few minutes, then pay the ₹999 membership fee and upload your payment screenshot.</p><span class="must"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2h.5A1.5 1.5 0 0 1 13.5 8.5v5A1.5 1.5 0 0 1 12 15H4a1.5 1.5 0 0 1-1.5-1.5v-5A1.5 1.5 0 0 1 4 7h.5zm1.8 0h3.4V5a1.7 1.7 0 0 0-3.4 0v2z"/></svg>Membership is a must</span><br><a href="register.html">Register now</a></li>
-      <li class="step"><h3>Get your Club ID</h3><p>We check your payment, activate your membership and email you your Club ID. You're now a member, for one year.</p><a href="#find">Already registered? Find your Club ID</a></li>
+      <li class="step"><h3>Get your Club ID</h3><p>We check your payment, activate your membership and email you your Club ID. You're now a member, for one year.</p><span class="ask">Already a member, but need to find your Club ID?</span><a href="#find">Find your Club ID</a></li>
       <li class="step"><h3>Pick a race and generate your race card</h3><p>On the race schedule, pick your race and generate its race card with your Club ID and registered mobile. Show its QR code at the start line: no race card, no entry.</p><span class="must"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2h.5A1.5 1.5 0 0 1 13.5 8.5v5A1.5 1.5 0 0 1 12 15H4a1.5 1.5 0 0 1-1.5-1.5v-5A1.5 1.5 0 0 1 4 7h.5zm1.8 0h3.4V5a1.7 1.7 0 0 0-3.4 0v2z"/></svg>Active members only</span><br><a href="races.html">Visit the race schedule for details</a></li>
     </ol>
     <div class="facts">
