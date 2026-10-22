@@ -758,7 +758,6 @@
       <span class="ci-lbl">Checked in</span>
       <ol class="ci-list" id="ciList"></ol>
       <p class="hint" id="ciEmpty">No check-ins yet for this race.</p>
-      <button class="btn" id="ciCsv" type="button" hidden>Download check-ins (Excel)</button>
     </div>
     </div>
   </section>
@@ -2496,23 +2495,7 @@
     $("ciList").innerHTML = items.slice(0, 40).map((x) => "<li><time>" + esc(ciTime(x.at)) + "</time><span><b>" + esc(x.club) + "</b> " + esc(x.name || "") + "</span><small>" + mark(x) + " · " + (x.method === "qr" ? "Card" : "Typed") + "</small></li>").join("") +
       refused.map((id) => '<li class="no"><time>' + esc(ciTime(log[id].at)) + "</time><span><b>" + esc(id) + "</b> " + esc(log[id].name || "") + "</span><small>Not recorded: " + (log[id].refused === "inactive" ? "membership not active" : "check the details") + "</small></li>").join("");
     $("ciEmpty").hidden = items.length + refused.length > 0;
-    $("ciCsv").hidden = !items.length;
   }
-  // A spreadsheet of the race's check-ins from every phone (opens in Excel)
-  $("ciCsv").addEventListener("click", async () => {
-    const raceId = ciRaceId, race = ciRaces.find((r) => r.id === raceId);
-    await ciRefresh();
-    const log = ci.log[raceId] || {};
-    const rows = Object.keys(log).filter((id) => !log[id].refused).map((id) => log[id]).sort((a, b) => (a.at < b.at ? -1 : 1));
-    const cell = (v) => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
-    const csv = ["Race ID,Race,Club ID,Full name,Card or typed,Checked in (IST),Saved"].concat(Object.keys(log).filter((id) => !log[id].refused).sort((a, b) => (log[a].at < log[b].at ? -1 : 1)).map((id) => {
-      const x = log[id], t = new Date(x.at), d = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", day: "2-digit", month: "2-digit", year: "numeric" }).format(t);
-      return [raceId, race ? race.name : "", id, x.name, x.method === "qr" ? "Card" : "Typed", d + " " + ciTime(x.at), x.saved ? "Yes" : "Waiting"].map(cell).join(",");
-    })).join("\r\n");
-    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv" })); a.download = "UNBND-" + raceId + "-check-ins.csv";
-    document.body.appendChild(a); a.click(); a.remove();
-    if (!rows.length) toast("No check-ins yet.");
-  });
 
   // The stamp: ECDSA P-256 / SHA-256 over the first five fields. Only one spelling of a stamp counts.
   async function ciStampOk(f) {
