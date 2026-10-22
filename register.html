@@ -205,6 +205,11 @@
 
   /* Buttons under the question */
   .run-foot { padding: 16px 20px 18px; }
+  /* Laptops: once the form is in view, Continue stays on screen even when a question is taller than the window */
+  @media (hover: hover) and (pointer: fine) {
+    .run { overflow: clip; }
+    .run.pin .run-foot { position: sticky; bottom: 0; z-index: 4; background: var(--white); border-radius: 0 0 22px 22px; }
+  }
   .run-nav { display: flex; gap: 10px; }
   .back { flex: none; border: 1.5px solid var(--line); background: #fff; color: #000; border-radius: 14px; padding: 0 16px; font: 700 1.05rem/1 "Barlow Condensed", sans-serif; cursor: pointer; }
   .next { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; border: 0; border-radius: 14px; padding: 17px 18px; cursor: pointer;
@@ -311,7 +316,7 @@
 <body>
 <header class="hdr">
   <div class="hdr-in">
-    <a class="brand" href="index.html" aria-label="UNBND Run Club home"><img src="logo.png" alt="" width="40" height="40"><span><b>UNBND</b><small>Run club</small></span></a>
+    <a class="brand" href="index.html" aria-label="UNBND Run Club home"><span><b>UNBND</b><small>Run club</small></span></a>
     <nav class="hnav" aria-label="Site"><a href="races.html">Races</a><a href="index.html#how">How it works</a><a href="index.html#members">Members</a><a href="rules.html">Club rules</a><a href="support.html">Support</a></nav>
     <a class="ig" href="https://www.instagram.com/unbndrunclub/" aria-label="UNBND on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor" stroke="none"/></svg></a>
     <a class="join" href="register.html" aria-current="page">Join <small>₹999</small></a>
@@ -755,6 +760,7 @@
     let i = list.findIndex((s) => s.id === id);
     if (i < 0) i = Math.min(firstOpen(), list.length - 1);
     const s = list[i], prevStage = (stepOf(cur) || {}).stage;
+    if (dir) $("welcomeBack").hidden = true;
     const from = form.querySelector(".step:not([hidden]):not(.out)"), to = elOf(s.id);
     cur = s.id;
     if (s.id === "review") returnToReview = false;
@@ -814,6 +820,8 @@
   if (vv) vv.addEventListener("resize", () => { clearTimeout(clearKeyboard.t); clearKeyboard.t = setTimeout(clearKeyboard, 80); });
   // re-check when a box gets focus, and when someone taps a box that already has it
   ["focusin", "click"].forEach((type) => form.addEventListener(type, (ev) => { if (ev.target.matches(".big input")) { clearTimeout(clearKeyboard.t); clearKeyboard.t = setTimeout(clearKeyboard, 400); } }));
+  const pinCheck = () => $("run").classList.toggle("pin", $("run").getBoundingClientRect().top < 120);
+  addEventListener("scroll", pinCheck, { passive: true }); addEventListener("resize", pinCheck);
   function keepInView() {
     if (keyboardUp()) { clearTimeout(clearKeyboard.t); clearKeyboard.t = setTimeout(clearKeyboard, 60); return; }
     const top = $("journey").getBoundingClientRect().top;
@@ -1122,8 +1130,7 @@
   syncGuardian();
   live();
   const startAt = restored ? steps()[firstOpen()].id : "name";
-  $("welcomeBack").hidden = !restored;
-  if (restored) setTimeout(() => ($("welcomeBack").hidden = true), 8000);
+  $("welcomeBack").hidden = !restored;   // stays until they move on, so nothing jumps while they aim at Continue
   go(startAt, null, { focus: false });
 </script>
 </body>

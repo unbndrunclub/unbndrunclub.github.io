@@ -352,7 +352,6 @@
   .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
   .free { background: #eaf8ef; color: #0b5e36; border-radius: 12px; padding: 12px 14px; font-weight: 600; margin-top: 16px; }
   .free.paid { background: var(--paper); color: var(--black); }
-  .entry-pick { margin-left: 0; flex-wrap: wrap; }
   .daytag { font-weight: 600; color: var(--muted); font-size: .9rem; margin-top: 6px; }
   .ulist { display: grid; gap: 8px; margin-bottom: 16px; max-width: 720px; }
   .uitem { background: var(--white); border-radius: 12px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
@@ -419,7 +418,8 @@
     animation: stampIn .35s 1.05s cubic-bezier(.2,.9,.3,1.4) both; }
   @keyframes stampIn { 0% { transform: scale(3) rotate(30deg); opacity: 0; } 100% { transform: rotate(12deg); opacity: 1; } }
   .p-head { margin: 22px 0 0; font: italic 800 clamp(2.3rem, 9.5vw, 3.6rem)/.95 "Barlow Condensed", "Arial Narrow", sans-serif; text-transform: uppercase; color: var(--pink); }
-  .p-head span { display: inline-block; animation: pRise .45s both; }
+  .p-head .w { display: inline-block; white-space: nowrap; }
+  .p-head .w span { display: inline-block; animation: pRise .45s both; }
   @keyframes pRise { from { transform: translateY(26px) scale(.6); opacity: 0; } }
   .p-sub { margin: 8px 0 0; font-weight: 600; color: rgba(255,255,255,.88); animation: pRise .4s 1.2s both; }
   .p-stats { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 16px; animation: pRise .4s 1.3s both; }
@@ -441,7 +441,7 @@
   @keyframes bump { 0% { box-shadow: 0 0 0 0 rgba(254,144,174,.9); } 100% { box-shadow: 0 0 0 18px rgba(254,144,174,0); } }
   @keyframes countPop { 40% { transform: scale(1.5); color: var(--pink); } }
   @media (prefers-reduced-motion: reduce) {
-    .party, .party::before, .p-tape i, .p-bib, .p-stamp, .p-kick, .p-head span, .p-sub, .p-stats, .p-mile, .roll span, .p-bar i, .rsec.bump, .rsec.bump .rcount { animation: none !important; }
+    .party, .party::before, .p-tape i, .p-bib, .p-stamp, .p-kick, .p-head .w span, .p-sub, .p-stats, .p-mile, .roll span, .p-bar i, .rsec.bump, .rsec.bump .rcount { animation: none !important; }
     .party .p-comet, .party .p-flash, .party .p-ring, .party .p-tape { display: none; }
     .roll span:first-child { display: none; }
   }
@@ -535,17 +535,26 @@
   .lhead h2 { margin: 0; font: italic 800 clamp(2.3rem, 11vw, 3.4rem)/.88 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--pink); letter-spacing: -.01em; }
   .lsub { margin: -4px 0 0; color: rgba(255,255,255,.72); font-size: .92rem; line-height: 1.4; }
   /* Access notice: a gold card so it can't be missed */
-  .lpay { background: linear-gradient(135deg, #ffd23f, #ffb000); color: #000; border-radius: 20px; padding: 12px 14px 12px; box-shadow: 0 22px 50px -24px rgba(255,190,0,.75); text-align: center; }
-  .lpay .lp-k { display: inline-flex; align-items: center; gap: 7px; margin: 0; font: 800 .82rem/1 "Barlow Condensed", sans-serif; letter-spacing: .14em; text-transform: uppercase; }
-  .lpay .lp-k svg { width: 17px; height: 17px; fill: none; stroke: #000; stroke-width: 2.4; stroke-linecap: round; }
-  .lpay .lp-d { margin: 5px 0 1px; font: italic 800 clamp(1.7rem, 7.6vw, 2.1rem)/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
-  .lpay .lp-t { margin: 0; font-weight: 700; font-size: .92rem; line-height: 1.3; }
-  .lpay .lp-cd { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-top: 9px; }
-  .lpay .lp-cd div { display: flex; align-items: baseline; justify-content: center; gap: 4px; background: #000; border-radius: 11px; padding: 6px 4px 6px; }
-  .lpay .lp-cd b { display: inline; font: italic 800 1.55rem/1 "Barlow Condensed", sans-serif; color: #ffc61a; font-variant-numeric: tabular-nums; }
-  .lpay .lp-cd span { font-size: .6rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.75); }
-  .lpay .lp-renew { margin: 9px 0 0; padding: 7px 10px; border-radius: 10px; background: #000; color: #ffc61a; font: 700 .86rem/1.25 "Barlow", sans-serif; }
+  /* Portal access date and countdown, inside the Admin panel box */
+  .lpay { margin: 16px -16px -16px; padding: 14px 16px 16px; border-radius: 0 0 20px 20px; background: #000; color: #fff; text-align: center; }
+  .lpay .lp-k { display: inline-flex; align-items: center; gap: 7px; margin: 0; font: 800 .8rem/1 "Barlow Condensed", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.7); }
+  .lpay .lp-k svg { width: 16px; height: 16px; fill: none; stroke: var(--pink); stroke-width: 2.4; stroke-linecap: round; }
+  .lpay .lp-d { margin: 6px 0 0; font: italic 800 clamp(1.5rem, 6.6vw, 1.8rem)/1 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--pink); }
+  .lpay .lp-d small { display: block; margin-top: 4px; font: 700 .85rem/1.2 "Barlow", sans-serif; text-transform: none; color: rgba(255,255,255,.75); }
+  .lpay .lp-cd { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-top: 10px; }
+  .lpay .lp-cd div { display: flex; align-items: baseline; justify-content: center; gap: 4px; background: #1d1d23; border: 1px solid rgba(254,144,174,.35); border-radius: 11px; padding: 6px 4px; }
+  .lpay .lp-cd b { display: inline; font: italic 800 1.45rem/1 "Barlow Condensed", sans-serif; color: var(--pink); font-variant-numeric: tabular-nums; }
+  .lpay .lp-cd span { font-size: .6rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.7); }
+  .lpay .lp-renew { margin: 10px 0 0; color: rgba(255,255,255,.75); font: 600 .86rem/1.3 "Barlow", sans-serif; }
   .lpay .lp-renew b { color: #fff; }
+  /* Race check-in login */
+  .lback { justify-self: start; border: 1.5px solid rgba(255,255,255,.3); background: transparent; color: #fff; border-radius: 999px; padding: 7px 14px; font: 700 1rem/1 "Barlow Condensed", sans-serif; letter-spacing: .04em; cursor: pointer; }
+  .lback:hover { border-color: var(--pink); color: var(--pink); }
+  .ltips { border: 1.5px solid rgba(254,144,174,.6); background: rgba(254,144,174,.08); border-radius: 20px; padding: 16px; color: rgba(255,255,255,.9); }
+  .ltips h3 { margin: 0 0 10px; display: flex; align-items: center; gap: 10px; font: italic 800 1.4rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--pink); }
+  .ltips h3 i { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--pink); color: #000; font: normal 800 1.1rem/1 "Barlow", sans-serif; }
+  .ltips ul { margin: 0; padding-left: 20px; display: grid; gap: 8px; font-size: 1rem; line-height: 1.4; }
+  .ltips b { color: #fff; }
   /* Sign-in card */
   .lcard { background: #fff; color: #000; border-radius: 20px; padding: 16px 16px 16px; box-shadow: 0 30px 60px -30px rgba(0,0,0,.9); }
   .lcard h3 { margin: 0 0 10px; font: italic 800 1.5rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
@@ -564,6 +573,9 @@
     .lin { max-width: 940px; grid-template-columns: 1fr 1fr; gap: 20px 28px; align-items: center; }
     .lhead { grid-column: 1 / -1; justify-content: center; } .lhead img { width: 76px; height: 76px; } .lhead h2 { font-size: 3.8rem; }
     .lsub, .lfoot { grid-column: 1 / -1; text-align: center; } .lsub { margin-top: -8px; }
+    #loginView .lin { align-items: start; }
+    .lback { grid-column: 1 / -1; }
+    #ciLoginView .lin { align-items: stretch; }
   }
   @media (prefers-reduced-motion: reduce) { .lstage::before { animation: none; } .comets { display: none; } }
   /* ---------- Race Day Check-in ---------- */
@@ -605,15 +617,9 @@
   .ci-sync .live { color: #0a8a4a; font-weight: 700; }
   .ci-list .ok { color: #0a8a4a; } .ci-list .wait { color: #b00020; }
   .ci-list li.no { color: #b00020; }
-  .lcard.ci-entry { margin-top: 14px; }
-  .lcard.ci-entry p { margin: 0 0 12px; color: #55555c; }
   .lcard.ci-entry .btn { margin-top: 0; }
   body.ci-only #checkinPanel .backbtn { display: none; }
   .ci-list .oth { color: var(--muted); }
-  .ci-uc { margin: 40px 0 0; text-align: center; font: italic 800 1.6rem/1.15 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--muted); }
-  #ciLockForm { position: fixed; right: 14px; bottom: 14px; margin: 0; }
-  #ciKey { display: block; width: 64px; height: 26px; padding: 0 6px; border: 0; border-radius: 3px; background: #fff; color: #f0f0f2; caret-color: #e2e2e6;
-    font: 16px/1 Barlow, sans-serif; outline: none; box-shadow: none; -webkit-text-security: disc; }   /* 16px: iPhones don't zoom in on it */
   .ci-result { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 24px; text-align: center; color: var(--white); cursor: pointer; }
   .ci-result.ok { background: #0f9d58; } .ci-result.bad { background: #d0021b; } .ci-result.dup { background: #f59e0b; color: #000; }
   .ci-result .in { display: grid; gap: 10px; justify-items: center; max-width: 560px; }
@@ -641,13 +647,6 @@
       <div><p class="kick">UNBND Run Club · Mumbai</p><h2>Admin portal</h2></div>
     </div>
     <p class="lsub">Members, races, race day photos and more, all in one place.</p>
-    <section class="lpay" aria-live="off" aria-labelledby="lpK">
-      <p class="lp-k" id="lpK"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Admin portal available until</p>
-      <p class="lp-d" id="lpDate">&nbsp;</p>
-      <p class="lp-t">11:59:59 PM IST</p>
-      <div class="lp-cd" id="lpCd"><div><b>--</b><span>Days</span></div><div><b>--</b><span>Hrs</span></div><div><b>--</b><span>Mins</span></div><div><b>--</b><span>Secs</span></div></div>
-      <p class="lp-renew"><b>Contact the developer</b> to renew portal access.</p>
-    </section>
     <form class="lcard" id="loginForm" novalidate>
       <h3><i aria-hidden="true">🔐</i>Admin panel</h3>
       <div class="field">
@@ -656,13 +655,45 @@
       </div>
       <div class="summary" id="loginErr" role="alert"></div>
       <button class="btn" type="submit">Log in</button>
+      <section class="lpay" aria-live="off" aria-labelledby="lpK">
+        <p class="lp-k" id="lpK"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Admin portal available until</p>
+        <p class="lp-d"><span id="lpDate">&nbsp;</span> <small>11:59:59 PM IST</small></p>
+        <div class="lp-cd" id="lpCd"><div><b>--</b><span>Days</span></div><div><b>--</b><span>Hrs</span></div><div><b>--</b><span>Mins</span></div><div><b>--</b><span>Secs</span></div></div>
+        <p class="lp-renew"><b>Contact the developer</b> to renew portal access.</p>
+      </section>
     </form>
     <section class="lcard ci-entry" aria-labelledby="ciEntryH">
       <h3 id="ciEntryH"><i aria-hidden="true">🏁</i>Race check-in</h3>
-      <p>For organisers at the start line. Opens race check-in only, never the admin panel.</p>
       <button class="btn pink" type="button" id="ciEnter">Open race check-in</button>
     </section>
     <p class="lfoot">Run hard · Be kind · Have fun</p>
+  </div>
+</div>
+
+<div class="lstage" id="ciLoginView" hidden>
+  <div class="comets" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="lin">
+    <button class="lback" type="button" id="ciBack">&larr; Back</button>
+    <div class="lhead">
+      <img src="logo.png" alt="UNBND Run Club">
+      <div><p class="kick">UNBND Run Club · Race day</p><h2>Race check-in</h2></div>
+    </div>
+    <form class="lcard" id="ciLoginForm" novalidate>
+      <h3><i aria-hidden="true">🏁</i>Organiser login</h3>
+      <div class="field">
+        <label class="lbl" for="ciKey">Check-in passcode</label>
+        <input id="ciKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false">
+      </div>
+      <div class="summary" id="ciLoginErr" role="alert"></div>
+      <button class="btn pink" type="submit" id="ciLoginBtn">Open check-in</button>
+    </form>
+    <section class="ltips" aria-labelledby="ciTipsH">
+      <h3 id="ciTipsH"><i aria-hidden="true">!</i>Before you start</h3>
+      <ul>
+        <li><b>Turn off Low Power Mode</b> (Battery Saver on Android) if it's on.</li>
+        <li><b>Don't lock the screen</b> while you're checking runners in.</li>
+      </ul>
+    </section>
   </div>
 </div>
 
@@ -706,11 +737,7 @@
 
   <section class="panel" id="checkinPanel" hidden>
     <div class="sechead"><button class="backbtn" type="button" data-go="menuPanel">&larr; Menu</button><h2 class="sec">Race Day Check-in</h2></div>
-    <div id="ciLocked">
-      <p class="ci-uc">This section is under construction.</p>
-      <form id="ciLockForm" novalidate><input id="ciKey" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label=" "></form>
-    </div>
-    <div id="ciOpen" hidden>
+    <div id="ciOpen">
     <div class="ci-box">
       <span class="ci-lbl" id="ciRaceLbl">Race</span>
       <div class="ci-races" id="ciRaces" role="radiogroup" aria-labelledby="ciRaceLbl"><p class="hint">Loading races…</p></div>
@@ -878,14 +905,6 @@
         <div class="field"><label class="lbl" for="rMaxAge">Maximum age <span class="optional">optional</span></label><input id="rMaxAge" type="number" min="1" max="100" inputmode="numeric" placeholder="No limit"></div>
       </div>
       <div class="field">
-        <span class="lbl" id="rEntryLbl">Entry</span>
-        <div class="ampm entry-pick" role="radiogroup" aria-labelledby="rEntryLbl">
-          <label><input type="radio" name="rEntry" value="free" checked><span>Free for active members</span></label>
-          <label><input type="radio" name="rEntry" value="paid"><span>Paid</span></label>
-        </div>
-        <div class="field" id="rFeeBox" hidden style="margin-top:10px"><label class="lbl" for="rFee">Entry fee in ₹</label><input id="rFee" type="number" min="1" max="999999" step="1" inputmode="numeric" placeholder="e.g. 299"></div>
-      </div>
-      <div class="field">
         <label class="lbl" for="rActivities">Additional activities <span class="optional">optional</span></label>
         <textarea id="rActivities" maxlength="1000" placeholder="Start a line with - to make it a bullet point&#10;- Warm-up session&#10;- Group photo"></textarea>
       </div>
@@ -1036,16 +1055,28 @@
   // Race check-in: a separate way in with its own passcode, so a phone can be handed to an organiser
   // without the admin panel. Nothing from the admin panel is reachable from here.
   $("ciEnter").addEventListener("click", () => {
-    passcode = ""; ciPass = ""; document.body.classList.add("ci-only");
+    passcode = ""; ciPass = "";
     try { sessionStorage.removeItem("unbnd_admin"); sessionStorage.removeItem("unbnd_admin_data"); } catch (x) {}
-    $("loginView").hidden = true; $("adminView").hidden = false; $("logout").hidden = false; $("logout").textContent = "Exit"; document.body.classList.remove("out");
-    showSection("checkinPanel");
+    ciLoginShow("");
   });
+  $("ciBack").addEventListener("click", () => { $("ciKey").value = ""; $("ciLoginView").hidden = true; $("loginView").hidden = false; });
+  // The check-in login screen (also where a phone lands if the check-in passcode is changed while it's open)
+  function ciLoginShow(msg) {
+    ciStop(); document.body.classList.remove("ci-only"); document.body.classList.add("out");
+    $("adminView").hidden = true; $("logout").hidden = true; $("loginView").hidden = true; $("ciLoginView").hidden = false;
+    $("ciLoginErr").textContent = msg || ""; $("ciKey").value = "";
+    try { $("ciKey").focus({ preventScroll: true }); } catch (x) {}
+  }
+  function ciScreen() {
+    document.body.classList.add("ci-only"); document.body.classList.remove("out");
+    $("ciLoginView").hidden = true; $("loginView").hidden = true; $("adminView").hidden = false; $("logout").hidden = false; $("logout").textContent = "Exit";
+    showSection("checkinPanel");
+  }
   function logout(msg) {
     ciStop(); ciDisconnect(); document.body.classList.remove("ci-only"); $("logout").textContent = "Log out";
     passcode = ""; ciPass = ""; headers = []; rows = []; refs = []; regLoaded = false; homeData = null; mainAt = 0; alertAt = 0;
     try { sessionStorage.removeItem("unbnd_admin"); sessionStorage.removeItem("unbnd_admin_data"); } catch (x) {}
-    $("adminView").hidden = true; $("loginView").hidden = false; $("logout").hidden = true; document.body.classList.add("out");
+    $("adminView").hidden = true; $("ciLoginView").hidden = true; $("loginView").hidden = false; $("logout").hidden = true; document.body.classList.add("out");
     clearRegistrations();
     if (msg) $("loginErr").textContent = msg;
   }
@@ -1269,7 +1300,8 @@
     const active = rows.filter((r) => r[st] === "Active").length, pendingLeft = rows.filter((r) => r[st] === "Pending").length;
     const milestone = MILESTONES.includes(active) || (active > 1000 && active % 100 === 0);
     const DUR = milestone ? 6200 : 4600;
-    const head = "Welcome to the club!".split("").map((c, i) => c === " " ? " " : '<span style="animation-delay:' + (0.95 + i * 0.03).toFixed(2) + 's">' + esc(c) + "</span>").join("");
+    let li = 0;   // each word stays on one line; its letters still rise one by one
+    const head = "Welcome to the club!".split(" ").map((w) => '<span class="w">' + w.split("").map((c) => '<span style="animation-delay:' + (0.95 + li++ * 0.03).toFixed(2) + 's">' + esc(c) + "</span>").join("") + "</span>").join(" ");
     const el = document.createElement("div");
     el.className = "party"; el.tabIndex = -1;
     el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "New member activated");
@@ -1533,11 +1565,9 @@
   ["raceView", "photoView"].forEach((id) => $(id).addEventListener("click", (e) => { if (e.target.id === id) $(id).hidden = true; }));
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") { $("raceView").hidden = true; $("photoView").hidden = true; } });
 
-  // Entry: blank fee = free for active members
+  // Entry: blank fee = free for active members. Paid entry is switched off for now, so every race is saved as free.
   const raceFee = (r) => (/^\d+$/.test(String(r.fee || "")) ? Number(r.fee) : 0);
-  const entryText = (r) => raceFee(r) ? "Entry ₹" + raceFee(r) + " for active club members." : "Free for all active club members.";
-  const showFee = () => { $("rFeeBox").hidden = !document.querySelector('input[name="rEntry"][value="paid"]').checked; };
-  document.querySelectorAll('input[name="rEntry"]').forEach((i) => i.addEventListener("change", () => { showFee(); if (!$("rFeeBox").hidden) rf("rFee").focus(); }));
+  const entryText = (r) => (raceFee(r) ? "Entry ₹" + raceFee(r) + " for active club members." : "Free for all active club members.") + " No entry without a race card, even for active members.";
   function fillForm(r) {
     const v = r || {};
     rf("rName").value = v.name || ""; rf("rDate").value = isoToDmy(v.date);
@@ -1548,8 +1578,6 @@
     rf("rStart").value = v.start || ""; rf("rLandmark").value = v.landmark || ""; rf("rMap").value = v.map || "";
     rf("rMinAge").value = v.minAge || ""; rf("rMaxAge").value = v.maxAge || "";
     rf("rActivities").value = v.activities || ""; rf("rGoodies").value = v.goodies || "";
-    document.querySelector('input[name="rEntry"][value="' + (raceFee(v) ? "paid" : "free") + '"]').checked = true;
-    rf("rFee").value = raceFee(v) || ""; showFee();
     showDay();
     editingPhotoId = v.photoId || "";
     $("rfTitle").textContent = r ? "Edit " + r.id : "Post a Race";
@@ -1567,8 +1595,6 @@
     if (!iso) local.push("Enter the date as DD-MM-YYYY.");
     const time = to24(rf("rHour").value, rf("rMin").value, (document.querySelector('input[name="rAmpm"]:checked') || {}).value);
     if (!time) local.push("Choose the reporting time (hour and minutes).");
-    const paid = document.querySelector('input[name="rEntry"][value="paid"]').checked, feeVal = rf("rFee").value.trim();
-    if (paid && !/^[1-9]\d{0,5}$/.test(feeVal)) local.push("Enter the entry fee in rupees, or choose Free for active members.");
     if (local.length) { $("rErr").innerHTML = "<ul>" + local.map((m) => "<li>" + m + "</li>").join("") + "</ul>"; return; }
     const race = {
       id: editingRace, name: rf("rName").value.trim(), date: iso, time: time,
@@ -1576,7 +1602,7 @@
       start: rf("rStart").value.trim(), landmark: rf("rLandmark").value.trim(), map: rf("rMap").value.trim(),
       minAge: rf("rMinAge").value, maxAge: rf("rMaxAge").value,
       activities: rf("rActivities").value, goodies: rf("rGoodies").value,
-      fee: paid ? feeVal : "", photoId: editingPhotoId,
+      fee: "", photoId: editingPhotoId,
     };
     const out = await api({ action: "adminRaceSave", race: race }, race.id ? "Updating " + race.id : "Posting race");
     if (!out.ok) {
@@ -1742,33 +1768,43 @@
     $("annPrevText").textContent = t || "Nothing to show";
   }
   $("annText").addEventListener("input", annPreview);
+  // What the website shows right now: read from Supabase, like the website does (the backend if Supabase can't be reached)
+  async function annLive() {
+    try {
+      const r = await fetch(SB().url + "/rest/v1/announcement?id=eq.1&select=text,link", { headers: { apikey: SB().key }, cache: "no-store" });
+      const rows = r.ok ? await r.json() : null;
+      return rows && rows[0] ? rows[0] : null;
+    } catch (e) { return null; }
+  }
   async function openAnnouncement() {
     if (annLoaded) return;
-    let a = changedRecently() ? null : await siteFile("data/announcement.json");
+    let a = SB().url ? await annLive() : null;
     if (!a) { const out = await api({ action: "adminAnnounceGet" }, "Loading", READ); a = out.ok ? out.announcement : {}; }
     annLoaded = true;
     $("annText").value = (a && a.text) || ""; $("annLink").value = (a && a.link) || "";
     $("annStatus").textContent = a && a.text ? "Currently showing on the website." : "No announcement is showing right now.";
     annPreview();
   }
-  function annResult(out, msg) {
+  // live: saved in Supabase, so it's on the website at once. published: the website's own copy (the fallback), which takes about a minute.
+  function annResult(out, now, soon) {
     if (!out.ok) { toast((out.errors || ["Couldn't save"])[0]); return; }
     lastChange = Date.now();
-    $("annStatus").textContent = out.published === false ? "Saved, but the website wasn't updated (" + (out.publishError || "error") + "). Try again." : msg;
-    toast(out.published === false ? "Website not updated. Try again." : msg);
+    const msg = out.live ? now : out.published !== false ? soon : "Saved, but the website wasn't updated (" + (out.publishError || "error") + "). Try again.";
+    $("annStatus").textContent = msg;
+    toast(out.live || out.published !== false ? msg : "Website not updated. Try again.");
   }
   $("annForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const text = $("annText").value.trim(), link = $("annLink").value.trim();
     if (!text) { toast("Type the announcement first, or use Clear."); return; }
     if (link && !/^https:\/\/\S+$/.test(link)) { toast("The link should start with https://"); return; }
-    annResult(await api({ action: "adminAnnounceSet", text: text, link: link }, "Publishing"), "Published. Live on the website in about a minute.");
+    annResult(await api({ action: "adminAnnounceSet", text: text, link: link }, "Publishing"), "Published. It's on the website now.", "Published. Live on the website in about a minute.");
   });
   $("annClear").addEventListener("click", async () => {
     if (!confirm("Remove the announcement from the website?")) return;
     const out = await api({ action: "adminAnnounceClear" }, "Clearing");
     if (out.ok) { $("annText").value = ""; $("annLink").value = ""; annPreview(); }
-    annResult(out, "Cleared. Gone from the website in about a minute.");
+    annResult(out, "Cleared. It's gone from the website.", "Cleared. Gone from the website in about a minute.");
   });
 
   // ---------- Main page: status tiles, registrations per day, and the race-photo reminder ----------
@@ -2067,15 +2103,16 @@
         x.fillStyle = "#000"; x.textAlign = "center"; x.font = "italic 800 92px " + C; x.fillText(r.distance, mx, my + 22); x.font = "800 30px " + C; x.fillText("KM", mx, my + 56); x.textAlign = "left";
       }
       // info panel: start point, then reporting time and who it's for
-      const py = 1380;
+      const py = 1350;
       x.font = "800 56px " + C; const where = wrapText(x, ((r.start || "") + (r.landmark ? " (near " + r.landmark + ")" : "")).toUpperCase(), W - 230).slice(0, 2);
-      const ph = 236 + where.length * 58; panel(x, py, ph);
+      const ph = 266 + where.length * 58; panel(x, py, ph);
       label(x, "Start point", 104, py + 60);
       x.fillStyle = "#fff"; x.font = "800 56px " + C; where.forEach((l, i) => x.fillText(l, 104, py + 116 + i * 58));
       const ry = py + 116 + where.length * 58 + 22;
       x.fillStyle = "rgba(254,144,174,.35)"; x.fillRect(104, ry - 34, W - 208, 2);
       label(x, "Reporting", 104, ry + 22); x.fillStyle = "#fff"; x.font = "800 44px " + C; x.fillText(t12(r.time), 104, ry + 70);
-      label(x, "Entry", 470, ry + 22); x.fillStyle = "#fff"; x.font = "600 36px " + B; x.fillText(raceFee(r) ? "₹" + raceFee(r) + " · active members" : "Free for active members", 470, ry + 66);
+      label(x, "Entry", 470, ry + 22); x.fillStyle = "#fff"; x.font = "600 34px " + B; x.fillText(raceFee(r) ? "₹" + raceFee(r) + " · active members" : "Free for active members", 470, ry + 60);
+      x.fillStyle = PINK; x.font = "700 28px " + B; x.fillText("No race card, no entry", 470, ry + 94);
       site(x, py + ph + 34, "FULL DETAILS & LIVE COUNTDOWN AT");
       checkers(x);
     };
@@ -2274,7 +2311,8 @@
       const sb = await ciClient();
       const { data, error } = await sb.auth.signInWithPassword({ email: CI_EMAIL, password: key });
       if (!error && data && data.session) return "ok";
-      if (error && (error.status === 400 || error.status === 422 || error.status === 429 || /invalid login|credentials/i.test(error.message || ""))) return "wrong";
+      if (error && error.status === 429) return "slow";
+      if (error && (error.status === 400 || error.status === 422 || /invalid login|credentials/i.test(error.message || ""))) return "wrong";
       return "offline";
     } catch (e) { return "offline"; }
   }
@@ -2285,7 +2323,7 @@
     const { data } = await sb.auth.getSession();
     if (data && data.session && data.session.expires_at * 1000 > Date.now() + 30000) return true;
     const r = await ciSignIn(ciPass);
-    if (r === "wrong") { ciPass = ""; ciShowLock(); }
+    if (r === "wrong") { ciPass = ""; ciShowLock("The check-in passcode has changed. Enter the new one."); }
     return r === "ok";
   }
   // Sends every check-in still waiting on this phone. Called straight after each scan, then every few seconds until none are left.
@@ -2394,22 +2432,29 @@
     return Array.from(d, (b) => b.toString(16).padStart(2, "0")).join("");
   }
 
-  // Check-in has its own passcode (the check-in login's password in Supabase). Until it's given, the section looks unfinished.
-  function ciShowLock() {
-    const open = !!ciPass;
-    $("ciLocked").hidden = open; $("ciOpen").hidden = !open;
-    if (!open) { ciStop(); $("ciKey").value = ""; }
-    return open;
+  // Check-in has its own passcode (the check-in login's password in Supabase). Without it, back to the check-in login.
+  function ciShowLock(msg) {
+    if (ciPass) return true;
+    ciLoginShow(msg);
+    return false;
   }
-  $("ciLockForm").addEventListener("submit", async (e) => {
+  $("ciLoginForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const key = $("ciKey").value; $("ciKey").value = ""; $("ciKey").blur();
-    if (!key) return;
-    const r = navigator.onLine === false ? "offline" : await ciSignIn(key);
-    if (r === "ok") { ciPass = key; openCheckin(); return; }
-    if (r === "wrong") return;
-    const pk = ciPack();     // no signal: checked against the member list saved on this phone in the last 12 hours
-    if (ciPackFresh(pk) && pk.key && pk.key === await ciHash(key)) { ciPass = key; openCheckin(); }
+    const key = $("ciKey").value, btn = $("ciLoginBtn");
+    $("ciLoginErr").textContent = "";
+    if (!key) { $("ciLoginErr").textContent = "Enter the check-in passcode."; return; }
+    btn.disabled = true; btn.textContent = "Checking…";
+    let r = navigator.onLine === false ? "offline" : await ciSignIn(key);
+    if (r === "offline") {   // no signal: checked against the member list saved on this phone in the last 12 hours
+      const pk = ciPack();
+      r = ciPackFresh(pk) && pk.key ? (pk.key === await ciHash(key) ? "ok" : "wrong") : "nosignal";
+    }
+    btn.disabled = false; btn.textContent = "Open check-in";
+    if (r === "ok") { $("ciKey").value = ""; ciPass = key; ciScreen(); return; }
+    $("ciLoginErr").textContent = r === "wrong" ? "That passcode isn't right. Check it and try again."
+      : r === "slow" ? "Too many tries. Wait a few minutes, then try again."
+      : "No connection. Connect to the internet once to open check-in on this phone.";
+    if (r === "wrong") { $("ciKey").select(); }
   });
   async function openCheckin() {
     if (!ciShowLock()) return;
@@ -2423,15 +2468,15 @@
     ciConnect();
   }
   function ciRenderRaces() {
-    const today = istToday(), near = ciRaces.filter((r) => r.date >= ciShift(today, -1) && r.date <= ciShift(today, 1));
-    near.sort((a, b) => (a.date === today ? -1 : 0) - (b.date === today ? -1 : 0) || (a.date + a.time < b.date + b.time ? -1 : 1));   // today's first
-    const shown = ciAllRaces ? ciRaces.filter((r) => r.date >= ciShift(today, -7)) : near;
+    // Past races are never listed: today's and tomorrow's, or "Show all races" for everything from today on
+    const today = istToday(), ahead = ciRaces.filter((r) => r.date >= today);
+    const shown = ciAllRaces ? ahead : ahead.filter((r) => r.date <= ciShift(today, 1));
     if (!shown.some((r) => r.id === ciRaceId)) ciRaceId = shown.length ? shown[0].id : "";
     $("ciRaces").innerHTML = shown.length ? shown.map((r) => {
-      const when = r.date === today ? "Today" : r.date === ciShift(today, -1) ? "Yesterday" : r.date === ciShift(today, 1) ? "Tomorrow" : niceDate(r.date);
+      const when = r.date === today ? "Today" : r.date === ciShift(today, 1) ? "Tomorrow" : niceDate(r.date);
       return '<button type="button" role="radio" aria-checked="' + (r.id === ciRaceId) + '" data-ci="' + esc(r.id) + '"><b>' + esc(r.name) + "</b><small>" + esc(r.id) + " · " + when + " · " + esc(to12(r.time).text) + "</small></button>";
-    }).join("") : '<p class="hint" style="margin:0">' + (ciRaces.length ? "No race today, yesterday or tomorrow." : "Couldn't load the races. Check your connection and open Check-in again.") + "</p>";
-    $("ciMore").hidden = !ciRaces.length; $("ciMore").textContent = ciAllRaces ? "Show only races near today" : "Show all races";
+    }).join("") : '<p class="hint" style="margin:0">' + (ciRaces.length ? (ciAllRaces ? "No upcoming races." : "No race today or tomorrow.") : "Couldn't load the races. Check your connection and open Check-in again.") + "</p>";
+    $("ciMore").hidden = !ciRaces.length; $("ciMore").textContent = ciAllRaces ? "Show only today and tomorrow" : "Show all races";
     try { localStorage.setItem(CI_RACE, ciRaceId); } catch (e) {}
     ciRenderList();
   }

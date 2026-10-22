@@ -1,7 +1,7 @@
 // UNBND Run Club: makes the site installable and usable offline.
 // Pages and race data: fresh from the network first, saved copy if offline.
 // Images and fonts: saved copy first, refreshed in the background.
-const CACHE = "unbnd-v6";
+const CACHE = "unbnd-v7";
 const CORE = ["./", "index.html", "races.html", "rules.html", "support.html", "register.html", "pay.html", "upload.html",
   "site.js", "config.js", "logo.png", "hero.jpg", "icon-192.png", "manifest.webmanifest",
   "admin.html", "data/races.json", "vendor/jsQR-1.4.0.min.js", "vendor/qrcode-generator-1.4.4.js", "racecard.js", "theme.css", "vendor/supabase-js-2.117.2.js"];   // admin: race day check-in without signal

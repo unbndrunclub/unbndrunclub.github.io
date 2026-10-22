@@ -1,5 +1,5 @@
 // UNBND Run Club: shared on every public page.
-// 1) Shows the announcement ribbon (from data/announcement.json)
+// 1) Shows the announcement ribbon (from Supabase, or data/announcement.json if Supabase can't be reached)
 // 2) Opens and closes the mobile menu in the page header
 // 3) Makes the site installable as an app
 (function () {
@@ -28,17 +28,30 @@
     document.body.insertBefore(el, document.body.firstChild);
     document.documentElement.classList.add("has-ribbon");
   }
-  var cached = null;
+  var cached = null, typing = false;
   try { cached = JSON.parse(localStorage.getItem("unbnd_annc") || "null"); } catch (e) {}
+  // Once someone is filling in a form, a ribbon that changes doesn't push the page about (it shows on their next page)
+  document.addEventListener("focusin", function (e) { if (e.target.matches && e.target.matches("input, textarea, select")) typing = true; });
+  // The announcement is read from Supabase, so it shows as soon as it's published. The file on the website is the fallback.
+  function fromSupabase() {
+    var sb = window.UNBND_SUPABASE;
+    if (!sb || !sb.url || !sb.key) return Promise.reject(new Error("no Supabase"));
+    var ctrl = window.AbortController ? new AbortController() : null, t = setTimeout(function () { if (ctrl) ctrl.abort(); }, 5000);
+    return fetch(sb.url + "/rest/v1/announcement?id=eq.1&select=text,link,updated", { headers: { apikey: sb.key }, cache: "no-store", signal: ctrl ? ctrl.signal : undefined })
+      .then(function (r) { clearTimeout(t); if (!r.ok) throw new Error("Supabase " + r.status); return r.json(); })
+      .then(function (rows) { if (!rows || !rows[0]) throw new Error("no announcement row"); return rows[0]; });
+  }
+  function fromFile() {
+    return fetch("data/announcement.json?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; });
+  }
   function start() {
     if (cached) show(cached);
-    fetch("data/announcement.json?t=" + Date.now(), { cache: "no-store" })
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (a) {
-        if (!a) return;
-        try { localStorage.setItem("unbnd_annc", JSON.stringify(a)); } catch (e) {}
-        if (JSON.stringify(a) !== JSON.stringify(cached)) show(a);
-      }).catch(function () {});
+    fromSupabase().catch(fromFile).then(function (a) {
+      if (!a) return;
+      a = { text: a.text || "", link: a.link || "", updated: a.updated || "" };
+      try { localStorage.setItem("unbnd_annc", JSON.stringify(a)); } catch (e) {}
+      if (JSON.stringify(a) !== JSON.stringify(cached) && !typing) show(a);
+    }).catch(function () {});
   }
   if (document.body) start(); else document.addEventListener("DOMContentLoaded", start);
 

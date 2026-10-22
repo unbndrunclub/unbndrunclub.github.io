@@ -306,7 +306,7 @@
 <body>
 <header class="hdr">
   <div class="hdr-in">
-    <a class="brand" href="index.html" aria-label="UNBND Run Club home"><img src="logo.png" alt="" width="40" height="40"><span><b>UNBND</b><small>Run club</small></span></a>
+    <a class="brand" href="index.html" aria-label="UNBND Run Club home"><span><b>UNBND</b><small>Run club</small></span></a>
     <nav class="hnav" aria-label="Site"><a href="races.html" aria-current="page">Races</a><a href="index.html#how">How it works</a><a href="index.html#members">Members</a><a href="rules.html">Club rules</a><a href="support.html">Support</a></nav>
     <a class="ig" href="https://www.instagram.com/unbndrunclub/" aria-label="UNBND on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor" stroke="none"/></svg></a>
     <a class="join" href="register.html">Join <small>₹999</small></a>
@@ -392,13 +392,12 @@
   <div class="mbox">
     <button class="xbtn" type="button" id="cardClose" aria-label="Close">✕</button>
     <h3 id="cardTitle">Your race card</h3>
-    <p class="hint" id="cardRace" style="margin:0 0 6px"></p>
-    <p class="hint" style="margin:0 0 10px">Race cards are for <b>active members</b> only. Enter your Club ID and registered mobile number.</p>
+    <p class="hint" id="cardRace" style="margin:0 0 12px"></p>
     <form id="cardForm" novalidate>
       <div class="field" data-f="kId"><label class="lbl" for="kId">Club ID</label><div class="idin"><b>UB</b><input id="kId" type="text" inputmode="numeric" maxlength="4" placeholder="0001" autocomplete="off"></div><p class="err"></p></div>
       <div class="field" data-f="kPhone"><label class="lbl" for="kPhone">Registered mobile number</label><input id="kPhone" type="tel" inputmode="numeric" maxlength="10" placeholder="10 digits" autocomplete="tel-national"><p class="err"></p></div>
       <div class="summary" id="kErr" role="alert"></div>
-      <button class="btn" id="kBtn" type="submit">Create my race card</button>
+      <button class="btn" id="kBtn" type="submit">Generate my race card</button>
     </form>
     <div id="cardDone" hidden>
       <div class="rc-one">
@@ -594,10 +593,10 @@
   const entryLine = (r) => fee(r) ? "Entry ₹" + fee(r) + " for active club members." : "Free for all active club members.";
   const stampHtml = (r) => fee(r) ? '<div class="stamp paid" aria-hidden="true"><b>₹' + fee(r) + "</b><span>Entry for active club members</span></div>"
     : '<div class="stamp" aria-hidden="true"><b>Free</b><span>for all active club members</span></div>';
-  const entryHtml = (r) => '<p class="entry' + (fee(r) ? " paid" : "") + '">' + entryLine(r) + " Race cards are for active members only.</p>";
+  const entryHtml = (r) => '<p class="entry' + (fee(r) ? " paid" : "") + '">' + entryLine(r) + " <b>No entry without a race card</b>, even for active members.</p>";
   function actions(r) {
     return '<div class="actions">' +
-      '<button class="primary" type="button" data-card="' + esc(r.id) + '">Create my race card</button>' +
+      '<button class="primary" type="button" data-card="' + esc(r.id) + '">Generate my race card</button>' +
       '<button type="button" data-cal="' + esc(r.id) + '">Add to calendar</button>' +
       '<button type="button" data-wa="' + esc(r.id) + '">Share on WhatsApp</button></div>' +
       '<div class="calmenu" id="cal-' + esc(r.id) + '" hidden>' +
@@ -742,7 +741,7 @@
     if (!/^\d{1,4}$/.test(id) || !/^[6-9]\d{9}$/.test(ph)) { $("kErr").innerHTML = "<ul><li>Enter your Club ID digits and your 10-digit registered mobile number.</li></ul>"; return; }
     const btn = $("kBtn"); btn.disabled = true; btn.textContent = "Checking…";
     const out = await post({ action: "card", clubId: "UB" + id.padStart(4, "0"), phone: ph, raceId: cardRace.id }, 25000);
-    btn.disabled = false; btn.textContent = "Create my race card";
+    btn.disabled = false; btn.textContent = "Generate my race card";
     if (!out.ok) { $("kErr").innerHTML = "<ul>" + (out.errors || ["Something went wrong."]).map((m) => "<li>" + esc(m) + "</li>").join("") + "</ul>"; return; }
     const forRace = cardRace, qr = typeof out.qr === "string" && out.qr.split("|")[3] === forRace.id ? out.qr : "";
     $("cardForm").hidden = true; $("cardDone").hidden = false;
@@ -757,7 +756,7 @@
     $("rcCardImg").src = made.card.url;
     $("cardSave").disabled = false;
     if (qr && !made.qr) {
-      $("cardQrNote").textContent = "We couldn't add the QR code to your race card. Check your connection and create it again.";
+      $("cardQrNote").textContent = "We couldn't add the QR code to your race card. Check your connection and generate it again.";
       $("cardQrNote").hidden = false;
     }
   });

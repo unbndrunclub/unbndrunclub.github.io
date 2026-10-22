@@ -74,7 +74,6 @@
   .hdr { position: sticky; top: 0; z-index: 40; background: rgba(7,7,8,.82); -webkit-backdrop-filter: saturate(1.3) blur(12px); backdrop-filter: saturate(1.3) blur(12px); border-bottom: 1px solid rgba(255,255,255,.08); }
   .hdr .wide { display: flex; align-items: center; gap: 12px; height: 64px; }
   .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; margin-right: auto; }
-  .brand img { width: 40px; height: 40px; display: block; }
   .brand b { display: block; font: italic 800 1.7rem/.9 var(--C); letter-spacing: .01em; }
   .brand small { display: block; font: 700 .6rem/1 var(--C); letter-spacing: .3em; text-transform: uppercase; color: var(--pink); margin-top: 3px; }
   .nav { display: none; gap: 2px; }
@@ -105,6 +104,10 @@
   .hero-ph::before { content: ""; position: absolute; inset: 0; z-index: 1; background: #fe90ae; mix-blend-mode: multiply; opacity: .28; }
   .hero-ph::after { content: ""; position: absolute; inset: 0; z-index: 2;
     background: linear-gradient(180deg, rgba(7,7,8,.6) 0%, rgba(7,7,8,.2) 30%, rgba(7,7,8,.75) 64%, var(--bg) 100%); }
+  @media (min-width: 960px) {   /* laptops: the hero is as tall as its content, and the photo is cropped to the runners */
+    .hero { min-height: 0; }
+    .hero-ph img { object-position: 50% 80%; }
+  }
   @media (max-width: 959px) {   /* phones: the runners fill the top of the screen, then fade into the page */
     .hero-ph { bottom: auto; height: 600px; }
     .hero-ph img { object-position: 50% 68%; }
@@ -119,6 +122,7 @@
   .speed i:nth-child(4) { top: 58%; width: 22%; animation-delay: 2.4s; background: linear-gradient(90deg, transparent, #fff); }
   @keyframes zip { 0% { transform: translateX(0); opacity: 0; } 15% { opacity: .9; } 100% { transform: translateX(380%); opacity: 0; } }
   .hero-in { position: relative; z-index: 4; width: 100%; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; padding-top: 40px; padding-bottom: 26px; }
+  @media (min-width: 960px) { .hero-in { padding-top: 48px; padding-bottom: 32px; } }
   .chip { display: inline-flex; align-self: flex-start; align-items: center; gap: 8px; margin: 0; padding: 7px 12px; border-radius: 999px; background: rgba(0,0,0,.55); border: 1px solid rgba(254,144,174,.5); font: 700 .78rem/1 var(--C); letter-spacing: .2em; text-transform: uppercase; }
   .chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--pink); box-shadow: 0 0 0 0 rgba(254,144,174,.8); animation: pulse 1.8s infinite; }
   @keyframes pulse { 70% { box-shadow: 0 0 0 10px rgba(254,144,174,0); } 100% { box-shadow: 0 0 0 0 rgba(254,144,174,0); } }
@@ -176,6 +180,8 @@
   .cd .today { grid-column: 1 / -1; background: var(--pink); color: #000; font: italic 800 1.4rem/1 var(--C); text-transform: uppercase; padding: 14px; }
   .next .go { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--edge); font: italic 800 1.1rem/1 var(--C); text-transform: uppercase; }
   .next .go i { font-style: normal; color: var(--pink); }
+  .next .nrule, .rcard { display: block; margin: 12px 0 0; font: 700 .86rem/1.3 Barlow, sans-serif; color: var(--pink); }
+  .rcard { margin-top: 4px; font-size: .8rem; }
   /* Entry stamp: FREE for active members, or the fee */
   .stamp { position: absolute; right: 12px; top: 40px; width: 96px; height: 96px; border-radius: 50%; display: grid; place-content: center; text-align: center; gap: 3px;
     color: var(--green); border: 3px solid currentColor; box-shadow: inset 0 0 0 3px var(--card), inset 0 0 0 5px currentColor, 0 0 24px -6px rgba(25,195,125,.6); transform: rotate(-10deg); background: rgba(25,195,125,.08); }
@@ -322,7 +328,7 @@
 
 <header class="hdr">
   <div class="wide">
-    <a class="brand" href="index.html" aria-label="UNBND Run Club home"><img src="logo.png" alt="" width="42" height="42"><span><b>UNBND</b><small>Run club</small></span></a>
+    <a class="brand" href="index.html" aria-label="UNBND Run Club home"><span><b>UNBND</b><small>Run club</small></span></a>
     <nav class="nav" aria-label="Site">
       <a href="races.html">Races</a><a href="#how">How it works</a><a href="#members">Members</a><a href="rules.html">Club rules</a><a href="support.html">Support</a>
     </nav>
@@ -363,13 +369,14 @@
         <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg><span id="nrWhere"></span></span>
       </div>
       <div class="cd" id="nrCd" aria-label="Time until the race"></div>
+      <p class="nrule">No entry without a race card</p>
       <div class="go"><span>Race details and race card</span><i aria-hidden="true">→</i></div>
     </div>
   </a>
       <nav class="paths" aria-label="Start here">
         <a class="path go" href="register.html"><small>New here?</small><b>Join the club</b><span>₹999 for one year of membership</span></a>
         <a class="path" href="pay.html"><small>Registered, not paid?</small><b>Complete payment</b><span>Upload your payment screenshot</span></a>
-        <a class="path" href="races.html"><small>Active member?</small><b>Races &amp; race cards</b><span>Pick a race, make your race card</span></a>
+        <a class="path" href="races.html"><small>Active member?</small><b>Races &amp; race cards</b><span>Pick a race, generate your race card</span></a>
         <a class="path" href="#find"><small>Forgot your Club ID?</small><b>Find it</b><span>With your registered mobile</span></a>
       </nav>
     </div>
@@ -384,14 +391,14 @@
     <div class="facts">
       <div class="fact hl"><b>₹999</b><span>Membership for one year. Renew every year to keep racing.</span></div>
       <div class="fact"><b>Free <small>&amp;</small> paid</b><span>Many races are free for active members. Some have an entry fee.</span></div>
-      <div class="fact"><b>1 card</b><span>Each race needs its own race card, for active members only.</span></div>
+      <div class="fact"><b>1 card</b><span>Each race needs its own race card. No race card, no entry.</span></div>
       <div class="fact"><b>All paces</b><span>Beginners, regulars and racers all run together.</span></div>
     </div>
     <ol class="steps">
       <li class="step"><h3>Become a member</h3><p>Register online in a few minutes, then pay the ₹999 membership fee and upload your payment screenshot.</p><span class="must">Membership is a must</span><br><a href="register.html">Register now</a></li>
       <li class="step"><h3>Get your Club ID</h3><p>We check your payment, activate your membership and email you your Club ID. Your membership lasts one year.</p><a href="#find">Already registered? Find your Club ID</a></li>
       <li class="step"><h3>Pick a race</h3><p>See the race schedule. Each race is marked <b>Free</b> for active members, or shows its entry fee.</p><a href="races.html">See the race schedule</a></li>
-      <li class="step"><h3>Make your race card</h3><p>Create your race card for that race with your Club ID and registered mobile, then show its QR code at the start line.</p><span class="must">Active members only</span></li>
+      <li class="step"><h3>Generate your race card</h3><p>Generate your race card for that race with your Club ID and registered mobile, then show its QR code at the start line. No entry without one.</p><span class="must">Active members only</span></li>
     </ol>
   </div>
 </section>
@@ -402,7 +409,7 @@
     <ol class="rlist" id="rList"></ol>
     <div class="rempty" id="rEmpty" hidden></div>
     <a class="btn" href="races.html" style="margin-top:18px">Full race schedule <span aria-hidden="true">→</span></a>
-    <p class="rnote"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9h6M7 13h10M7 16.5h4"/></svg>To run, make your race card for the race on the race schedule. Race cards are for active members only.</p>
+    <p class="rnote"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9h6M7 13h10M7 16.5h4"/></svg>To run, generate your race card for the race on the race schedule. No entry without a race card, even for active members.</p>
   </div>
 </section>
 
@@ -431,7 +438,7 @@
       <div class="mcard">
         <small class="k">Active member?</small>
         <h3>Get your race card</h3>
-        <p>Pick your race on the schedule and make your race card. Keep it to yourself: its QR code is your entry.</p>
+        <p>Pick your race on the schedule and generate your race card. No race card, no entry. Keep it to yourself: its QR code is your entry.</p>
         <a class="btn line" href="races.html">Go to races</a>
       </div>
     </div>
@@ -468,7 +475,7 @@
       <details><summary>Do I need to be a member to run?</summary><p>Yes. UNBND races are for club members. Register, pay the ₹999 membership fee and we'll activate your membership.</p></details>
       <details><summary>How long does membership last?</summary><p>One year from when it's activated. Renew every year to keep running with the club.</p></details>
       <details><summary>Are races free?</summary><p>Many races are free for active members, and some have an entry fee. Each race on the race schedule shows which.</p></details>
-      <details><summary>What is a race card?</summary><p>Your entry to one race. Make it on the race schedule with your Club ID and registered mobile, save it to your phone, and show its QR code at the start line. Each race needs its own race card.</p></details>
+      <details><summary>What is a race card?</summary><p>Your entry to one race. Generate it on the race schedule with your Club ID and registered mobile, save it to your phone, and show its QR code at the start line. Each race needs its own race card, and there is no entry without one, even for active members.</p></details>
       <details><summary>Can I share my race card?</summary><p>No. Your race card's QR code is unique to you, so please don't post it on social media or send it to anyone. Organisers may ask for a government photo ID to confirm who you are.</p></details>
       <details><summary>I've paid. When do I get my Club ID?</summary><p>Once we've checked your payment, we activate your membership and email your Club ID. Check your spam or promotions folder, or use Find my Club ID above.</p></details>
       <details><summary>I'm a beginner. Can I join?</summary><p>Of course. Every pace is welcome, and nobody gets left behind.</p></details>
@@ -637,7 +644,7 @@
         '<span class="rdate"><small>' + esc(wday(r)) + "</small><b>" + d + "</b><small>" + MONTHS[m - 1] + "</small></span>" +
         "<span><span class=\"rtop\">" + (i === 0 ? '<span class="pill next">Next</span>' : "") + pillHtml(r) + '<span class="pill">' + daysAway(r) + "</span></span>" +
         '<span class="rname">' + esc(r.name) + "</span>" +
-        '<span class="rmeta" style="display:block">' + time12(r.time) + (r.start ? " · " + esc(r.start) : "") + (r.distance ? " · " + esc(r.distance) + " km" : "") + "</span></span></a></li>";
+        '<span class="rmeta" style="display:block">' + time12(r.time) + (r.start ? " · " + esc(r.start) : "") + (r.distance ? " · " + esc(r.distance) + " km" : "") + '</span><span class="rcard">No entry without a race card</span></span></a></li>';
     }).join("");
   }
   // ---- Race ticker: the next three races, then the club motto, on a loop ----
@@ -653,7 +660,7 @@
   // ---- Find your Club ID, and what to do next ----
   const fmtD = (dmy) => { const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(dmy || ""); return m ? Number(m[1]) + " " + MONTHS[Number(m[2]) - 1] + " " + m[3] : ""; };
   const NEXT_STEP = {
-    Active: 'You can run. <a href="races.html">Pick a race and make your race card</a>.',
+    Active: 'You can run. <a href="races.html">Pick a race and generate your race card</a>.',
     Pending: 'Paid already? We\'re checking it and will email your Club ID. Not paid yet? <a href="pay.html">Complete your payment</a>.',
     Deactivated: 'This membership isn\'t active. <a href="support.html">Contact support</a> to renew or ask why.',
   };
