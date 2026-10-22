@@ -78,7 +78,7 @@
   .brand small { display: block; font: 700 .6rem/1 var(--C); letter-spacing: .3em; text-transform: uppercase; color: var(--pink); margin-top: 3px; }
   .nav { display: none; gap: 2px; }
   .nav a { text-decoration: none; font: 700 1.05rem/1 var(--C); text-transform: uppercase; letter-spacing: .05em; padding: 10px 12px; border-radius: 10px; color: rgba(255,255,255,.85); }
-  .nav a:hover { color: var(--pink); }
+  .nav a:hover, .nav a[aria-current="page"] { color: var(--pink); }
   .ig { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; text-decoration: none; }
   .ig:hover { color: var(--pink); }
   .ig svg { width: 24px; height: 24px; }
@@ -123,7 +123,7 @@
   @keyframes zip { 0% { transform: translateX(0); opacity: 0; } 15% { opacity: .9; } 100% { transform: translateX(380%); opacity: 0; } }
   .hero-in { position: relative; z-index: 4; width: 100%; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; padding-top: 40px; padding-bottom: 26px; }
   @media (min-width: 960px) { .hero-in { padding-top: clamp(72px, 11vh, 124px); padding-bottom: 32px; } }
-  .chip { display: inline-flex; align-self: flex-start; align-items: center; gap: 8px; margin: 0; padding: 7px 12px; border-radius: 999px; background: rgba(0,0,0,.55); border: 1px solid rgba(254,144,174,.5); font: 700 .78rem/1 var(--C); letter-spacing: .2em; text-transform: uppercase; }
+  .chip { display: inline-flex; align-self: flex-start; align-items: center; gap: 8px; margin: 0; font: 700 .82rem/1 var(--C); letter-spacing: .2em; text-transform: uppercase; text-shadow: 0 1px 8px rgba(0,0,0,.8); }
   .chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--pink); box-shadow: 0 0 0 0 rgba(254,144,174,.8); animation: pulse 1.8s infinite; }
   @keyframes pulse { 70% { box-shadow: 0 0 0 10px rgba(254,144,174,0); } 100% { box-shadow: 0 0 0 0 rgba(254,144,174,0); } }
   /* The wordmark with a speed trail behind it */
@@ -179,7 +179,8 @@
   .cd span { font: 700 .66rem/1 var(--C); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
   .cd .today { grid-column: 1 / -1; background: var(--pink); color: #000; font: italic 800 1.4rem/1 var(--C); text-transform: uppercase; padding: 14px; }
   .next .go { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--edge); font: italic 800 1.1rem/1 var(--C); text-transform: uppercase; }
-  .next .go i { font-style: normal; color: var(--pink); }
+  .next .go i { font-style: normal; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--pink); color: #000; font-size: 1rem; transition: transform .15s; }
+  .next:hover .go i { transform: translateX(3px); }
   .next .nrule, .rcard { display: block; margin: 12px 0 0; font: 700 .86rem/1.3 Barlow, sans-serif; color: var(--pink); }
   .rcard { margin-top: 4px; font-size: .8rem; }
   /* Entry stamp: FREE for active members, or the fee */
@@ -197,12 +198,11 @@
   }
 
   /* ---------- How UNBND works ---------- */
-  .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 28px; }
-  .fact { border-radius: 16px; padding: 16px; background: var(--card); border: 1px solid var(--edge); }
+  .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 18px; margin-top: 34px; }
+  .fact { padding: 2px 0 2px 14px; border-left: 3px solid var(--pink); }   /* plain facts: no box, so they don't look clickable */
   .fact b { display: block; font: italic 800 2.1rem/1 var(--C); text-transform: uppercase; color: var(--pink); }
   .fact b small { font-size: .55em; color: var(--muted); }
   .fact span { display: block; margin-top: 6px; font-size: .92rem; line-height: 1.35; color: rgba(255,255,255,.78); }
-  .fact.hl { background: var(--pink); border-color: var(--pink); } .fact.hl b { color: #000; } .fact.hl span { color: #2a0f17; }
   .steps { list-style: none; margin: 30px 0 0; padding: 0; display: grid; gap: 12px; counter-reset: st; }
   .step { position: relative; border-radius: 18px; padding: 20px 18px 20px 90px; background: var(--card); border: 1px solid var(--edge); overflow: hidden; }
   .step::before { counter-increment: st; content: counter(st, decimal-leading-zero); position: absolute; left: 14px; top: 12px; font: italic 800 4rem/1 var(--C); color: transparent; -webkit-text-stroke: 1.5px var(--pink); }
@@ -211,23 +211,26 @@
   .step p { margin: 6px 0 0; color: rgba(255,255,255,.78); font-size: .98rem; }
   .step p b { color: var(--green); }
   .step a { display: inline-block; margin-top: 8px; font-weight: 700; color: var(--pink); text-decoration-thickness: 2px; text-underline-offset: 3px; }
-  .step .must { display: inline-block; margin-top: 10px; padding: 4px 9px; border-radius: 7px; background: var(--pink); color: #000; font: 800 .76rem/1.2 var(--C); letter-spacing: .1em; text-transform: uppercase; }
+  .step .must { display: inline-flex; align-items: center; gap: 7px; margin-top: 10px; font: 700 .95rem/1.2 Barlow, sans-serif; color: var(--pink); }   /* a note, not a button */
+  .step .must svg { width: 14px; height: 14px; fill: currentColor; flex: none; }
   @media (min-width: 760px) { .facts { grid-template-columns: repeat(4, 1fr); } .steps { grid-template-columns: 1fr 1fr; } }
   @media (min-width: 760px) and (max-width: 1099px) { .step:last-child:nth-child(odd) { grid-column: 1 / -1; } }
   @media (min-width: 1100px) { .steps { grid-template-columns: repeat(3, 1fr); } .step { padding: 86px 18px 22px; } }
 
   /* ---------- Upcoming races ---------- */
   .rlist { list-style: none; margin: 28px 0 0; padding: 0; display: grid; gap: 12px; }
-  .rlist a { position: relative; display: grid; grid-template-columns: 76px 1fr; gap: 14px; align-items: center; padding: 14px; border-radius: 18px; background: var(--card); border: 1px solid var(--edge); text-decoration: none; transition: border-color .15s, transform .15s; }
+  .rlist a { position: relative; display: grid; grid-template-columns: 76px 1fr; gap: 14px; align-items: center; padding: 14px 54px 14px 14px; border-radius: 18px; background: var(--card); border: 1px solid var(--edge); text-decoration: none; transition: border-color .15s, transform .15s; }
   .rlist a:hover { border-color: var(--pink); transform: translateY(-2px); }
-  .rdate { border-radius: 14px; background: var(--pink); color: #000; text-align: center; padding: 9px 4px; }
+  .rlist a::after { content: "→"; position: absolute; right: 14px; top: 50%; margin-top: -14px; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--pink); color: #000; font-weight: 800; transition: transform .15s; }   /* the same arrow as the other cards you can tap */
+  .rlist a:hover::after { transform: translateX(3px); }
+  .rdate { border-radius: 14px; background: #26262d; color: #fff; text-align: center; padding: 9px 4px; } .rdate small { color: var(--pink); }
   .rdate small { display: block; font: 800 .7rem/1 var(--C); letter-spacing: .16em; text-transform: uppercase; }
   .rdate b { display: block; font: italic 800 2.4rem/1 var(--C); }
   .rname { display: block; font: italic 800 1.5rem/1 var(--C); text-transform: uppercase; }
   .rmeta { display: block; margin-top: 5px; font-size: .92rem; color: var(--muted); }
   .rtop { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 7px; }
   .pill { display: inline-block; border-radius: 7px; padding: 4px 8px; font: 800 .72rem/1 var(--C); letter-spacing: .1em; text-transform: uppercase; background: #26262d; color: rgba(255,255,255,.85); }
-  .pill.free { background: rgba(25,195,125,.16); color: var(--green); } .pill.fee { background: rgba(254,144,174,.16); color: var(--pink); } .pill.next { background: var(--pink); color: #000; }
+  .pill.free { background: rgba(25,195,125,.16); color: var(--green); } .pill.fee { background: rgba(254,144,174,.16); color: var(--pink); } .pill.next { background: rgba(254,144,174,.16); color: var(--pink); box-shadow: inset 0 0 0 1px rgba(254,144,174,.45); }
   .rempty { margin-top: 28px; border-radius: 18px; background: var(--card); border: 1px solid var(--edge); padding: 20px; }
   .rempty b { display: block; font: italic 800 1.5rem/1 var(--C); text-transform: uppercase; }
   .rnote { margin: 18px 0 0; display: flex; gap: 10px; align-items: flex-start; font-weight: 600; font-size: .95rem; color: rgba(255,255,255,.85); }
@@ -265,7 +268,7 @@
   .tile:hover img { transform: scale(1.06); }
   .tile.big { grid-column: span 2; grid-row: span 2; }
   .tile .tc { position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 10px 8px; background: linear-gradient(transparent, rgba(0,0,0,.78)); color: #fff; text-align: left; font: 600 .8rem/1.2 Barlow, sans-serif; display: flex; gap: 6px; align-items: center; }
-  .tile .tc b { background: var(--pink); color: #000; border-radius: 5px; padding: 2px 6px; font: 800 .72rem/1.2 var(--C); }
+  .tile .tc b { color: var(--pink); font: 800 .78rem/1.2 var(--C); letter-spacing: .06em; text-transform: uppercase; }
   .igline { margin: 14px 0 0; font-weight: 600; color: rgba(255,255,255,.85); }
   .igline a { font-weight: 700; color: var(--pink); text-decoration-thickness: 2px; text-underline-offset: 3px; }
   .more { margin-top: 16px; }
@@ -331,7 +334,7 @@
   <div class="wide">
     <a class="brand" href="index.html" aria-label="UNBND Run Club home"><span><b>UNBND</b><small>Run club</small></span></a>
     <nav class="nav" aria-label="Site">
-      <a href="races.html">Races</a><a href="#how">How it works</a><a href="#members">Members</a><a href="rules.html">Club rules</a><a href="support.html">Support</a>
+      <a href="#main" aria-current="page">Home</a><a href="#how">How it works</a><a href="races.html">Races</a><a href="#members">Members</a><a href="rules.html">Club rules</a><a href="support.html">Support</a>
     </nav>
     <a class="ig" href="https://www.instagram.com/unbndrunclub/" aria-label="UNBND on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor" stroke="none"/></svg></a>
     <a class="join" href="register.html">Join <small>₹999</small></a>
@@ -339,8 +342,9 @@
   </div>
 </header>
 <div class="sheet" id="sheet" hidden>
+  <a class="row" href="#main" aria-current="page">Home</a>
+  <a class="row" href="#how">How it works <small>Three simple steps</small></a>
   <a class="row" href="races.html">Races <small>Schedule and race cards</small></a>
-  <a class="row" href="#how">How it works <small>Membership, races, race cards</small></a>
   <a class="row" href="#find">Find my Club ID <small>For members</small></a>
   <a class="row" href="pay.html">Complete payment <small>Registered, not paid?</small></a>
   <a class="row" href="rules.html">Club rules</a>
@@ -374,34 +378,41 @@
       <div class="go"><span>Race details and race card</span><i aria-hidden="true">→</i></div>
     </div>
   </a>
-      <nav class="paths" aria-label="Start here">
-        <a class="path go" href="register.html"><small>New here?</small><b>Join the club</b><span>₹999 for one year of membership</span></a>
-        <a class="path" href="pay.html"><small>Registered, not paid?</small><b>Complete payment</b><span>Upload your payment screenshot</span></a>
-        <a class="path" href="races.html"><small>Active member?</small><b>Races &amp; race cards</b><span>Pick a race, generate your race card</span></a>
-        <a class="path" href="#find"><small>Forgot your Club ID?</small><b>Find it</b><span>With your registered mobile</span></a>
-      </nav>
     </div>
   </div>
 </section>
-<div class="ticker" aria-hidden="true"><div class="tk-track" id="tkTrack"></div></div>
 <section id="how" class="lanes" aria-labelledby="howTitle">
   <div class="wide">
     <p class="kick">How UNBND works</p>
     <h2 class="h2" id="howTitle">Member first. <em>Then the start line.</em></h2>
     <p class="sub">Every UNBND race is for club members. Here's everything you need to know, in three steps.</p>
+    <ol class="steps">
+      <li class="step"><h3>Register and pay ₹999</h3><p>Register online in a few minutes, then pay the ₹999 membership fee and upload your payment screenshot.</p><span class="must"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2h.5A1.5 1.5 0 0 1 13.5 8.5v5A1.5 1.5 0 0 1 12 15H4a1.5 1.5 0 0 1-1.5-1.5v-5A1.5 1.5 0 0 1 4 7h.5zm1.8 0h3.4V5a1.7 1.7 0 0 0-3.4 0v2z"/></svg>Membership is a must</span><br><a href="register.html">Register now</a></li>
+      <li class="step"><h3>Get your Club ID</h3><p>We check your payment, activate your membership and email you your Club ID. You're now a member, for one year.</p><a href="#find">Already registered? Find your Club ID</a></li>
+      <li class="step"><h3>Pick a race and generate your race card</h3><p>On the race schedule, pick your race and generate its race card with your Club ID and registered mobile. Show its QR code at the start line: no race card, no entry.</p><span class="must"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2h.5A1.5 1.5 0 0 1 13.5 8.5v5A1.5 1.5 0 0 1 12 15H4a1.5 1.5 0 0 1-1.5-1.5v-5A1.5 1.5 0 0 1 4 7h.5zm1.8 0h3.4V5a1.7 1.7 0 0 0-3.4 0v2z"/></svg>Active members only</span><br><a href="races.html">Visit the race schedule for details</a></li>
+    </ol>
     <div class="facts">
-      <div class="fact hl"><b>₹999</b><span>Membership for one year. Renew every year to keep racing.</span></div>
+      <div class="fact"><b>₹999</b><span>Membership for one year. Renew every year to keep racing.</span></div>
       <div class="fact"><b>Free <small>&amp;</small> paid</b><span>Many races are free for active members. Some have an entry fee.</span></div>
       <div class="fact"><b>Race card</b><span>Each race needs its own race card. No race card, no entry.</span></div>
       <div class="fact"><b>All paces</b><span>Beginners, regulars and racers all run together.</span></div>
     </div>
-    <ol class="steps">
-      <li class="step"><h3>Become a member</h3><p>Register online in a few minutes, then pay the ₹999 membership fee and upload your payment screenshot.</p><span class="must">Membership is a must</span><br><a href="register.html">Register now</a></li>
-      <li class="step"><h3>Get your Club ID</h3><p>We check your payment, activate your membership and email you your Club ID. Your membership lasts one year.</p><a href="#find">Already registered? Find your Club ID</a></li>
-      <li class="step"><h3>Pick a race and generate your race card</h3><p>On the race schedule, pick your race and generate its race card with your Club ID and registered mobile. Show its QR code at the start line: no race card, no entry.</p><span class="must">Active members only</span><br><a href="races.html">Visit the race schedule for details</a></li>
-    </ol>
   </div>
 </section>
+
+<section id="start" aria-labelledby="startTitle">
+  <div class="wide">
+    <p class="kick">Start here</p>
+    <h2 class="h2" id="startTitle">Where are <em>you now?</em></h2>
+    <nav class="paths" aria-label="Start here">
+      <a class="path go" href="register.html"><small>New here?</small><b>Join the club</b><span>₹999 for one year of membership</span></a>
+      <a class="path" href="pay.html"><small>Registered, not paid?</small><b>Complete payment</b><span>Upload your payment screenshot</span></a>
+      <a class="path" href="races.html"><small>Active member?</small><b>Races &amp; race cards</b><span>Pick a race, generate your race card</span></a>
+      <a class="path" href="#find"><small>Forgot your Club ID?</small><b>Find it</b><span>With your registered mobile</span></a>
+    </nav>
+  </div>
+</section>
+<div class="ticker" aria-hidden="true"><div class="tk-track" id="tkTrack"></div></div>
 
 <section class="alt" id="races" aria-labelledby="raceTitle">
   <div class="wide">
@@ -492,7 +503,7 @@
   <div class="wide">
     <div class="fgrid">
       <div>
-        <a class="fbrand" href="index.html"><img src="logo.png" alt="" width="52" height="52"><span><b>UNBND</b><small>Run club · Mumbai</small></span></a>
+        <a class="fbrand" href="index.html"><span><b>UNBND</b><small>Run club · Mumbai</small></span></a>
         <p>Group runs and races across Mumbai. Every pace, every distance, one club.</p>
       </div>
       <div class="fcols">

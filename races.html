@@ -149,8 +149,8 @@
   /* Keep the logo and headline lined up with the cards on wide screens */
   @media (min-width: 1110px) { .nav, .hero-inner { padding-left: 14px; padding-right: 14px; } }
   .wide { max-width: 1080px; margin: 0 auto; }
-  .facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
-  .facts div { background: var(--paper); border-radius: 12px; padding: 10px 12px; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px 10px; }
+  .facts div { padding: 2px 0 2px 12px; border-left: 2px solid rgba(254,144,174,.6); }   /* plain details: no box, so they don't look clickable */
   .facts small { display: block; color: var(--muted); font-size: .8rem; }
   .facts b { font: 700 1.05rem/1.25 "Barlow", sans-serif; }
   /* Entry stamp on each race: FREE for active members, or the entry fee */
@@ -214,7 +214,7 @@
   }
   .feat .cover.nophoto { min-height: 210px; }
   .rc .cover.nophoto { height: 110px; }
-  .kicker { display: inline-block; background: var(--pink); color: var(--black); font: 700 .9rem/1 "Barlow Condensed", sans-serif; padding: 6px 10px; border-radius: 6px; }
+  .kicker { display: inline-block; color: var(--pink); font: 700 .9rem/1 "Barlow Condensed", sans-serif; letter-spacing: .14em; text-transform: uppercase; }   /* a label, not a button */
   .feat h2 { font: italic 800 clamp(2.4rem, 10vw, 4.4rem)/.92 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--white); margin: 10px 0 0; }
   .feat .body { padding: 18px 20px 24px; }
   .feat h3, .rc h3 { font: 700 1.25rem "Barlow Condensed", sans-serif; margin: 18px 0 4px; }
@@ -224,7 +224,7 @@
   .rgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
   .rc { background: var(--white); border-radius: 18px; overflow: hidden; }
   .rc .cover { height: 150px; background: #000 center / cover no-repeat; position: relative; }
-  .rc .cover > b { position: absolute; left: 12px; top: 12px; background: var(--black); color: var(--pink); font: 700 .95rem/1 "Barlow Condensed", sans-serif; padding: 6px 10px; border-radius: 8px; }
+  .rc .cover > b { position: absolute; left: 14px; top: 14px; color: var(--pink); font: 700 .95rem/1 "Barlow Condensed", sans-serif; letter-spacing: .12em; text-shadow: 0 1px 6px rgba(0,0,0,.9); }
   .rc .body { padding: 14px 16px 18px; }
   .rc h4 { font: italic 800 1.7rem/1 "Barlow Condensed", sans-serif; text-transform: uppercase; margin: 0 0 10px; }
   .rc details { margin-top: 12px; } .rc summary { cursor: pointer; font-weight: 700; }
@@ -307,7 +307,7 @@
 <header class="hdr">
   <div class="hdr-in">
     <a class="brand" href="index.html" aria-label="UNBND Run Club home"><span><b>UNBND</b><small>Run club</small></span></a>
-    <nav class="hnav" aria-label="Site"><a href="races.html" aria-current="page">Races</a><a href="index.html#how">How it works</a><a href="index.html#members">Members</a><a href="rules.html">Club rules</a><a href="support.html">Support</a></nav>
+    <nav class="hnav" aria-label="Site"><a href="index.html">Home</a><a href="index.html#how">How it works</a><a href="races.html" aria-current="page">Races</a><a href="index.html#members">Members</a><a href="rules.html">Club rules</a><a href="support.html">Support</a></nav>
     <a class="ig" href="https://www.instagram.com/unbndrunclub/" aria-label="UNBND on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor" stroke="none"/></svg></a>
     <a class="join" href="register.html">Join <small>₹999</small></a>
     <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="sheet" aria-label="Open menu"><i></i><i></i></button>
@@ -315,8 +315,8 @@
 </header>
 <div class="sheet" id="sheet" hidden>
   <a class="row" href="index.html">Home</a>
+  <a class="row" href="index.html#how">How it works <small>Three simple steps</small></a>
   <a class="row" href="races.html" aria-current="page">Races <small>Schedule and race cards</small></a>
-  <a class="row" href="index.html#how">How it works <small>Membership, races, race cards</small></a>
   <a class="row" href="index.html#find">Find my Club ID <small>For members</small></a>
   <a class="row" href="pay.html">Complete payment <small>Registered, not paid?</small></a>
   <a class="row" href="rules.html">Club rules</a>
@@ -425,7 +425,7 @@
   <div class="sf-in">
     <div class="fgrid">
       <div>
-        <a class="fbrand" href="index.html"><img src="logo.png" alt="" width="52" height="52"><span><b>UNBND</b><small>Run club · Mumbai</small></span></a>
+        <a class="fbrand" href="index.html"><span><b>UNBND</b><small>Run club · Mumbai</small></span></a>
         <p>Group runs and races across Mumbai. Every pace, every distance, one club.</p>
       </div>
       <div class="fcols">

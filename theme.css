@@ -67,7 +67,7 @@ input:focus, select:focus, textarea:focus { background-color: #0b0b0e !important
 .btn:hover { box-shadow: 0 10px 28px -10px rgba(254,144,174,.7); }
 .btn.pink { background: var(--pink); color: #000; }
 .copy { background: var(--paper); color: #fff; }
-.idin b { background: var(--pink) !important; color: #000 !important; }
+.idin b { background: #2a2a31 !important; color: var(--pink) !important; }   /* part of the box, not a button */
 .err, .summary { color: #ff8a9c; }
 .summary { background: rgba(208,2,27,.14) !important; border-color: rgba(255,95,109,.5) !important; }
 .summary li, .summary b { color: #ffc2cc; }
@@ -99,7 +99,7 @@ a { color: inherit; }
 
 /* ---------- Page details ---------- */
 /* Numbered steps and rules */
-.step-n, .rule .n { background: var(--pink) !important; color: #000 !important; }
+.step-n, .rule .n { background: transparent !important; color: var(--pink) !important; box-shadow: inset 0 0 0 2px var(--pink); }   /* step numbers: outlined, not filled like buttons */
 .rule p { color: rgba(255,255,255,.75); }
 .signoff span { -webkit-text-stroke: 0; }
 /* Payment */
@@ -147,5 +147,11 @@ a { color: inherit; }
 .rv-row { border-top-color: var(--line); }
 .back { background: var(--paper); color: #fff; }
 .next.ready { background: var(--pink); color: #000; }
-.chip.req { background: var(--pink); color: #000; }
+.chip.req { background: none; color: var(--pink); padding: 0; }
 .big input, .big input:focus { background: transparent !important; border: 0 !important; }
+
+/* Only things you can click look like buttons: labels are plain text */
+.chip.opt { background: none !important; border: 0 !important; padding: 0 !important; color: var(--muted) !important; }
+.perks { gap: 8px 18px !important; }
+.perks li { background: none !important; padding: 0 0 0 20px !important; position: relative; border-radius: 0 !important; }
+.perks li::before { content: "✓"; position: absolute; left: 0; color: var(--pink); font-weight: 800; }
