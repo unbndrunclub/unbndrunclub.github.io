@@ -122,7 +122,7 @@
   .speed i:nth-child(4) { top: 58%; width: 22%; animation-delay: 2.4s; background: linear-gradient(90deg, transparent, #fff); }
   @keyframes zip { 0% { transform: translateX(0); opacity: 0; } 15% { opacity: .9; } 100% { transform: translateX(380%); opacity: 0; } }
   .hero-in { position: relative; z-index: 4; width: 100%; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; padding-top: 40px; padding-bottom: 26px; }
-  @media (min-width: 960px) { .hero-in { padding-top: 48px; padding-bottom: 32px; } }
+  @media (min-width: 960px) { .hero-in { padding-top: clamp(72px, 11vh, 124px); padding-bottom: 32px; } }
   .chip { display: inline-flex; align-self: flex-start; align-items: center; gap: 8px; margin: 0; padding: 7px 12px; border-radius: 999px; background: rgba(0,0,0,.55); border: 1px solid rgba(254,144,174,.5); font: 700 .78rem/1 var(--C); letter-spacing: .2em; text-transform: uppercase; }
   .chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--pink); box-shadow: 0 0 0 0 rgba(254,144,174,.8); animation: pulse 1.8s infinite; }
   @keyframes pulse { 70% { box-shadow: 0 0 0 10px rgba(254,144,174,0); } 100% { box-shadow: 0 0 0 0 rgba(254,144,174,0); } }
@@ -213,7 +213,8 @@
   .step a { display: inline-block; margin-top: 8px; font-weight: 700; color: var(--pink); text-decoration-thickness: 2px; text-underline-offset: 3px; }
   .step .must { display: inline-block; margin-top: 10px; padding: 4px 9px; border-radius: 7px; background: var(--pink); color: #000; font: 800 .76rem/1.2 var(--C); letter-spacing: .1em; text-transform: uppercase; }
   @media (min-width: 760px) { .facts { grid-template-columns: repeat(4, 1fr); } .steps { grid-template-columns: 1fr 1fr; } }
-  @media (min-width: 1100px) { .steps { grid-template-columns: repeat(4, 1fr); } .step { padding: 86px 18px 22px; } }
+  @media (min-width: 760px) and (max-width: 1099px) { .step:last-child:nth-child(odd) { grid-column: 1 / -1; } }
+  @media (min-width: 1100px) { .steps { grid-template-columns: repeat(3, 1fr); } .step { padding: 86px 18px 22px; } }
 
   /* ---------- Upcoming races ---------- */
   .rlist { list-style: none; margin: 28px 0 0; padding: 0; display: grid; gap: 12px; }
@@ -255,7 +256,7 @@
   .fres small { display: block; color: rgba(255,255,255,.65); }
   .fres .nxt { display: block; margin-top: 10px; font-weight: 600; }
   .fres a { color: var(--pink); font-weight: 700; }
-  @media (min-width: 760px) { .mgrid { grid-template-columns: 1.3fr 1fr 1fr; } }
+  @media (min-width: 760px) { .mgrid { grid-template-columns: 1.3fr 1fr; } }
 
   /* ---------- Race day photos ---------- */
   .mosaic { display: grid; grid-template-columns: repeat(2, 1fr); grid-auto-rows: 150px; gap: 8px; margin-top: 28px; }
@@ -387,18 +388,17 @@
   <div class="wide">
     <p class="kick">How UNBND works</p>
     <h2 class="h2" id="howTitle">Member first. <em>Then the start line.</em></h2>
-    <p class="sub">Every UNBND race is for club members. Here's everything you need to know, in four steps.</p>
+    <p class="sub">Every UNBND race is for club members. Here's everything you need to know, in three steps.</p>
     <div class="facts">
       <div class="fact hl"><b>₹999</b><span>Membership for one year. Renew every year to keep racing.</span></div>
       <div class="fact"><b>Free <small>&amp;</small> paid</b><span>Many races are free for active members. Some have an entry fee.</span></div>
-      <div class="fact"><b>1 card</b><span>Each race needs its own race card. No race card, no entry.</span></div>
+      <div class="fact"><b>Race card</b><span>Each race needs its own race card. No race card, no entry.</span></div>
       <div class="fact"><b>All paces</b><span>Beginners, regulars and racers all run together.</span></div>
     </div>
     <ol class="steps">
       <li class="step"><h3>Become a member</h3><p>Register online in a few minutes, then pay the ₹999 membership fee and upload your payment screenshot.</p><span class="must">Membership is a must</span><br><a href="register.html">Register now</a></li>
       <li class="step"><h3>Get your Club ID</h3><p>We check your payment, activate your membership and email you your Club ID. Your membership lasts one year.</p><a href="#find">Already registered? Find your Club ID</a></li>
-      <li class="step"><h3>Pick a race</h3><p>See the race schedule. Each race is marked <b>Free</b> for active members, or shows its entry fee.</p><a href="races.html">See the race schedule</a></li>
-      <li class="step"><h3>Generate your race card</h3><p>Generate your race card for that race with your Club ID and registered mobile, then show its QR code at the start line. No entry without one.</p><span class="must">Active members only</span></li>
+      <li class="step"><h3>Pick a race and generate your race card</h3><p>On the race schedule, pick your race and generate its race card with your Club ID and registered mobile. Show its QR code at the start line: no race card, no entry.</p><span class="must">Active members only</span><br><a href="races.html">Visit the race schedule for details</a></li>
     </ol>
   </div>
 </section>
@@ -430,14 +430,8 @@
         <div id="fOut" aria-live="polite"></div>
       </div>
       <div class="mcard">
-        <small class="k">Registered, not paid?</small>
-        <h3>Complete your payment</h3>
-        <p>Pay the ₹999 membership fee and upload the screenshot. We'll check it, activate your membership and email your Club ID.</p>
-        <a class="btn line" href="pay.html">Pay and upload screenshot</a>
-      </div>
-      <div class="mcard">
         <small class="k">Active member?</small>
-        <h3>Get your race card</h3>
+        <h3>Generate your race card</h3>
         <p>Pick your race on the schedule and generate your race card. No race card, no entry. Keep it to yourself: its QR code is your entry.</p>
         <a class="btn line" href="races.html">Go to races</a>
       </div>
